@@ -1,3 +1,0 @@
-C:/Lucy/DAE/Group Projects/Summer Prototype/repo/WallBSummer/NativePlugin/build/dev/_deps/catch2-subbuild/CMakeFiles/catch2-populate.dir
-C:/Lucy/DAE/Group Projects/Summer Prototype/repo/WallBSummer/NativePlugin/build/dev/_deps/catch2-subbuild/CMakeFiles/edit_cache.dir
-C:/Lucy/DAE/Group Projects/Summer Prototype/repo/WallBSummer/NativePlugin/build/dev/_deps/catch2-subbuild/CMakeFiles/rebuild_cache.dir
