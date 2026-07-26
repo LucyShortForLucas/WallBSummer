@@ -1,0 +1,5 @@
+if(EXISTS "C:/Lucy/DAE/Group Projects/Summer Prototype/repo/WallBSummer/NativePlugin/build/dev/tests/NativePlugin_tests-b12d07c_tests.cmake")
+  include("C:/Lucy/DAE/Group Projects/Summer Prototype/repo/WallBSummer/NativePlugin/build/dev/tests/NativePlugin_tests-b12d07c_tests.cmake")
+else()
+  add_test(NativePlugin_tests_NOT_BUILT-b12d07c NativePlugin_tests_NOT_BUILT-b12d07c)
+endif()
