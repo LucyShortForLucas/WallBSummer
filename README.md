@@ -6,6 +6,7 @@ To set up the git repo on your device follow these steps:
 
 1. Install the prerequisite software:
     - Git: https://git-scm.com/install/windows
+    - Git LFS: https://git-lfs.com/
     - Google Drive for Desktop: https://support.google.com/a/users/answer/13022292?hl=en
     - Rust: https://rust-lang.org/tools/install/
 
