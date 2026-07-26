@@ -20,7 +20,7 @@ git config lfs.customtransfer.lfs-dal.path "lfs-dal"
 git config lfs.standalonetransferagent lfs-dal
 
 git config -f .lfsdalconfig lfs-dal.scheme fs
-git config -f .lfsdalconfig lfs-dal.root "G:\.shortcut-targets-by-id\1DCjk_n6IbwflVbzSh7G2kYXci_Lf2pyX\GroupProjects2026\LFS_SummerPrototype"
+git config -f .lfsdalconfig lfs-dal.root "G:\My Drive\GroupProjects2026\LFS_SummerPrototype"
 
 Write-Host "Configured lfs-dal as the standalone LFS transfer agent."
 Write-Host "Pulling LFS content from Drive..."
