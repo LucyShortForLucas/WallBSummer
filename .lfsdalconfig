@@ -1,7 +1,11 @@
 [lfs-dal]
 	scheme = fs
 <<<<<<< HEAD
+<<<<<<< HEAD
 	root = G:\.shortcut-targets-by-id\1DCjk_n6IbwflVbzSh7G2kYXci_Lf2pyX\GroupProjects2026
+=======
+	root = G:\\My Drive\\GroupProjects2026\\LFS_SummerPrototype
+>>>>>>> refs/remotes/origin/main
 =======
 	root = G:\\My Drive\\GroupProjects2026\\LFS_SummerPrototype
 >>>>>>> refs/remotes/origin/main
