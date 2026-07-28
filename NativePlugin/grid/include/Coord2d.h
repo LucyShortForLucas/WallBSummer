@@ -13,7 +13,7 @@ struct Coord2d {
 
 	const auto operator<=>(const Coord2d& other) const = default;
 
-#define MATH_OP(o) Coord2d&  operator##o##=(const Coord2d& rh) { x ##o##= rh.x; y ##o##= rh.y;  return *this; }
+#define MATH_OP(o) inline Coord2d& operator##o##=(const Coord2d& rh) { x ##o##= rh.x; y ##o##= rh.y;  return *this; }
 	MATH_OP(+)
 	MATH_OP(-)
 	MATH_OP(*)
@@ -22,7 +22,7 @@ struct Coord2d {
 }; // !Coord2d
 
 #undef MATH_OP
-#define MATH_OP(o) Coord2d  operator##o##(const Coord2d& lh, const Coord2d& rh) { 	Coord2d result{ lh }; result ##o##= rh; return result; }
+#define MATH_OP(o) inline Coord2d operator##o##(const Coord2d& lh, const Coord2d& rh) { 	Coord2d result{ lh }; result ##o##= rh; return result; }
 MATH_OP(+)
 MATH_OP(-)
 MATH_OP(*)
@@ -33,8 +33,11 @@ MATH_OP(%)
 template<typename T>
 struct Coord2dWrapper {
 	Coord2d value;
+
+	const auto operator<=>(const Coord2dWrapper& other) const = default;
+
 #undef MATH_OP
-#define MATH_OP(o) Coord2dWrapper<T>&  operator##o##=(const Coord2dWrapper<T>& rh) { value ##o##= rh.value;  return *this; }
+#define MATH_OP(o) inline Coord2dWrapper<T>&  operator##o##=(const Coord2dWrapper<T>& rh) { value ##o##= rh.value;  return *this; }
 	MATH_OP(+)
 	MATH_OP(-)
 	MATH_OP(*)
@@ -43,14 +46,39 @@ struct Coord2dWrapper {
 }; // !Coord2dWrapper
 
 #undef MATH_OP
-#define MATH_OP(o) template<typename T> Coord2dWrapper<T>  operator##o##(const Coord2dWrapper<T>& lh, const Coord2dWrapper<T>& rh) { 	Coord2dWrapper<T> result{ lh }; result ##o##= rh; return result; }
+#define MATH_OP(o)  template<typename T> inline Coord2dWrapper<T>  operator##o##(const Coord2dWrapper<T>& lh, const Coord2dWrapper<T>& rh) { 	Coord2dWrapper<T> result{ lh }; result ##o##= rh; return result; }
 MATH_OP(+)
 MATH_OP(-)
 MATH_OP(*)
-MATH_OP(/)
+MATH_OP(/ )
 MATH_OP(%)
 
 #undef MATH_OP
+
+template <typename T>
+struct CoordRect {
+	Coord2dWrapper<T> coord;
+	int width;
+	int height;
+
+	const auto operator<=>(const CoordRect& other) const = default;
+
+#undef MATH_OP(o)
+#define MATH_OP(o) inline CoordRect<T>& operator##o##=(const CoordRect<T>& rh) { coord ##o##= rh.coord ; width ##o##= rh.width; height ##o##= rh.height;  return *this; }
+	MATH_OP(+)
+	MATH_OP(-)
+	MATH_OP(*)
+	MATH_OP(/ )
+	MATH_OP(%)
+};
+
+#undef MATH_OP
+#define MATH_OP(o)  template<typename T> inline CoordRect<T> operator##o##(const CoordRect<T>& lh, const CoordRect<T>& rh) { CoordRect<T> result{ lh }; result ##o##= rh; return result; }
+MATH_OP(+)
+MATH_OP(-)
+MATH_OP(*)
+MATH_OP(/ )
+MATH_OP(%)
 
 // ---- Tagged typedefs
 
@@ -63,9 +91,20 @@ using ChunkCoord2d = Coord2dWrapper<tag::Chunk>;
 using ChunkTileCoord2d = Coord2dWrapper<tag::ChunkTile>;
 using GridTileCoord2d = Coord2dWrapper<tag::GridTile>;
 
+using ChunkRect = CoordRect<tag::Chunk>;
+using ChunkTileRect = CoordRect<tag::ChunkTile>;
+using GridTileRect = CoordRect<tag::GridTile>;
+
 // ---- Helper constants
 
-constexpr GridTileCoord2d CHUNK_EXTENDS_2D{CHUNK_WIDTH, CHUNK_WIDTH};
+constexpr GridTileCoord2d CHUNK_EXTENDS_2D{ CHUNK_WIDTH, CHUNK_WIDTH };
+
+constexpr ChunkTileCoord2d CHUNK_TOPLEFT_2D{ 0, 0 };
+constexpr ChunkTileCoord2d CHUNK_TOPRIGHT_2D{ CHUNK_WIDTH-1, 0 };
+constexpr ChunkTileCoord2d CHUNK_BOTTOMLEFT_2D{ 0, CHUNK_WIDTH-1 };
+constexpr ChunkTileCoord2d CHUNK_BOTTOMRIGHT_2D{CHUNK_WIDTH-1, CHUNK_WIDTH-1};
+
+constexpr ChunkTileRect WHOLE_CHUNK_RECT{ CHUNK_TOPLEFT_2D, CHUNK_WIDTH - 1, CHUNK_WIDTH - 1 };
 
 } // !grid
 
@@ -86,6 +125,6 @@ struct std::hash<grid::Coord2d> {
 template<typename T>
 struct std::hash<grid::Coord2dWrapper<T>> {
 	std::size_t operator()(const grid::Coord2dWrapper<T>& wrapper) const noexcept {
-		return std::hash(wrapper.value);
+		return std::hash<grid::Coord2d>{}(wrapper.value);
 	}
 };

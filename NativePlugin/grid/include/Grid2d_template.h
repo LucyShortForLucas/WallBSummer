@@ -23,29 +23,29 @@
 
 namespace grid {
 
-template <typename T, Chunk2dFactory<T> ChunkGen>
+template <typename T, Chunk2dFactory<T> ChunkGen = DefaultChunk2dFactory<T>>
 class Grid2d {
 public:
 	using Chunk = Chunk2d<T>;
 
 	// ---- Ctor and co
-	Grid2d(ChunkGen gen = DefaultChunk2dFactory<T>);
+	Grid2d(ChunkGen gen = DefaultChunk2dFactory<T>{}) : m_ChunkFactory(gen) {};
 
 	// ---- Get/set tiles
 	T		get_tile(GridTileCoord2d coord);
 	void	set_tile(GridTileCoord2d coord, T value);
-	std::vector<T>	get_tile_rect(GridTileCoord2d coord, int width, int height);
-	void			fill_tile_rect(GridTileCoord2d coord, int width, int height, T value);
+	std::vector<T>	get_tile_rect(GridTileRect rect);
+	void			fill_tile_rect(GridTileRect rect, T value);
 
 	// ---- Chunk algorithm methods
 	template <typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
 	void run_on_chunk(ChunkCoord2d chunkCoord, F&& func, Args&&... args);
 
-	template <typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
-	void run_on_awake_chunks(ExecutionPolicy policy, F&& func, Args&&... args);
+	template <ExecutionPolicy policy, typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
+	void run_on_awake_chunks(F&& func, Args&&... args);
 
-	template <typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
-	void run_on_loaded_chunks(ExecutionPolicy policy, F&& func, Args&&... args);
+	template <ExecutionPolicy policy, typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
+	void run_on_loaded_chunks(F&& func, Args&&... args);
 
 	// ---- control chunks
 	void load_chunk_asleep(ChunkCoord2d coord);
@@ -61,14 +61,14 @@ public:
 	int sleeping_chunk_count();
 
 private: 
-	std::unordered_map<ChunkCoord2d, Chunk> m_Chunks{};
+	std::unordered_map<ChunkCoord2d, std::unique_ptr<Chunk>> m_Chunks{};
 	std::vector<Chunk*> m_DirtyEdgeChunks{};
 
 	/// This vector stores a pointer to all currently loaded chunks. The vector is sorted in such a way that
 	/// all 'awake' chunks are in the front, and all asleep chunks in the back. The int member ``m_AwakeChunkCount``
 	/// keeps track of how many chunks are currently awake.
 	std::vector<Chunk*> m_LoadedChunks{};
-	int m_AwakeChunkCount;
+	int m_AwakeChunkCount{};
 
 	ChunkGen m_ChunkFactory;
 };

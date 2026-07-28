@@ -20,3 +20,5 @@ target_link_libraries(${EXENAME} PRIVATE "${PROJECT_NAME}_grid")
 include(CTest)
 include(Catch)  
 catch_discover_tests(${EXENAME})
+
+target_compile_options(${EXENAME} PRIVATE /EHsc)

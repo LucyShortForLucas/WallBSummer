@@ -1,4 +1,5 @@
 #include <catch2/catch_template_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include <string>
 #include <bitset>
@@ -9,15 +10,57 @@
 
 using namespace grid;
 
+TEMPLATE_TEST_CASE("Grid chunk Factories", "[grid]", GRID_TEST_TYPES) {
+    int testX{ GENERATE(
+        0, 5, 3,-3, -21,48, 101,-30065, -21,-71
+    ) };
+
+    int testY{ GENERATE(
+        0, 52, 13,-13, -1, 25, 11, 3788, 10,-710
+    ) };
+
+    GridTileCoord2d testCoord{ testX, testY };
+
+    auto v = TestValues<TestType>::v;
+
+    SECTION(std::string("Default Chunk Factory, checking tile [") + std::to_string(testX) + ", " + std::to_string(testY) + "]") {
+        Grid2d<TestType, DefaultChunk2dFactory<TestType>> testGrid{};
+        REQUIRE(testGrid.get_tile(testCoord) == TestType{});
+    }
+
+    SECTION("Fill Chunk Factory") {
+        Grid2d<TestType, FillChunk2dFactory<TestType>> testGrid{ FillChunk2dFactory<TestType>{v[0]}};
+        REQUIRE(testGrid.get_tile(testCoord) == v[0]);
+    }
+}
+
 TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[grid]", GRID_TEST_TYPES) {
     Grid2d<TestType> testGrid{};
-    TestValues<TestType> testVals{};
+    auto v = TestValues<TestType>::v;
 
     SECTION("Set/get a single tile") {
-        auto v{ testVals.v[0] };
+        testGrid.set_tile({ 0,0 }, v[0]);
+        REQUIRE(testGrid.get_tile({ 0,0 }) == v[0]);
+    }
 
-        testGrid.set_tile({ 0,0 }, v);
-        
-        REQUIRE(testGrid.get_tile({ 0,0 }) == v);
+    SECTION("Fill/get a whole rect of tiles") {
+
+        // Within a single chunk
+        Grid2d<TestType, FillChunk2dFactory<TestType>> v0Grid{ FillChunk2dFactory<TestType>{v[0]} };
+        testGrid.fill_tile_rect({ {4, 4}, 6, 4 }, v[0]);
+        REQUIRE(testGrid.get_tile_rect({ { 4, 4 }, 6, 4 }) == utils::make_filled_vector<6 * 4, TestType>(v[0]));
+        REQUIRE(testGrid.get_tile_rect({ { 4, 4 }, 6, 4 }) == v0Grid.get_tile_rect({ { 4, 4 }, 6, 4 }));
+
+        // Across multiple chunks
+        Grid2d<TestType, FillChunk2dFactory<TestType>> v1Grid{ FillChunk2dFactory<TestType>{v[1]} };
+        testGrid.fill_tile_rect({ { -4, -4 }, 20, 31 }, v[1]);
+        REQUIRE(testGrid.get_tile_rect({ { -4, -4 }, 20, 31 }) == utils::make_filled_vector<20 * 31, TestType>(v[1]));
+        REQUIRE(testGrid.get_tile_rect({ { -4, -4 }, 20, 31 }) == v1Grid.get_tile_rect({{ -4, -4 }, 20, 31}));
+
+        // Long and thin
+        Grid2d<TestType, FillChunk2dFactory<TestType>> v2Grid{ FillChunk2dFactory<TestType>{v[2]} };
+        testGrid.fill_tile_rect({ { 4, -4 }, 300, 1 }, v[2]);
+        REQUIRE(testGrid.get_tile_rect({ { 4, -4 }, 300, 1 }) == utils::make_filled_vector<300 * 1, TestType>(v[2]));
+        REQUIRE(testGrid.get_tile_rect({ { 4, -4 }, 300, 1 }) == v2Grid.get_tile_rect({ { 4, -4 }, 300, 1 }));
     }
 }

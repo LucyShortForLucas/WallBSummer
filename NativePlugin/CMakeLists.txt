@@ -18,6 +18,9 @@ target_compile_options(no_exceptions_rtti INTERFACE
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-fno-exceptions -fno-rtti>
 )
 
+# Common lib
+add_subdirectory(common)
+
 # Feature domain libs
 add_subdirectory(grid)
 

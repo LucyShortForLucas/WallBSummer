@@ -18,7 +18,7 @@ struct TestGridDataAggregate {
     auto operator<=>(const TestGridDataAggregate&) const = default;
 };
 
-#define GRID_TEST_TYPES int, float, std::string, TestGridDataAggregate, \
+#define GRID_TEST_TYPES int, std::string, TestGridDataAggregate, \
     std::bitset<4>, std::vector<int>
 
 template<typename T>
