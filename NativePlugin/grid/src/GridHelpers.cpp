@@ -41,13 +41,13 @@ std::vector<std::pair<ChunkCoord2d, ChunkTileRect>> grid_to_chunk_rect(GridTileR
     auto bottomRightChunkRect{ rect_from_to(CHUNK_TOPLEFT_2D, bottomRightChunkTile) };
 
     if (topLeftChunk.value.y == bottomRightChunk.value.y) {
-        int height{ bottomRightChunkTile.value.y - topLeftChunkTile.value.y };
+        int height{ bottomRightChunkTile.value.y - topLeftChunkTile.value.y+1 };
         topLeftChunkRect.height = height;
         bottomRightChunkRect.height = height;
     }
 
     if (topLeftChunk.value.x == bottomRightChunk.value.x) {
-        int width{ bottomRightChunkTile.value.x - topLeftChunkTile.value.x };
+        int width{ bottomRightChunkTile.value.x - topLeftChunkTile.value.x+1 };
         topLeftChunkRect.width = width;
         bottomRightChunkRect.width = width;
     }
