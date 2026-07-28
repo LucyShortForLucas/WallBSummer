@@ -62,5 +62,14 @@ TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[gri
         testGrid.fill_tile_rect({ { 4, -4 }, 300, 1 }, v[2]);
         REQUIRE(testGrid.get_tile_rect({ { 4, -4 }, 300, 1 }) == utils::make_filled_vector<300 * 1, TestType>(v[2]));
         REQUIRE(testGrid.get_tile_rect({ { 4, -4 }, 300, 1 }) == v2Grid.get_tile_rect({ { 4, -4 }, 300, 1 }));
+
+        // Single tile rects, Side by side
+        Grid2d<TestType, FillChunk2dFactory<TestType>> v3Grid{ FillChunk2dFactory<TestType>{v[3]} };
+        testGrid.fill_tile_rect({ {5,9}, 1,1 }, v[2]);
+        testGrid.fill_tile_rect({ {5,8}, 1,1 }, v[3]);
+        REQUIRE(testGrid.get_tile_rect({ { 5, 9 }, 1, 1 }) == v2Grid.get_tile_rect({ { 5, 9 }, 1, 1 }));
+        REQUIRE(testGrid.get_tile_rect({ { 5, 8 }, 1, 1 }) == v3Grid.get_tile_rect({ { 5, 8 }, 1, 1 }));
+        REQUIRE(testGrid.get_tile({ 5, 9 }) == v[2]);
+        REQUIRE(testGrid.get_tile({ 5, 8 }) == v[3]);
     }
 }

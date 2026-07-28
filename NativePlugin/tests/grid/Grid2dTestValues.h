@@ -40,7 +40,7 @@ template<>
 struct TestValues<std::string> {
     static inline const std::array<std::string, 4> v{ 
         "This is a string!", "Hello World!",
-        "",
+        "blabla",
         "         \"\"               " // <-- Weird string just because. Python devs must love all that white space -Lucy
     };
 };

@@ -34,7 +34,7 @@ std::vector<T> Grid2d<T, ChunkGen>::get_tile_rect(GridTileRect rect) {
 		load_chunk_asleep(chunkRect.first);
 		auto& chunk{ m_Chunks[chunkRect.first] };
 		utils::fetch_rect_from_square_array<T, CHUNK_DATA_WIDTH>(chunk->current_data_buffer(),
-			chunkRect.second.coord.value.x, chunkRect.second.coord.value.y,
+			chunkRect.second.coord.value.x+1, chunkRect.second.coord.value.y+1,
 			chunkRect.second.width, chunkRect.second.height,
 			result);
 	}
@@ -47,7 +47,7 @@ void Grid2d<T, ChunkGen>::fill_tile_rect(GridTileRect rect, T value) {
 		load_chunk_asleep(chunkRect.first);
 		auto& chunk{m_Chunks[chunkRect.first]};
 		utils::fill_rect_in_square_array<T, CHUNK_DATA_WIDTH>(chunk->current_data_buffer(),
-			chunkRect.second.coord.value.x, chunkRect.second.coord.value.y,
+			chunkRect.second.coord.value.x+1, chunkRect.second.coord.value.y+1,
 			chunkRect.second.width, chunkRect.second.height,
 			value);
 	}
