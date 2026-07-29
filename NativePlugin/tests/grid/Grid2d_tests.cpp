@@ -34,20 +34,18 @@ TEMPLATE_TEST_CASE("Grid chunk Factories", "[grid]", GRID_TEST_TYPES) {
     }
 }
 
+#define CHUNKCOUNTREQUIRE(a, b, c) REQUIRE(testGrid.loaded_chunk_count() == a); REQUIRE(testGrid.awake_chunk_count() == b); REQUIRE(testGrid.sleeping_chunk_count() == c);
+
 TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[grid]", GRID_TEST_TYPES) {
     Grid2d<TestType> testGrid{};
     auto v = TestValues<TestType>::v;
 
-    REQUIRE(testGrid.loaded_chunk_count() == 0);
-    REQUIRE(testGrid.awake_chunk_count() == 0);
-    REQUIRE(testGrid.sleeping_chunk_count() == 0);
+    CHUNKCOUNTREQUIRE(0, 0, 0);
 
     SECTION("Set/get a single tile") {
         testGrid.set_tile({ 0,0 }, v[0]);
         REQUIRE(testGrid.get_tile({ 0,0 }) == v[0]);
-        REQUIRE(testGrid.loaded_chunk_count() == 1);
-        REQUIRE(testGrid.awake_chunk_count() == 0);
-        REQUIRE(testGrid.sleeping_chunk_count() == 1);
+        CHUNKCOUNTREQUIRE(1, 0, 1);
     }
 
     SECTION("Fill/get a whole rect of tiles") {
@@ -78,5 +76,19 @@ TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[gri
         REQUIRE(testGrid.get_tile_rect({ { 5, 8 }, 1, 1 }) == v3Grid.get_tile_rect({ { 5, 8 }, 1, 1 }));
         REQUIRE(testGrid.get_tile({ 5, 9 }) == v[2]);
         REQUIRE(testGrid.get_tile({ 5, 8 }) == v[3]);
+    }
+
+    SECTION("Wake up/put chunks to sleep") {
+        testGrid.load_chunk_asleep(ChunkCoord2d{ 0,0 });
+        CHUNKCOUNTREQUIRE(1, 0, 1);
+        testGrid.load_chunk_asleep(ChunkCoord2d{ 1,0 });
+        CHUNKCOUNTREQUIRE(2, 0, 2);
+        testGrid.wake_chunk(ChunkCoord2d{ 0,0 });
+        CHUNKCOUNTREQUIRE(2, 1, 1);
+        testGrid.wake_chunk(ChunkCoord2d{ 0,1 });
+        CHUNKCOUNTREQUIRE(3, 2, 1);
+        testGrid.sleep_chunk(ChunkCoord2d{ 0,1 });
+        CHUNKCOUNTREQUIRE(3, 1, 2);
+
     }
 }

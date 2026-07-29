@@ -63,6 +63,26 @@ void Grid2d<T, ChunkGen>::load_chunk_asleep(ChunkCoord2d chunkCoord) {
 }
 
 template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
+void Grid2d<T, ChunkGen>::wake_chunk(ChunkCoord2d coord) {
+	load_chunk_asleep(coord);
+	auto it{ std::find(m_LoadedChunks.begin(), m_LoadedChunks.end(), m_Chunks[coord])};
+	if (std::distance(it, m_LoadedChunks.begin()+m_AwakeChunkCount) < m_AwakeChunkCount) return;
+
+	std::swap(*it, m_LoadedChunks(m_AwakeChunkCount));
+	++m_AwakeChunkCount;
+}
+
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
+void Grid2d<T, ChunkGen>::sleep_chunk(ChunkCoord2d coord) {
+	load_chunk_asleep(coord);
+	auto it{ std::ranges::find(m_LoadedChunks, m_Chunks[coord]) };
+	if (std::distance(it, m_LoadedChunks.begin() + m_AwakeChunkCount) >= m_AwakeChunkCount) return;
+
+	std::swap(*it, m_LoadedChunks(m_AwakeChunkCount-1));
+	--m_AwakeChunkCount;
+}
+
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
 int Grid2d<T, ChunkGen>::loaded_chunk_count() {
 	return m_LoadedChunks.size();
 }

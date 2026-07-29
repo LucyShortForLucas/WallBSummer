@@ -63,7 +63,7 @@ struct CoordRect {
 
 	const auto operator<=>(const CoordRect& other) const = default;
 
-#undef MATH_OP(o)
+#undef MATH_OP
 #define MATH_OP(o) inline CoordRect<T>& operator##o##=(const CoordRect<T>& rh) { coord ##o##= rh.coord ; width ##o##= rh.width; height ##o##= rh.height;  return *this; }
 	MATH_OP(+)
 	MATH_OP(-)
