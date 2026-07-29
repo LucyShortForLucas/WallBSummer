@@ -21,7 +21,7 @@ struct DefaultChunk2dFactory {
 	}
 };
 
-template <typename T>
+template <ValidGridData T>
 struct FillChunk2dFactory {
 	const T defaultValue;
 

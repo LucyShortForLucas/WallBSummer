@@ -23,13 +23,13 @@
 
 namespace grid {
 
-template <typename T, Chunk2dFactory<T> ChunkGen = DefaultChunk2dFactory<T>>
+template <ValidGridData T, Chunk2dFactory<T> ChunkGen = DefaultChunk2dFactory<T>>
 class Grid2d {
 public:
 	using Chunk = Chunk2d<T>;
 
 	// ---- Ctor and co
-	Grid2d(ChunkGen gen = DefaultChunk2dFactory<T>{}) : m_ChunkFactory(gen) {};
+	explicit Grid2d(ChunkGen gen = DefaultChunk2dFactory<T>{}) : m_ChunkFactory(gen) {};
 
 	// ---- Get/set tiles
 	T		get_tile(GridTileCoord2d coord);
@@ -51,6 +51,11 @@ public:
 	void load_chunk_asleep(ChunkCoord2d coord);
 	void wake_chunk(ChunkCoord2d coord);
 	void sleep_chunk(ChunkCoord2d coord);
+		
+	// rect overloads
+	void load_chunk_asleep(ChunkRect rect);
+	void wake_chunk(ChunkRect rect);
+	void sleep_chunk(ChunkRect rect);
 
 	// ---- Halo
 	void sync_dirty_halos();
@@ -62,7 +67,6 @@ public:
 
 private: 
 	std::unordered_map<ChunkCoord2d, std::unique_ptr<Chunk>> m_Chunks{};
-	std::vector<Chunk*> m_DirtyEdgeChunks{};
 
 	/// This vector stores a pointer to all currently loaded chunks. The vector is sorted in such a way that
 	/// all 'awake' chunks are in the front, and all asleep chunks in the back. The int member ``m_AwakeChunkCount``

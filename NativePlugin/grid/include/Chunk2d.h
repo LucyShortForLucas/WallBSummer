@@ -5,8 +5,10 @@
 
 namespace grid {
 
-template <typename T>
+template <ValidGridData T>
 struct Chunk2d {
+	explicit Chunk2d(std::array<T, CHUNK_DATA_SIZE>&& data) : buffer(std::move(data), {}) {};
+
 	std::array<std::array<T, CHUNK_DATA_SIZE>, 2> buffer;
 	uint8_t dirtyEdges{ 0 };
 

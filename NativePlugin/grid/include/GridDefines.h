@@ -44,7 +44,7 @@ struct GridTile {};
 
 // ---- Concepts
 template<typename T>
-concept ValidGridData = requires { std::default_initializable<T>; };
+concept ValidGridData = requires { std::is_trivially_copy_assignable_v<T>; };
 
 template <typename T>
 concept ExecutionPolicy = requires {std::is_execution_policy_v<T>; };

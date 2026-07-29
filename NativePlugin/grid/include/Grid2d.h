@@ -9,7 +9,7 @@
 
 namespace grid {
 
-template<typename T, Chunk2dFactory<T> ChunkGen>
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
 inline T Grid2d<T, ChunkGen>::get_tile(GridTileCoord2d coord) {
 	auto [chunkCoord, chunkTile] {grid_to_chunk_tile(coord)};
 
@@ -18,7 +18,7 @@ inline T Grid2d<T, ChunkGen>::get_tile(GridTileCoord2d coord) {
 	return m_Chunks[chunkCoord]->current_data_buffer()[coord_to_data_index(chunkTile)];
 }
 
-template<typename T, Chunk2dFactory<T> ChunkGen>
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
 void Grid2d<T, ChunkGen>::set_tile(GridTileCoord2d coord, T value) {
 	auto [chunkCoord, chunkTile] {grid_to_chunk_tile(coord)};
 
@@ -27,7 +27,7 @@ void Grid2d<T, ChunkGen>::set_tile(GridTileCoord2d coord, T value) {
 	m_Chunks[chunkCoord]->current_data_buffer()[coord_to_data_index(chunkTile)] = value;
 }
 
-template<typename T, Chunk2dFactory<T> ChunkGen>
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
 std::vector<T> Grid2d<T, ChunkGen>::get_tile_rect(GridTileRect rect) {
 	std::vector<T> result;
 	for (auto& chunkRect : grid_to_chunk_rect(rect)) {
@@ -41,7 +41,7 @@ std::vector<T> Grid2d<T, ChunkGen>::get_tile_rect(GridTileRect rect) {
 	return result;
 }
 
-template<typename T, Chunk2dFactory<T> ChunkGen>
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
 void Grid2d<T, ChunkGen>::fill_tile_rect(GridTileRect rect, T value) {
 	for (auto& chunkRect : grid_to_chunk_rect(rect)) {
 		load_chunk_asleep(chunkRect.first);
@@ -54,12 +54,27 @@ void Grid2d<T, ChunkGen>::fill_tile_rect(GridTileRect rect, T value) {
 }
 
 
-template<typename T, Chunk2dFactory<T> ChunkGen>
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
 void Grid2d<T, ChunkGen>::load_chunk_asleep(ChunkCoord2d chunkCoord) {
 	if (!m_Chunks.contains(chunkCoord)) {
-		m_Chunks[chunkCoord] = std::make_unique<Chunk2d<T>>();
-		m_Chunks[chunkCoord]->current_data_buffer() = m_ChunkFactory(chunkCoord);
+		m_Chunks[chunkCoord] = std::make_unique<Chunk2d<T>>(m_ChunkFactory(chunkCoord));
+		m_LoadedChunks.emplace_back(m_Chunks[chunkCoord].get());
 	}
+}
+
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
+int Grid2d<T, ChunkGen>::loaded_chunk_count() {
+	return m_LoadedChunks.size();
+}
+
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
+int Grid2d<T, ChunkGen>::awake_chunk_count() {
+	return m_AwakeChunkCount;
+}
+
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
+int Grid2d<T, ChunkGen>::sleeping_chunk_count() {
+	return m_LoadedChunks.size() - m_AwakeChunkCount;
 }
 
 }
