@@ -585,7 +585,7 @@ We use suffixes only for the files and only for the ones in the list below. Suff
 
 The list of available suffixes:
 
-* Names: ```ArtBibleSketches_Bob.psd```, ```UnityPractice_Alice```
+* Names: ```ArtBibleSketches_Alice.psd```, ```UnityPractice_Bob```
 * Textures:
     * ``_BC``: Base color texture
     * ``_N``: Normal map
