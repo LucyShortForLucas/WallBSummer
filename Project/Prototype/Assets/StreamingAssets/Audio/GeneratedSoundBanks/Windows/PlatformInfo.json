@@ -6,11 +6,11 @@
    "Generator": "2025.1.9.9197"
   },
   "RootPaths": {
-   "ProjectRoot": "../../../../../WallBPrototypeWwise",
-   "SourceFilesRoot": "../../../../../WallBPrototypeWwise/.cache",
+   "ProjectRoot": "../../../../../../WallBPrototypeWwise",
+   "SourceFilesRoot": "../../../../../../WallBPrototypeWwise/.cache",
    "SoundBanksRoot": ".",
    "ExternalSourcesInputFile": "",
-   "ExternalSourcesOutputRoot": "../../../../../WallBPrototypeWwise/GeneratedSoundBanks/Windows"
+   "ExternalSourcesOutputRoot": "../../../../../../WallBPrototypeWwise/GeneratedSoundBanks/Windows"
   },
   "DefaultAlign": "16",
   "Settings": {
@@ -33,6 +33,6 @@
    "PrintObjectPath": "true",
    "PrintObjectColor": "true"
   },
-  "FileHash": "{A8C93244-996B-DD08-B568-14BAEDDF62FE}"
+  "FileHash": "{F4C11877-3677-232E-8D15-69C253364413}"
  }
 }
