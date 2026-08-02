@@ -494,6 +494,7 @@ Here is the **approximate** top-level folder structure of our Unity project:
                 CSharp/
                 Cpp/
             Input/
+            Scenes/
         Editor/
             Scripts/
         Dev/
