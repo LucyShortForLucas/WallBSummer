@@ -1,0 +1,45 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "4056684167",
+    "Type": "User",
+    "GUID": "{A71A4991-68E7-457B-A1D0-5EB7B176AF0C}",
+    "Language": "SFX",
+    "Hash": "{81280AE0-EBD0-B374-7BAD-6F81AB3193DE}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\Master",
+    "ShortName": "Master",
+    "Path": "Master.bnk",
+    "Media": [
+     {
+      "Id": "616443019",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "BadToTheBone.wav",
+      "CachePath": "6E/{6E3BCD52-B934-2F98-F8A8-D87CE7B22E73}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "1097980931",
+      "Name": "TestEvent",
+      "ObjectPath": "\\Events\\Default Work Unit\\TestEvent",
+      "GUID": "{A3B38532-5B14-4C2C-AAF7-551F405A5470}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "616443019"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{E18A38E4-0547-A81E-13DB-458B90EDF10B}"
+ }
+}
