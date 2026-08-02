@@ -76,10 +76,37 @@ template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
 void Grid2d<T, ChunkGen>::sleep_chunk(ChunkCoord2d coord) {
 	load_chunk_asleep(coord);
 	auto it{ std::ranges::find(m_LoadedChunks, m_Chunks[coord]) };
-	if (std::distance(it, m_LoadedChunks.begin() + m_AwakeChunkCount) >= m_AwakeChunkCount) return;
+	if (std::distance(it, m_LoadedChunks.begin()+m_AwakeChunkCount) >= m_AwakeChunkCount) return;
 
 	std::swap(*it, m_LoadedChunks(m_AwakeChunkCount-1));
 	--m_AwakeChunkCount;
+}
+
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
+void Grid2d<T, ChunkGen>::load_chunks_asleep(ChunkRect rect) {
+	for (int x{ rect.coord.value.x }; x < rect.width + rect.coord.value.x; ++x) {
+		for (int y{ rect.coord.value.y }; y < rect.height + rect.coord.value.y; ++y) {
+			load_chunk_asleep({x,y});
+		}
+	}
+}
+
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
+void Grid2d<T, ChunkGen>::wake_chunks(ChunkRect rect) {
+	for (int x{ rect.coord.value.x }; x < rect.width + rect.coord.value.x; ++x) {
+		for (int y{ rect.coord.value.y }; y < rect.height + rect.coord.value.y; ++y) {
+			wake_chunk({ x,y });
+		}
+	}
+}
+
+template<ValidGridData T, Chunk2dFactory<T> ChunkGen>
+void Grid2d<T, ChunkGen>::sleep_chunks(ChunkRect rect) {
+	for (int x{ rect.coord.value.x }; x < rect.width + rect.coord.value.x; ++x) {
+		for (int y{ rect.coord.value.y }; y < rect.height + rect.coord.value.y; ++y) {
+			sleep_chunk({ x,y });
+		}
+	}
 }
 
 template<ValidGridData T, Chunk2dFactory<T> ChunkGen>

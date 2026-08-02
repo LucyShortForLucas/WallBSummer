@@ -89,6 +89,10 @@ TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[gri
         CHUNKCOUNTREQUIRE(3, 2, 1);
         testGrid.sleep_chunk(ChunkCoord2d{ 0,1 });
         CHUNKCOUNTREQUIRE(3, 1, 2);
+    }
+
+    SECTION("Wake up/put chunks to sleep rects at a time") {
 
     }
+
 }
