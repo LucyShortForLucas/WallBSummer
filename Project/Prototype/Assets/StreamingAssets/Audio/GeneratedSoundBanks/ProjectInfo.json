@@ -1,0 +1,29 @@
+{
+ "ProjectInfo": {
+  "Project": {
+   "Name": "WallBPrototypeWwise",
+   "GUID": "{24EA5C90-F528-4DBE-84E6-1D3B536F0C76}",
+   "Generator": "2025.1.9.9197"
+  },
+  "CacheRoot": "../../../../../WallBPrototypeWwise/.cache",
+  "Platforms": [
+   {
+    "Name": "Windows",
+    "GUID": "{AAD22B77-50CF-4275-B88C-220856A593F5}",
+    "BasePlatform": "Windows",
+    "BasePlatformGUID": "{6E0CB257-C6C8-4C5C-8366-2740DFC441EB}",
+    "Path": "."
+   }
+  ],
+  "Languages": [
+   {
+    "Name": "English(US)",
+    "Id": "684519430",
+    "GUID": "{74D81A68-A84A-45DA-9383-A138BE696A1C}",
+    "Default": "true",
+    "UseAsStandIn": "true"
+   }
+  ],
+  "FileHash": "{3B187016-2E44-253F-F8BD-E31F3E881A3E}"
+ }
+}
