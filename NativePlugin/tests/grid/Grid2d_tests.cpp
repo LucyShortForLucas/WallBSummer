@@ -1,5 +1,8 @@
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
+
+#include <iostream>
 
 #include <string>
 #include <bitset>
@@ -24,12 +27,13 @@ TEMPLATE_TEST_CASE("Grid chunk Factories", "[grid]", GRID_TEST_TYPES) {
     auto v = TestValues<TestType>::v;
 
     SECTION(std::string("Default Chunk Factory, checking tile [") + std::to_string(testX) + ", " + std::to_string(testY) + "]") {
-        Grid2d<TestType, DefaultChunk2dFactory<TestType>> testGrid{};
+        Grid2d<TestType> testGrid{};
         REQUIRE(testGrid.get_tile(testCoord) == TestType{});
     }
 
     SECTION("Fill Chunk Factory") {
-        Grid2d<TestType, FillChunk2dFactory<TestType>> testGrid{ FillChunk2dFactory<TestType>{v[0]}};
+        FillChunk2dFactory<TestType> f0{ v[0] };
+        Grid2d<TestType> testGrid{ &f0 };
         REQUIRE(testGrid.get_tile(testCoord) == v[0]);
     }
 }
@@ -39,6 +43,11 @@ TEMPLATE_TEST_CASE("Grid chunk Factories", "[grid]", GRID_TEST_TYPES) {
 TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[grid]", GRID_TEST_TYPES) {
     Grid2d<TestType> testGrid{};
     auto v = TestValues<TestType>::v;
+
+    FillChunk2dFactory<TestType> f0{ v[0] };
+    FillChunk2dFactory<TestType> f1{ v[1] };
+    FillChunk2dFactory<TestType> f2{ v[2] };
+    FillChunk2dFactory<TestType> f3{ v[3] };
 
     CHUNKCOUNTREQUIRE(0, 0, 0);
 
@@ -51,25 +60,25 @@ TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[gri
     SECTION("Fill/get a whole rect of tiles") {
 
         // Within a single chunk
-        Grid2d<TestType, FillChunk2dFactory<TestType>> v0Grid{ FillChunk2dFactory<TestType>{v[0]} };
+        Grid2d<TestType> v0Grid{ &f0 };
         testGrid.fill_tile_rect({ {4, 4}, 6, 4 }, v[0]);
         REQUIRE(testGrid.get_tile_rect({ { 4, 4 }, 6, 4 }) == utils::make_filled_vector<6 * 4, TestType>(v[0]));
         REQUIRE(testGrid.get_tile_rect({ { 4, 4 }, 6, 4 }) == v0Grid.get_tile_rect({ { 4, 4 }, 6, 4 }));
 
         // Across multiple chunks
-        Grid2d<TestType, FillChunk2dFactory<TestType>> v1Grid{ FillChunk2dFactory<TestType>{v[1]} };
+        Grid2d<TestType> v1Grid{ &f1 };
         testGrid.fill_tile_rect({ { -4, -4 }, 20, 31 }, v[1]);
         REQUIRE(testGrid.get_tile_rect({ { -4, -4 }, 20, 31 }) == utils::make_filled_vector<20 * 31, TestType>(v[1]));
-        REQUIRE(testGrid.get_tile_rect({ { -4, -4 }, 20, 31 }) == v1Grid.get_tile_rect({{ -4, -4 }, 20, 31}));
+        REQUIRE(testGrid.get_tile_rect({ { -4, -4 }, 20, 31 }) == v1Grid.get_tile_rect({ { -4, -4 }, 20, 31 }));
 
         // Long and thin
-        Grid2d<TestType, FillChunk2dFactory<TestType>> v2Grid{ FillChunk2dFactory<TestType>{v[2]} };
+        Grid2d<TestType> v2Grid{ &f2 };
         testGrid.fill_tile_rect({ { 4, -4 }, 300, 1 }, v[2]);
         REQUIRE(testGrid.get_tile_rect({ { 4, -4 }, 300, 1 }) == utils::make_filled_vector<300 * 1, TestType>(v[2]));
         REQUIRE(testGrid.get_tile_rect({ { 4, -4 }, 300, 1 }) == v2Grid.get_tile_rect({ { 4, -4 }, 300, 1 }));
 
         // Single tile rects, Side by side
-        Grid2d<TestType, FillChunk2dFactory<TestType>> v3Grid{ FillChunk2dFactory<TestType>{v[3]} };
+        Grid2d<TestType> v3Grid{ &f3 };
         testGrid.fill_tile_rect({ {5,9}, 1,1 }, v[2]);
         testGrid.fill_tile_rect({ {5,8}, 1,1 }, v[3]);
         REQUIRE(testGrid.get_tile_rect({ { 5, 9 }, 1, 1 }) == v2Grid.get_tile_rect({ { 5, 9 }, 1, 1 }));
@@ -79,6 +88,8 @@ TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[gri
     }
 
     SECTION("Wake up/put chunks to sleep") {
+        testGrid.load_chunk_asleep(ChunkCoord2d{ 0,0 });
+        CHUNKCOUNTREQUIRE(1, 0, 1);
         testGrid.load_chunk_asleep(ChunkCoord2d{ 0,0 });
         CHUNKCOUNTREQUIRE(1, 0, 1);
         testGrid.load_chunk_asleep(ChunkCoord2d{ 1,0 });
@@ -92,7 +103,127 @@ TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[gri
     }
 
     SECTION("Wake up/put chunks to sleep rects at a time") {
-
+        testGrid.load_chunks_asleep({ {-1,1}, 2, 2 });
+        CHUNKCOUNTREQUIRE(4, 0, 4);
+        testGrid.load_chunks_asleep({ {-1, 1}, 3, 2 });
+        CHUNKCOUNTREQUIRE(6, 0, 6);
+        testGrid.load_chunks_asleep({ {-1, 1}, 2, 2 });
+        CHUNKCOUNTREQUIRE(6, 0, 6);
+        testGrid.wake_chunks({ { -1, 1 }, 3, 3 });
+        CHUNKCOUNTREQUIRE(9, 9, 0);
+        testGrid.wake_chunks({ { -2, 1 }, 3, 3 });
+        CHUNKCOUNTREQUIRE(12, 12, 0);
+        testGrid.sleep_chunks({ {-1,0}, 2, 2 });
+        CHUNKCOUNTREQUIRE(14, 10, 4);
     }
 
+    SECTION("Getting a 'chunk rect' of tiles that exactly fits the real borders of a chunk, fetches that chunk with its spatial partitioning in-tact (without halo)") {
+        testGrid.set_tile({ 5,4 }, v[0]);
+        testGrid.set_tile({ 10,3 }, v[1]);
+        testGrid.set_tile({ 1,0 }, v[2]);
+        testGrid.set_tile({0,10}, v[3]);
+        std::vector<TestType> chunkData{ testGrid.get_tile_rect({{0,0}, CHUNK_WIDTH, CHUNK_WIDTH }) };
+        REQUIRE(chunkData[5 + 4 * CHUNK_WIDTH] == v[0]);
+        REQUIRE(chunkData[10 + 3 * CHUNK_WIDTH] == v[1]);
+        REQUIRE(chunkData[1 + 0 * CHUNK_WIDTH] == v[2]);
+        REQUIRE(chunkData[0 + 10 * CHUNK_WIDTH] == v[3]);
+    };
+
+    SECTION("Halo syncing") {
+        auto setAllTiles{ [](Chunk2d<TestType>* chunk, Grid2d<TestType>* grid, TestType v) {
+            for (int y{}; y < CHUNK_WIDTH; ++y) { for (int x{}; x < CHUNK_WIDTH; ++x) {
+                chunk->current_data_buffer()[coord_to_data_index({ x,y })] = v;
+                grid->mark_chunk_dirty(chunk->coord, 255);
+        } } } };
+
+        testGrid.run_on_chunk({ 0, 1 }, setAllTiles, v[0]);
+        testGrid.run_on_chunk({ 1, 0 }, setAllTiles, v[1]);
+        testGrid.run_on_chunk({ 0, -1 }, setAllTiles, v[2]);
+        testGrid.run_on_chunk({-1, 0}, setAllTiles, v[3]);
+
+        testGrid.run_on_chunk({ 1, 1 }, setAllTiles, v[0]);
+        testGrid.run_on_chunk({ 1, -1 }, setAllTiles, v[1]);
+        testGrid.run_on_chunk({ -1, -1 }, setAllTiles, v[2]);
+        testGrid.run_on_chunk({ -1, 1 }, setAllTiles, v[3]);
+        testGrid.sync_dirty_halos();
+
+        testGrid.run_on_chunk({ 0, 0 }, [&](Chunk2d<TestType>* pChunk, Grid2d<TestType>* pGrid) {
+            auto buffer{pChunk->current_data_buffer()};
+
+            for (int i{ 1 }; i < CHUNK_WIDTH; ++i) {
+                REQUIRE(buffer[i] == v[0]);
+                REQUIRE(buffer[i * CHUNK_DATA_WIDTH + CHUNK_DATA_WIDTH - 1] == v[1]);
+                REQUIRE(buffer[i + HALO_SW_INDEX] == v[2]);
+                REQUIRE(buffer[i * CHUNK_DATA_WIDTH] == v[3]);
+            }
+
+            REQUIRE(buffer[HALO_SW_INDEX] == v[0]);
+            REQUIRE(buffer[HALO_NW_INDEX] == v[1]);
+            REQUIRE(buffer[HALO_NE_INDEX] == v[2]);
+            REQUIRE(buffer[HALO_SE_INDEX] == v[3]);
+        });
+    }
+}
+
+TEST_CASE("Chunk Alghoritms") {
+    FillChunk2dFactory<int> factory{100};
+    Grid2d<int> testGrid{ &factory };
+    
+    auto addToTiles{ [] (Chunk2d<int>* chunk, Grid2d<int>* grid,  int v) {
+        for (int y{}; y < CHUNK_WIDTH; ++y) {
+            for (int x{}; x < CHUNK_WIDTH; ++x) {
+                chunk->current_data_buffer()[coord_to_data_index({ x,y })] += v;
+            }
+        }
+    } };
+
+    SECTION("Single chunk algo") {
+        testGrid.run_on_chunk( {0, 0}, addToTiles, 5);
+        auto tiles{ testGrid.get_tile_rect({{0, 0}, CHUNK_WIDTH, CHUNK_WIDTH }) };
+        for (auto tile : tiles) {
+            REQUIRE(tile == 105);
+        }
+    }
+
+    SECTION("Multi chunk algos") {
+        testGrid.run_on_loaded_chunks(addToTiles, 25); // No-op, nothing loaded (just here to make sure this does not break)
+        testGrid.load_chunks_asleep({ {0, 0}, 5, 5 });
+        testGrid.run_on_loaded_chunks(addToTiles, 25);
+
+        SECTION("run_on_loaded_chunks runs on all loaded chunks") {
+            auto tiles{ testGrid.get_tile_rect({{0, 0}, CHUNK_WIDTH * 5, CHUNK_WIDTH * 5 }) };
+            for (auto tile : tiles) {
+                REQUIRE(tile == 125);
+            }
+        }
+
+        SECTION("run_on_awake_chunks runs only all loaded chunks") {
+            testGrid.run_on_awake_chunks(addToTiles, 25); // No-op again
+            auto tiles{ testGrid.get_tile_rect({{0, 0}, CHUNK_WIDTH * 5, CHUNK_WIDTH * 5 }) };
+            for (auto tile : tiles) {
+                REQUIRE(tile == 125);
+            }
+
+            testGrid.wake_chunks({ {0,0}, 5, 1 });
+            testGrid.run_on_awake_chunks(addToTiles, 75); 
+            auto tiles2{ testGrid.get_tile_rect({{0, CHUNK_WIDTH}, CHUNK_WIDTH * 5, CHUNK_WIDTH * 4 }) };
+            for (auto tile : tiles2) {
+                REQUIRE(tile == 125);
+            }
+            auto tiles3{ testGrid.get_tile_rect({{0, 0}, CHUNK_WIDTH * 5, CHUNK_WIDTH }) };
+            for (auto tile : tiles3) {
+                REQUIRE(tile == 200);
+            }
+
+            testGrid.run_on_loaded_chunks(addToTiles, 50);
+            auto tiles4{ testGrid.get_tile_rect({{0, CHUNK_WIDTH}, CHUNK_WIDTH * 5, CHUNK_WIDTH * 4 }) };
+            for (auto tile : tiles4) {
+                REQUIRE(tile == 175);
+            }
+            auto tiles5{ testGrid.get_tile_rect({{0, 0}, CHUNK_WIDTH * 5, CHUNK_WIDTH }) };
+            for (auto tile : tiles5) {
+                REQUIRE(tile == 250);
+            }
+        }
+    }
 }

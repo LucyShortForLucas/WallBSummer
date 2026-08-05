@@ -14,19 +14,28 @@ constexpr int CHUNK_DATA_WIDTH = CHUNK_WIDTH + 2;
 /// The size of the internal array of a chunk
 constexpr int CHUNK_DATA_SIZE = CHUNK_DATA_WIDTH * CHUNK_DATA_WIDTH;
 
+constexpr int CHUNK_NW_INDEX{ CHUNK_DATA_WIDTH + 1 };
+constexpr int CHUNK_SW_INDEX{ CHUNK_DATA_WIDTH * (CHUNK_DATA_WIDTH - 2) + 1 };
+constexpr int CHUNK_NE_INDEX{ CHUNK_NW_INDEX + CHUNK_WIDTH - 1 };
+constexpr int CHUNK_SE_INDEX{ CHUNK_SW_INDEX + CHUNK_WIDTH - 1 };
+
+constexpr int HALO_NW_INDEX{ 0 };
+constexpr int HALO_SW_INDEX{ CHUNK_DATA_WIDTH * (CHUNK_DATA_WIDTH - 1) };
+constexpr int HALO_NE_INDEX{ CHUNK_DATA_WIDTH - 1 };
+constexpr int HALO_SE_INDEX{ CHUNK_DATA_SIZE - 1 };
 
 // ---- Enums
 /// A simple flag-enum (using a struct merely for scope) to denote the 8 neighbours of a 2d chunk.
-struct EdgeTileType {
+struct EdgeTileDir {
 	enum : uint8_t { // We use a regular enum here as opposed to an enum class so it automatically converts to a uint8_t; these are glorified constants
-		TopEdge = 0b00000001,
-		TopRightCorner = 0b00000010,
-		RightEdge = 0b00000100,
-		BottomRightCorner = 0b00001000,
-		BottomEdge = 0b00010000,
-		BottomLeftCorner = 0b00100000,
-		LeftEdge = 0b01000000,
-		TopLeftCorner = 0b10000000
+		N =  0b1,		// 1
+		E =  0b10,		// 2
+		S =  0b100,		// 4
+		W =  0b1000,	// 8
+		NE = 0b10000,	// 16
+		SE = 0b100000,	// 32
+		SW = 0b1000000,	// 64
+		NW = 0b10000000	// 128
 	};
 };
 

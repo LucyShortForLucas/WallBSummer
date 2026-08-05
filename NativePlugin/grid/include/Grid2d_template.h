@@ -1,12 +1,11 @@
-///============================================================================ 
-/// This file is the template header for the Grid2d class. It does not include
-/// the template's method definitions, only its declarations, for the sake of 
-/// readability and indexing its methods.
+///================================================================================================ 
+/// This file is the template header for the Grid2d class. It does not include the template's
+/// method definitions, only its declarations, for the sake of readability and indexing its methods
 /// 
-/// Being a template, this class does not have a corresponding source file. 
-/// Instead, its methods are defined in the header file "Grid2.h". Always
-/// include that file if you require the Grid2d class, NEVER include this one.
-///============================================================================ 
+/// Being a template, this class does not have a corresponding source file. Instead, its methods
+/// are defined in the header file "Grid2.h". Always include that file if you require the Grid2d
+/// class, NEVER include this one.
+///================================================================================================
 
 #pragma once
 
@@ -14,6 +13,8 @@
 #include <unordered_map>
 #include <concepts>
 #include <execution>
+#include <functional>
+#include <mutex>
 
 #include "GridDefines.h"
 #include "GridHelpers.h"
@@ -21,30 +22,48 @@
 #include "Chunk2d.h"
 #include "ChunkFactory.h"
 
-namespace grid {
+namespace grid {	
 
-template <ValidGridData T, Chunk2dFactory<T> ChunkGen = DefaultChunk2dFactory<T>>
-class Grid2d {
+template <ValidGridData T>
+class Grid2d;
+										
+template<typename F, typename T, typename ...Args>
+concept Chunk2dAlgorithm = std::invocable<F, Chunk2d<T>*, Grid2d<T>*, Args...>;
+																	
+class AbstractChunkAlgoRunner {							/// ╔═════════════════════════════════════════════════════════════════════╗
+public:													/// ║ We use the strategy pattern to select, at runtime, how we want the  ║
+	virtual void Run(std::function<void()> func) = 0;	/// ║ grid to execute chunk-based alghoritms. The default strategy is	  ║
+};														/// ║ simply to run the algo sequentially for all chunks. Note that this  ║
+														/// ║ strategy carries no state and thus is a nameless type with a single ║
+class : public AbstractChunkAlgoRunner {				/// ║ global instance, as to not pollute the namespace with useless types.║
+public:													/// ╚═════════════════════════════════════════════════════════════════════╝
+	void Run(std::function<void()> func) override {		
+		func();														
+	}															
+} sequentialChunkAlgoRunner;										
+
+template <ValidGridData T>
+class Grid2d final {
 public:
 	using Chunk = Chunk2d<T>;
 
 	// ---- Ctor and co
-	explicit Grid2d(ChunkGen gen = DefaultChunk2dFactory<T>{}) : m_ChunkFactory(gen) {};
+	explicit Grid2d(AbstractChunk2dFactory<T>* gen = DefaultChunk2dFactory<T>::get(), AbstractChunkAlgoRunner* chunkAlgoRunner = &sequentialChunkAlgoRunner) : m_ChunkFactory(gen), m_pAlgoRunner(chunkAlgoRunner) {};
 
 	// ---- Get/set tiles
 	T		get_tile(GridTileCoord2d coord);
 	void	set_tile(GridTileCoord2d coord, T value);
 	std::vector<T>	get_tile_rect(GridTileRect rect);
-	void			fill_tile_rect(GridTileRect rect, T value);
+	void			fill_tile_rect(GridTileRect rect, T value); 
 
 	// ---- Chunk algorithm methods
 	template <typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
 	void run_on_chunk(ChunkCoord2d chunkCoord, F&& func, Args&&... args);
 
-	template <ExecutionPolicy policy, typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
+	template <typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
 	void run_on_awake_chunks(F&& func, Args&&... args);
 
-	template <ExecutionPolicy policy, typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
+	template <typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
 	void run_on_loaded_chunks(F&& func, Args&&... args);
 
 	// ---- control chunks
@@ -53,12 +72,13 @@ public:
 	void sleep_chunk(ChunkCoord2d coord);
 		
 	// rect overloads
-	void load_chunk_asleep(ChunkRect rect);
-	void wake_chunk(ChunkRect rect);
-	void sleep_chunk(ChunkRect rect);
+	void load_chunks_asleep(ChunkRect rect);
+	void wake_chunks(ChunkRect rect);
+	void sleep_chunks(ChunkRect rect);
 
 	// ---- Halo
 	void sync_dirty_halos();
+	void mark_chunk_dirty(ChunkCoord2d chunk, uint8_t dirtyFlags);
 
 	// ---- Info
 	int loaded_chunk_count();
@@ -67,6 +87,7 @@ public:
 
 private: 
 	std::unordered_map<ChunkCoord2d, std::unique_ptr<Chunk>> m_Chunks{};
+	std::mutex m_ChunksMutex{};
 
 	/// This vector stores a pointer to all currently loaded chunks. The vector is sorted in such a way that
 	/// all 'awake' chunks are in the front, and all asleep chunks in the back. The int member ``m_AwakeChunkCount``
@@ -74,7 +95,12 @@ private:
 	std::vector<Chunk*> m_LoadedChunks{};
 	int m_AwakeChunkCount{};
 
-	ChunkGen m_ChunkFactory;
+	AbstractChunk2dFactory<T>* m_ChunkFactory;
+
+	AbstractChunkAlgoRunner* m_pAlgoRunner{};
+
+	std::vector<ChunkCoord2d> m_DirtyChunks{};
+	std::mutex m_DirtyChunksMutex{};
 };
 
 }
