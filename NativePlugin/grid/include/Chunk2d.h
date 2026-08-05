@@ -3,13 +3,16 @@
 #include <utility>
 #include <cstdint>
 
+#include "Coord2d.h"
+
 namespace grid {
 
 template <ValidGridData T>
 struct Chunk2d {
-	explicit Chunk2d(std::array<T, CHUNK_DATA_SIZE>&& data) : buffer(std::move(data), {}) {};
+	explicit Chunk2d(ChunkCoord2d pos, std::array<T, CHUNK_DATA_SIZE>&& data) : buffer(std::move(data), {}), coord(pos) {};
 
 	std::array<std::array<T, CHUNK_DATA_SIZE>, 2> buffer;
+	ChunkCoord2d coord;
 	uint8_t dirtyEdges{ 0 };
 
 	std::array<T, CHUNK_DATA_SIZE>& current_data_buffer() {
@@ -26,9 +29,5 @@ struct Chunk2d {
 private:
 	uint8_t dataBufferIndex{ 0 };
 };
-
-	/// Function reference used to pass around alghoritms/procedures that run on chunks.
-template<typename F, typename T, typename ...Args>
-concept Chunk2dAlgorithm = std::invocable<F, Chunk2d<T>&, Args...>;
 
 } // !grid

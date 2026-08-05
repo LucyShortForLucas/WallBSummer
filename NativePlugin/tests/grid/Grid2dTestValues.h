@@ -1,5 +1,5 @@
 ///============================================================================
-/// This header primarily serves to define a set of templates types and 
+/// This header primarily serves to define a set of template types and 
 /// random value of said types to be used in template test cases for the Grid2d
 /// class. In this way one single test can be used across a wide range of 
 /// arbitrary types.
