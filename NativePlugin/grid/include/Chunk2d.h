@@ -8,25 +8,34 @@
 namespace grid {
 
 template <ValidGridData T>
-struct Chunk2d {
-	explicit Chunk2d(ChunkCoord2d pos, std::array<T, CHUNK_DATA_SIZE>&& data) : buffer(std::move(data), {}), coord(pos) {};
-
+class Chunk2d {
+private:
 	std::array<std::array<T, CHUNK_DATA_SIZE>, 2> buffer;
-	ChunkCoord2d coord;
+
+public:
+	std::recursive_mutex mutex{};
+	const ChunkCoord2d coord;
 	uint8_t dirtyEdges{ 0 };
+
+	Chunk2d(ChunkCoord2d pos, std::array<T, CHUNK_DATA_SIZE>&& data) : buffer(std::move(data), {}), coord(pos) {};
 
 	std::array<T, CHUNK_DATA_SIZE>& current_data_buffer() {
 		return buffer[dataBufferIndex];
 	}
 
-	void swap_buffers() {
-		if (dataBufferIndex != 0)
-			dataBufferIndex = 0;
-		else
-			dataBufferIndex = 1;
+	const std::array<T, CHUNK_DATA_SIZE>& read_buffer() const {
+		return buffer[dataBufferIndex];
 	}
 
-private:
+	std::array<T, CHUNK_DATA_SIZE>& write_buffer() {
+		return buffer[dataBufferIndex ^ 1];
+	}
+
+	void swap_buffers() {
+		dataBufferIndex = dataBufferIndex ^ 1;
+	}
+
+private: 
 	uint8_t dataBufferIndex{ 0 };
 };
 

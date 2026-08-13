@@ -29,4 +29,6 @@ std::vector<std::pair<ChunkCoord2d, ChunkTileRect>> grid_to_chunk_rect(GridTileR
 // ---- Chunk helper functions
 size_t coord_to_data_index(ChunkTileCoord2d coord);
 
+
+
 } // !grid

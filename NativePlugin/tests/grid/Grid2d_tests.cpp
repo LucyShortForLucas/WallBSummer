@@ -11,6 +11,8 @@
 
 #include "Grid2dTestValues.h"
 
+#include <GridAlgorithms.h>
+
 using namespace grid;
 
 TEMPLATE_TEST_CASE("Grid chunk Factories", "[grid]", GRID_TEST_TYPES) {
@@ -186,7 +188,7 @@ TEST_CASE("Chunk Alghoritms") {
     }
 
     SECTION("Multi chunk algos") {
-        testGrid.run_on_loaded_chunks(addToTiles, 25); // No-op, nothing loaded (just here to make sure this does not break)
+        testGrid.run_on_loaded_chunks(addToTiles, 25); // No-op, nothing loaded (just here to make sure this does not break anything)
         testGrid.load_chunks_asleep({ {0, 0}, 5, 5 });
         testGrid.run_on_loaded_chunks(addToTiles, 25);
 
@@ -225,5 +227,48 @@ TEST_CASE("Chunk Alghoritms") {
                 REQUIRE(tile == 250);
             }
         }
+    }
+
+    SECTION("Neumann Stencil Algos") {
+        auto set_as_total_3x3{ [](Chunk2d<int>* pChunk, Grid2d<int>* pGrid) {
+            std::unique_lock chunkLock{pChunk->mutex};
+            std::array<int, CHUNK_DATA_SIZE> intermediate{};
+
+            auto total_of{ [](const int a, const int b, const int c) -> int {
+                return a + b + c;
+            } };
+
+            row_reduce_3x3(pChunk->read_buffer(), intermediate, total_of);
+            column_reduce_3x3(intermediate, pChunk->write_buffer(), total_of);
+            pChunk->swap_buffers();
+
+            uint8_t dirtyFlags{flag_nonequal_edges(pChunk->read_buffer(), pChunk->write_buffer())};
+            chunkLock.unlock();
+            
+            if (dirtyFlags)
+                pGrid->mark_chunk_dirty(pChunk->coord, dirtyFlags);
+        } };
+
+        testGrid.run_on_chunk({0, 0}, set_as_total_3x3);
+        REQUIRE(testGrid.get_tile_rect({ {0, 0}, CHUNK_WIDTH, CHUNK_WIDTH }) == utils::make_filled_vector<CHUNK_WIDTH * CHUNK_WIDTH, int>(900));
+
+        testGrid.fill_tile_rect({ {0, 0}, CHUNK_WIDTH, CHUNK_WIDTH }, 0);
+        testGrid.run_on_chunk({ 0, 0 }, set_as_total_3x3);
+        REQUIRE(testGrid.get_tile_rect({ {0, 0}, CHUNK_WIDTH, CHUNK_WIDTH }) == utils::make_filled_vector<CHUNK_WIDTH * CHUNK_WIDTH, int>(0));
+
+        testGrid.set_tile({ 5, 5 }, 1);
+        testGrid.run_on_chunk({ 0, 0 }, set_as_total_3x3);
+        REQUIRE( testGrid.get_tile_rect({ {4, 4}, 3, 3 }) == utils::make_filled_vector<9, int>(1));
+
+        testGrid.run_on_chunk({ 0, 0 }, set_as_total_3x3);
+        REQUIRE(testGrid.get_tile_rect({ {2, 2}, 7, 7 }) == std::vector<int>{
+            0, 0, 0, 0, 0, 0, 0,
+            0, 1, 2, 3, 2, 1, 0,
+            0, 2, 4, 6, 4, 2, 0,
+            0, 3, 6, 9, 6, 3, 0,
+            0, 2, 4, 6, 4, 2, 0,
+            0, 1, 2, 3, 2, 1, 0,
+            0, 0, 0, 0, 0, 0, 0,
+        });
     }
 }

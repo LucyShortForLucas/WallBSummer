@@ -98,4 +98,10 @@ void fetch_rect_from_square_array(const std::array<T, N* N>& src, int x, int y, 
     }
 }
 
+template<typename T, template<typename...> class Template>
+struct is_specialization_of : std::false_type {};
+
+template<template<typename...> class Template, typename... Args>
+struct is_specialization_of<Template<Args...>, Template> : std::true_type {};
+
 }

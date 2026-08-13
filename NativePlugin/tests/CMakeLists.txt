@@ -9,7 +9,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
-add_executable(${EXENAME} grid/Grid2d_tests.cpp "grid/Grid2dTestValues.h")
+add_executable(${EXENAME} grid/Grid2d_tests.cpp "grid/Grid2dTestValues.h" "grid/GridWorld2d_tests.cpp")
 
 target_link_libraries(${EXENAME} PRIVATE Catch2::Catch2WithMain)
 

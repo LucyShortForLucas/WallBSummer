@@ -48,7 +48,36 @@ public:
 	using Chunk = Chunk2d<T>;
 
 	// ---- Ctor and co
-	explicit Grid2d(AbstractChunk2dFactory<T>* gen = DefaultChunk2dFactory<T>::get(), AbstractChunkAlgoRunner* chunkAlgoRunner = &sequentialChunkAlgoRunner) : m_ChunkFactory(gen), m_pAlgoRunner(chunkAlgoRunner) {};
+	//Grid2d() : Grid2d(&sequentialChunkAlgoRunner, DefaultChunk2dFactory<T>::get()) {}
+	Grid2d(AbstractChunk2dFactory<T>* gen = DefaultChunk2dFactory<T>::get(), AbstractChunkAlgoRunner* chunkAlgoRunner = &sequentialChunkAlgoRunner) : m_ChunkFactory(gen), m_pAlgoRunner(chunkAlgoRunner) {};
+	explicit Grid2d(AbstractChunkAlgoRunner* chunkAlgoRunner) : m_ChunkFactory(DefaultChunk2dFactory<T>::get()), m_pAlgoRunner(chunkAlgoRunner) {};
+
+	~Grid2d() = default;
+
+	Grid2d(Grid2d&& other) noexcept
+		: m_Chunks(std::move(other.m_Chunks))
+		, m_LoadedChunks(std::move(other.m_LoadedChunks))
+		, m_AwakeChunkCount(other.m_AwakeChunkCount)
+		, m_ChunkFactory(other.m_ChunkFactory)
+		, m_pAlgoRunner(other.m_pAlgoRunner)
+		, m_DirtyChunks(std::move(other.m_DirtyChunks))
+	{
+	}
+
+	Grid2d& operator=(Grid2d&& other) noexcept {
+		if (this != &other) {
+			std::scoped_lock lock(m_ChunksMutex, other.m_ChunksMutex);
+			m_Chunks = std::move(other.m_Chunks);
+			m_LoadedChunks = std::move(other.m_LoadedChunks);
+			m_AwakeChunkCount = other.m_AwakeChunkCount;
+			m_ChunkFactory = other.m_ChunkFactory;
+			m_pAlgoRunner = other.m_pAlgoRunner;
+			m_DirtyChunks = std::move(other.m_DirtyChunks);
+			other.m_ChunkFactory = nullptr;
+			other.m_pAlgoRunner = nullptr;
+		}
+		return *this;
+	}
 
 	// ---- Get/set tiles
 	T		get_tile(GridTileCoord2d coord);
@@ -71,7 +100,7 @@ public:
 	void wake_chunk(ChunkCoord2d coord);
 	void sleep_chunk(ChunkCoord2d coord);
 		
-	// rect overloads
+		// rect overloads
 	void load_chunks_asleep(ChunkRect rect);
 	void wake_chunks(ChunkRect rect);
 	void sleep_chunks(ChunkRect rect);
@@ -102,6 +131,9 @@ private:
 	std::vector<ChunkCoord2d> m_DirtyChunks{};
 	std::mutex m_DirtyChunksMutex{};
 };
+
+template <typename T>
+concept IsGrid2d = utils::is_specialization_of<T, Grid2d>::value;
 
 }
 
