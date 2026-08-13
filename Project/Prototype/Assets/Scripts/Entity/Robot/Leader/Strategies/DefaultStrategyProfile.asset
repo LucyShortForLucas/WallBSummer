@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4badb53b28af9664e9d5ead3e382a7a4, type: 3}
+  m_Name: DefaultStrategyProfile
+  m_EditorClassIdentifier: Assembly-CSharp::StrategyProfile
+  offensiveDistanceMultiplier: 0.5
+  neutralDistanceMultiplier: 1
+  defensiveDistanceMultiplier: 2
+  offensiveFormations:
+  - {fileID: 11400000, guid: a69f3db81e0556a4882e99e982b3a45d, type: 2}
+  neutralFormations:
+  - {fileID: 11400000, guid: e480bb265a7bf2f4c8576ec8b38067ec, type: 2}
+  defensiveFormations:
+  - {fileID: 11400000, guid: 445ee25b195184a4db1c4b1289c9dcc5, type: 2}
