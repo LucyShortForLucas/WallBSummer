@@ -30,6 +30,8 @@ public class GroundMover : MonoBehaviour, IRobotMover
 
     public bool IsMoving()
     {
+        if (!agent.isActiveAndEnabled || !agent.isOnNavMesh) return false;
+
         return agent.pathPending || agent.remainingDistance > agent.stoppingDistance;
     }
 
