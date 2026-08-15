@@ -4,17 +4,17 @@ using UnityEngine;
 [RequireComponent(typeof(DangerComponent))]
 public abstract class BaseTurret : MonoBehaviour
 {
-    public TurretStatsData stats;
-    public ProjectileStatsData projectileStats;
-    public LayerMask enemyLayer;
+    public TurretStatsData stats;                // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
+    public ProjectileStatsData projectileStats;  // ^^^ 
+    public LayerMask enemyLayer;                 // ^^^ 
+                                                 // ^^^ 
+    public Transform rotator;                    // ^^^ 
+    public Transform barrel;                     // ^^^ 
+    public Transform firePoint;                  // ^^^ 
+    public GameObject projectilePrefab;          // ^^^ 
 
-    public Transform rotator;
-    public Transform barrel;
-    public Transform firePoint;
-    public GameObject projectilePrefab;
-
-    public HealthComponent Health { get; private set; }
-    public DangerComponent Danger { get; private set; }
+    public HealthComponent Health { get; private set; } // VIOLATES Cs.S.2 - Avoid auto-implemented properties.
+    public DangerComponent Danger { get; private set; } // ^^
 
     protected Transform currentTarget;
     protected float nextFireTime;

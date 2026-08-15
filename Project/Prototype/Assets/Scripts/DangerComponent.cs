@@ -3,13 +3,13 @@ using UnityEngine;
 [RequireComponent(typeof(HealthComponent))]
 public class DangerComponent : MonoBehaviour
 {
-    public float baseDanger = 50f;
+    public float baseDanger = 50f; // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
 
     private HealthComponent healthComponent;
 
     private void Awake()
     {
-        healthComponent = GetComponent<HealthComponent>();
+        healthComponent = GetComponent<HealthComponent>(); // Lucy: Everything that has danger has health?
     }
 
     public float CurrentDanger

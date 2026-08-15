@@ -6,13 +6,15 @@ public class EnemyHandler : MonoBehaviour
     private int daysUntilNextWave = 0;
 
     [Header("Enemy Prefabs")]
-    public GameObject leaderPrefab;
-    public GameObject minionPrefab;
+    public GameObject leaderPrefab; // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
+    public GameObject minionPrefab;   // ^^^
 
     [Header("Spawning Rules")]
-    public float spawnMapRadius = 100f;
-    public LayerMask alliesLayer;
-    public float safeDistance = 30f;
+    public float spawnMapRadius = 100f; // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
+    public LayerMask alliesLayer;       // ^^^
+    public float safeDistance = 30f;    // ^^^ 
+                                        // Lucy: If you want these in the inspector, use the [[SerializeField]] or [[SerializeReference]] property.
+                                        // These properties should not be modifiable from references to this script in other classes
 
     private void Start()
     {

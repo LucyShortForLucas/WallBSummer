@@ -1,8 +1,10 @@
 set(LIBNAME ${PROJECT_NAME}_unityExport)
 
 add_library(${LIBNAME} SHARED 
-	src/TestExport.cpp
- "include/TestExport.h")
+	src/GridWorldExport.cpp
+ )
+
+ target_link_libraries(${LIBNAME} PRIVATE ${PROJECT_NAME}_grid no_exceptions_rtti)
 
 target_include_directories(${LIBNAME} PRIVATE include)
 

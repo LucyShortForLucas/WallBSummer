@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour // VIOLATES Cs.A.3 - A class should only have one responsibility (i.e. avoid God Objects)
 {
-    public static GameManager Instance { get; private set; }
+    public static GameManager Instance { get; private set; } // VIOLATES Cs.A.4 - Avoid Singletons
 
     [Header("Game State")]
     public int currentDay = 1;
@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
+        if (Instance == null) Instance = this; // VIOLATES Cs.A.4 - Avoid Singletons
         else Destroy(gameObject);
 
         if (_resourceHub == null)

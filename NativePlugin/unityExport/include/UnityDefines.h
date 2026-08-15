@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #ifdef _WIN32
   #ifdef PLUGIN_EXPORTS
     #define PLUGIN_API extern "C" __declspec(dllexport)
@@ -9,3 +11,8 @@
 #else
   #define PLUGIN_API extern "C" __attribute__((visibility("default")))
 #endif
+
+enum class WaterType: uint8_t {
+    Groundwater,
+    Flowing
+};
