@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0fb3679840a37243a2c56b795895df3, type: 3}
+  m_Name: ResourceDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::GlobalResourceDatabase
+  allResources:
+  - id: 0
+    resourceName: Scrap
+    icon: {fileID: 21300000, guid: 7d0d216f9f969ba468cebf9dce8bf0d5, type: 3}
+  - id: 1
+    resourceName: Food
+    icon: {fileID: 21300000, guid: a6352fee5b4496640b74311c587eb70e, type: 3}
