@@ -19,10 +19,10 @@ public class StrategyProfile : ScriptableObject
     [SerializeField] private List<FormationData> defensiveFormations = new List<FormationData>();
 
     // Getters and Setters
-    public float OffensiveDistanceMultiplier { get => offensiveDistanceMultiplier; set => offensiveDistanceMultiplier = value; }
-    public float NeutralDistanceMultiplier { get => neutralDistanceMultiplier; set => neutralDistanceMultiplier = value; }
-    public float DefensiveDistanceMultiplier { get => defensiveDistanceMultiplier; set => defensiveDistanceMultiplier = value; }
-    public List<FormationData> OffensiveFormations { get => offensiveFormations; set => offensiveFormations = value; }
-    public List<FormationData> NeutralFormations { get => neutralFormations; set => neutralFormations = value; }
-    public List<FormationData> DefensiveFormations { get => defensiveFormations; set => defensiveFormations = value; }
+    public float OffensiveDistanceMultiplier { get => offensiveDistanceMultiplier; }
+    public float NeutralDistanceMultiplier { get => neutralDistanceMultiplier; }
+    public float DefensiveDistanceMultiplier { get => defensiveDistanceMultiplier; }
+    public List<FormationData> OffensiveFormations { get => offensiveFormations; }
+    public List<FormationData> NeutralFormations { get => neutralFormations; }
+    public List<FormationData> DefensiveFormations { get => defensiveFormations; }
 }

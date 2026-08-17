@@ -18,12 +18,11 @@ public class FormationData : ScriptableObject
     [SerializeField] private float forwardOffset = 5f;
 
     // Getters and Setters
-    public FormationShape Shape { get => shape; set => shape = value; }
-    public float SafeCommandDistance { get => safeCommandDistance; set => safeCommandDistance = value; }
-    public float BreakFormationDistance { get => breakFormationDistance; set => breakFormationDistance = value; }
-    public float RecallDistance { get => recallDistance; set => recallDistance = value; }
-    public float Spacing { get => spacing; set => spacing = value; }
-    public float ForwardOffset { get => forwardOffset; set => forwardOffset = value; }
-
+    public FormationShape Shape { get => shape; }
+    public float SafeCommandDistance { get => safeCommandDistance; }
+    public float BreakFormationDistance { get => breakFormationDistance; }
+    public float RecallDistance { get => recallDistance; }
+    public float Spacing { get => spacing; }
+    public float ForwardOffset { get => forwardOffset; }
 
 }

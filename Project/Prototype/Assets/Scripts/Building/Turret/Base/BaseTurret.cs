@@ -4,14 +4,16 @@ using UnityEngine;
 [RequireComponent(typeof(DangerComponent))]
 public abstract class BaseTurret : MonoBehaviour
 {
-    public TurretStatsData stats;                // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
-    public ProjectileStatsData projectileStats;  // ^^^ 
-    public LayerMask enemyLayer;                 // ^^^ 
-                                                 // ^^^ 
-    public Transform rotator;                    // ^^^ 
-    public Transform barrel;                     // ^^^ 
-    public Transform firePoint;                  // ^^^ 
-    public GameObject projectilePrefab;          // ^^^ 
+    [Header("Configuration")]
+    [SerializeField] private TurretStatsData stats;                
+    [SerializeField] private ProjectileStatsData projectileStats;  
+    [SerializeField] private LayerMask enemyLayer;
+
+    [Header("Transforms")]
+    [SerializeField] private Transform rotator;                     
+    [SerializeField] private Transform barrel;                      
+    [SerializeField] private Transform firePoint;                   
+    [SerializeField] private GameObject projectilePrefab;           
 
     public HealthComponent Health { get; private set; } // VIOLATES Cs.S.2 - Avoid auto-implemented properties.
     public DangerComponent Danger { get; private set; } // ^^
@@ -21,6 +23,13 @@ public abstract class BaseTurret : MonoBehaviour
 
     protected bool needsNewTarget = true;
 
+    // Getters and Setters
+    public TurretStatsData Stats { get => stats; set => stats = value; }
+    public ProjectileStatsData ProjectileStats { get => projectileStats; set => projectileStats = value; }
+    public Transform FirePoint { get => firePoint; set => firePoint = value; }
+    public GameObject ProjectilePrefab { get => projectilePrefab; set => projectilePrefab = value; }
+
+
     protected virtual void Awake()
     {
         Health = GetComponent<HealthComponent>();
@@ -29,7 +38,7 @@ public abstract class BaseTurret : MonoBehaviour
 
     protected virtual void Start()
     {
-        if (stats != null) Health.Initialize(stats.maxHealth);
+        if (stats != null) Health.Initialize(stats.MaxHealth);
     }
 
     protected virtual void Update()
@@ -63,7 +72,7 @@ public abstract class BaseTurret : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, currentTarget.position);
 
-        if (distance > stats.detectionRadius || distance < stats.minRange) return true;
+        if (distance > stats.DetectionRadius || distance < stats.MinRange) return true;
 
         return false;
     }
@@ -72,7 +81,7 @@ public abstract class BaseTurret : MonoBehaviour
     {
         if (stats == null) return;
 
-        Collider[] enemies = Physics.OverlapSphere(transform.position, stats.detectionRadius, enemyLayer);
+        Collider[] enemies = Physics.OverlapSphere(transform.position, stats.DetectionRadius, enemyLayer);
 
         Transform bestTarget = null;
         float bestValue = Mathf.Infinity;
@@ -84,9 +93,9 @@ public abstract class BaseTurret : MonoBehaviour
 
             float distance = Vector3.Distance(transform.position, col.transform.position);
 
-            if (distance < stats.minRange) continue;
+            if (distance < stats.MinRange) continue;
 
-            if (stats.priority == TurretStatsData.TargetPriority.Closest)
+            if (stats.Priority == TurretStatsData.TargetPriority.Closest)
             {
                 if (distance < bestValue)
                 {
@@ -94,7 +103,7 @@ public abstract class BaseTurret : MonoBehaviour
                     bestTarget = col.transform;
                 }
             }
-            else if (stats.priority == TurretStatsData.TargetPriority.LowestHealth)
+            else if (stats.Priority == TurretStatsData.TargetPriority.LowestHealth)
             {
                 if (targetHealth.CurrentHealth < bestValue)
                 {
@@ -120,7 +129,7 @@ public abstract class BaseTurret : MonoBehaviour
 
             if (Quaternion.Angle(rotator.rotation, targetBaseRot) > 0.1f)
             {
-                rotator.rotation = Quaternion.Slerp(rotator.rotation, targetBaseRot, stats.turnSpeed * Time.deltaTime);
+                rotator.rotation = Quaternion.Slerp(rotator.rotation, targetBaseRot, stats.TurnSpeed * Time.deltaTime);
             }
         }
 
@@ -128,13 +137,13 @@ public abstract class BaseTurret : MonoBehaviour
         float heightDifference = currentTarget.position.y - barrel.position.y;
 
         float pitchAngle = Mathf.Atan2(heightDifference, groundDistance) * Mathf.Rad2Deg;
-        pitchAngle = Mathf.Clamp(pitchAngle, stats.maxDepression, stats.maxElevation);
+        pitchAngle = Mathf.Clamp(pitchAngle, stats.MaxDepression, stats.MaxElevation);
 
         Quaternion targetBarrelRot = Quaternion.Euler(-pitchAngle, 0, 0);
 
         if (Quaternion.Angle(barrel.localRotation, targetBarrelRot) > 0.1f)
         {
-            barrel.localRotation = Quaternion.Slerp(barrel.localRotation, targetBarrelRot, stats.turnSpeed * Time.deltaTime);
+            barrel.localRotation = Quaternion.Slerp(barrel.localRotation, targetBarrelRot, stats.TurnSpeed * Time.deltaTime);
         }
     }
 
@@ -153,10 +162,10 @@ public abstract class BaseTurret : MonoBehaviour
         if (stats == null) return;
 
         Gizmos.color = currentTarget != null ? Color.red : Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, stats.detectionRadius);
+        Gizmos.DrawWireSphere(transform.position, stats.DetectionRadius);
 
         Gizmos.color = Color.black;
-        Gizmos.DrawWireSphere(transform.position, stats.minRange);
+        Gizmos.DrawWireSphere(transform.position, stats.MinRange);
 
         if (currentTarget != null && firePoint != null)
         {

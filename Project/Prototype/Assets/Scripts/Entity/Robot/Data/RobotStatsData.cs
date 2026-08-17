@@ -14,10 +14,10 @@ public class RobotStatsData : ScriptableObject
     [SerializeField] private int attackDamage = 10;
 
     // Getters and Setters
-    public int MaxHealth { get => maxHealth; set => maxHealth = value; }
-    public float MoveSpeed { get => moveSpeed; set => moveSpeed = value; }
-    public float DetectionRadius { get => detectionRadius; set => detectionRadius = value; }
-    public float AttackRange { get => attackRange; set => attackRange = value; }
-    public float AttackCooldown { get => attackCooldown; set => attackCooldown = value; }
-    public int AttackDamage { get => attackDamage; set => attackDamage = value; }
+    public int MaxHealth { get => maxHealth; }
+    public float MoveSpeed { get => moveSpeed;  }
+    public float DetectionRadius { get => detectionRadius;  }
+    public float AttackRange { get => attackRange;  }
+    public float AttackCooldown { get => attackCooldown;  }
+    public int AttackDamage { get => attackDamage;  }
 }

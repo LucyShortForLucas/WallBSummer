@@ -230,4 +230,12 @@ public class DropBuildingInteractable : InteractableComponent, IInjectable
             uiManager.CloseUI();
         }
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, closeDistance);
+    }
+#endif
 }

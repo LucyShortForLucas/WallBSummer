@@ -31,6 +31,9 @@ public class InventoryUIManager : MonoBehaviour, IInjectable
 
     private CentralResourceHub resourceHub;
 
+    // Getters and Setters
+    public GlobalResourceDatabase ResourceDatabase { get => resourceDatabase; set => resourceDatabase = value; }
+
     public void Inject(DependencyContainer container)
     {
         resourceHub = container.Get<CentralResourceHub>();
@@ -62,7 +65,6 @@ public class InventoryUIManager : MonoBehaviour, IInjectable
         activePanelTypes = new List<StoragePanelType>(panelTypes);
 
         CloseAllPanels();
-
         // Turn on only requested panels
         foreach (var pType in activePanelTypes)
         {
