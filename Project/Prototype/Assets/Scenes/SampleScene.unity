@@ -1251,38 +1251,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &944894763 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3585548435327155510, guid: 7b7d162ec613b0f448be068a14e01be9, type: 3}
-  m_PrefabInstance: {fileID: 1502008619}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &944894772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 944894763}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2d53c64bccb44f4ba3074589f509b34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DangerComponent
-  baseDanger: 0
---- !u!114 &944894773
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 944894763}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9004a8784fbacb4cbef6febd1ecb018, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
-  maxHealth: 100
-  currentHealth: 0
 --- !u!1 &1011809455
 GameObject:
   m_ObjectHideFlags: 0
@@ -2342,13 +2310,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3585548435327155510, guid: 7b7d162ec613b0f448be068a14e01be9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 944894773}
-    - targetCorrespondingSourceObject: {fileID: 3585548435327155510, guid: 7b7d162ec613b0f448be068a14e01be9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 944894772}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b7d162ec613b0f448be068a14e01be9, type: 3}
 --- !u!1 &1523382034
 GameObject:
