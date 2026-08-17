@@ -3,10 +3,10 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     [Header("Attack Setup")]
-    public Vector3 hitboxSize = new Vector3(2f, 2f, 2f);
-    public float hitboxDistance = 1.5f;
-    public LayerMask enemyLayer;
-    public int damageAmount = 10;
+    [SerializeField] private Vector3 hitboxSize = new Vector3(2f, 2f, 2f);
+    [SerializeField] private float hitboxDistance = 1.5f;
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private int damageAmount = 10;
 
     // Cooldown tracking
     private float attackCooldown = 0.5f;

@@ -2,21 +2,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(StorageComponent))]
-public class StorageInteractable : InteractableComponent
+public class StorageInteractable : InteractableComponent, IInjectable
 {
     [Header("UI Configuration")]
-    private List<StoragePanelType> panelsToOpen = new List<StoragePanelType>
+    [SerializeField] private List<StoragePanelType> panelsToOpen = new List<StoragePanelType>
     {
         StoragePanelType.BigInOut
     };
 
     [Header("Interaction Settings")]
-    public float closeDistance = 5f;
+    [SerializeField] private float closeDistance = 5f;
 
     private StorageComponent myStorage;
 
     private bool isInteracting = false;
     private GameObject currentInteractor;
+
+    private InventoryUIManager uiManager;
+
+    public void Inject(DependencyContainer container)
+    {
+        uiManager = container.Get<InventoryUIManager>();
+    }
 
     protected override void Awake()
     {
@@ -28,10 +35,10 @@ public class StorageInteractable : InteractableComponent
     {
         StorageComponent playerStorage = interactor.GetComponent<StorageComponent>();
 
-        if (playerStorage != null)
+        if (playerStorage != null && uiManager != null)
         {
-            // Open panel
-            InventoryUIManager.Instance.OpenUI(
+            // Open panel 
+            uiManager.OpenUI(
                 myStorage.StorageID,
                 playerStorage.StorageID,
                 panelsToOpen
@@ -61,9 +68,9 @@ public class StorageInteractable : InteractableComponent
         isInteracting = false;
         currentInteractor = null;
 
-        if (InventoryUIManager.Instance != null)
+        if (uiManager != null)
         {
-            InventoryUIManager.Instance.CloseUI();
+            uiManager.CloseUI();
         }
     }
 }

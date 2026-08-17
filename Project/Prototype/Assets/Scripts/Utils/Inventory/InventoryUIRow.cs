@@ -5,32 +5,33 @@ using TMPro;
 public class InventoryUIRow : MonoBehaviour
 {
     [Header("UI Elements")]
-    public Image iconImage;
-    public TMP_Text nameText;
-    public TMP_Text amountText;
+    [SerializeField] private Image iconImage;
+    [SerializeField] private TMP_Text nameText;
+    [SerializeField] private TMP_Text amountText;
 
     [Header("Buttons")]
-    public Button storeOneBtn;
-    public Button storeAllBtn;
-    public Button takeOneBtn;
-    public Button takeAllBtn;
+    [SerializeField] private Button storeOneBtn;
+    [SerializeField] private Button storeAllBtn;
+    [SerializeField] private Button takeOneBtn;
+    [SerializeField] private Button takeAllBtn;
 
     private int targetStorageId;
     private int playerStorageId;
     private int resourceId;
 
-    public void Setup(GlobalResourceDatabase.ResourceDefinition resDef, ResourceState state, int targetId, int playerId, StoragePanelType panelType)
+    private CentralResourceHub resourceHub;
+
+    public void Setup(GlobalResourceDatabase.ResourceDefinition resDef, ResourceState state, int targetId, int playerId, StoragePanelType panelType, CentralResourceHub hub)
     {
         resourceId = resDef.id;
         targetStorageId = targetId;
-        playerStorageId = playerId;
+        playerStorageId = playerId; 
+        resourceHub = hub; 
 
-        // Setup the visuals
         iconImage.sprite = resDef.icon;
         nameText.text = resDef.resourceName;
         amountText.text = $"{state.current} / {state.max}";
 
-        // Connect all our transfer buttons
         if (storeOneBtn != null) storeOneBtn.onClick.AddListener(() => StoreAmount(1));
         if (takeOneBtn != null) takeOneBtn.onClick.AddListener(() => TakeAmount(1));
 
@@ -40,18 +41,17 @@ public class InventoryUIRow : MonoBehaviour
 
     private void StoreAmount(int amount)
     {
-        if (amount > 0) GameManager.ResourceHub.TransferResource(playerStorageId, targetStorageId, resourceId, amount);
+        if (amount > 0) resourceHub.TransferResource(playerStorageId, targetStorageId, resourceId, amount); 
     }
 
     private void TakeAmount(int amount)
     {
-        if (amount > 0) GameManager.ResourceHub.TransferResource(targetStorageId, playerStorageId, resourceId, amount);
+        if (amount > 0) resourceHub.TransferResource(targetStorageId, playerStorageId, resourceId, amount); 
     }
 
     private int GetAvailablePlayerAmount(int resId)
     {
-        // Check how much of this item the player has
-        var playerInv = GameManager.ResourceHub.GetReadOnlyInventory(playerStorageId);
+        var playerInv = resourceHub.GetReadOnlyInventory(playerStorageId);
 
         if (playerInv != null && playerInv.TryGetValue(resId, out ResourceState state))
         {

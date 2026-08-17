@@ -5,17 +5,17 @@ using Unity.Cinemachine;
 public class CameraOrbit : MonoBehaviour
 {
     [Header("Cinemachine Setup")]
-    public CinemachineCamera vcam;
+    [SerializeField] private CinemachineCamera vcam;
     private CinemachineFollow followComponent;
 
     [Header("Orbit Settings")]
-    public float orbitSensitivityX = 15f;
-    public float orbitSmoothness = 10f; 
-    public bool invertX = false;
+    [SerializeField] private float orbitSensitivityX = 15f;
+    [SerializeField] private float orbitSmoothness = 10f;
+    [SerializeField] private bool invertX = false;
 
     [Header("Return Settings")]
-    public bool returnToOriginalRotation = true;
-    public float returnSpeed = 5f;
+    [SerializeField] private bool returnToOriginalRotation = true;
+    [SerializeField] private float returnSpeed = 5f;
 
     private bool isOrbiting;
     private Vector2 dragDelta;

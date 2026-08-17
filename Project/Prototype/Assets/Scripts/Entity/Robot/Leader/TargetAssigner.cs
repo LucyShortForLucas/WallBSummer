@@ -8,15 +8,15 @@ public class TargetAssigner : MonoBehaviour
         for (int i = 0; i < escorts.Count; i++)
         {
             BaseRobotAI bodyguard = escorts[i];
-            bodyguard.currentTarget = currentTarget;
-            bodyguard.holdAttack = true;
+            bodyguard.CurrentTarget = currentTarget;
+            bodyguard.HoldAttack = true;
 
             // Position bodyguards around leader
             float side = (i % 2 == 0) ? 1.5f : -1.5f;
-            bodyguard.tacticalWaypoint = leaderTransform.position + (leaderTransform.forward * 1.5f) + (leaderTransform.right * side);
+            bodyguard.TacticalWaypoint = leaderTransform.position + (leaderTransform.forward * 1.5f) + (leaderTransform.right * side);
 
             if (bodyguard.CurrentState != bodyguard.Attack) bodyguard.ChangeState(bodyguard.Attack);
-            bodyguard.Mover.SetSpeed(bodyguard.stats.moveSpeed);
+            bodyguard.Mover.SetSpeed(bodyguard.Stats.MoveSpeed);
         }
     }
 
@@ -25,7 +25,7 @@ public class TargetAssigner : MonoBehaviour
         // Fallback if no threats exist
         if (validThreats.Count == 0)
         {
-            foreach (var bot in attackers) bot.currentTarget = fallbackTarget;
+            foreach (var bot in attackers) bot.CurrentTarget = fallbackTarget;
             return;
         }
 
@@ -69,12 +69,12 @@ public class TargetAssigner : MonoBehaviour
 
             if (currentThreatIndex < validThreats.Count)
             {
-                bot.currentTarget = validThreats[currentThreatIndex];
+                bot.CurrentTarget = validThreats[currentThreatIndex];
                 assignedToCurrent++;
             }
             else
             {
-                bot.currentTarget = validThreats[validThreats.Count - 1];
+                bot.CurrentTarget = validThreats[validThreats.Count - 1];
             }
         }
     }

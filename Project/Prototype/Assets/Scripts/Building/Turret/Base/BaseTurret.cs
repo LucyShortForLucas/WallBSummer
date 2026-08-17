@@ -96,9 +96,9 @@ public abstract class BaseTurret : MonoBehaviour
             }
             else if (stats.priority == TurretStatsData.TargetPriority.LowestHealth)
             {
-                if (targetHealth.currentHealth < bestValue)
+                if (targetHealth.CurrentHealth < bestValue)
                 {
-                    bestValue = targetHealth.currentHealth;
+                    bestValue = targetHealth.CurrentHealth;
                     bestTarget = col.transform;
                 }
             }

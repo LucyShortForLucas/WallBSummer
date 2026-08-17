@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class Melee : MonoBehaviour
 {
-    public Vector3 hitboxSize = new Vector3(1.5f, 1.5f, 1.5f);
-    public float hitboxDistance = 1f;
+    [SerializeField] private Vector3 hitboxSize = new Vector3(1.5f, 1.5f, 1.5f);
+    [SerializeField] private float hitboxDistance = 1f;
 
-    // Debug
-    public bool showDebugVisuals = true;
+    [Header("Debug")]
+    [SerializeField] private bool showDebugVisuals = true;
 
     public void PerformAttack(int damageAmount, LayerMask targetLayer)
     {

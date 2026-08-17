@@ -4,17 +4,13 @@ using UnityEngine.UI;
 
 public class LaunchPanelUI : MonoBehaviour
 {
-    public static LaunchPanelUI Instance { get; private set; }
-
     [Header("UI Elements")]
-    public Button launchButton;
+    [SerializeField] private Button launchButton;
 
-    public static event Action OnLaunchPressed;
+    public event Action OnLaunchPressed;
 
     private void Awake()
     {
-        Instance = this;
-
         if (launchButton != null)
         {
             launchButton.onClick.AddListener(() => OnLaunchPressed?.Invoke());

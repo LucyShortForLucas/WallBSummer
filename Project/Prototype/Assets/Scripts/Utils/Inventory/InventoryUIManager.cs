@@ -10,12 +10,10 @@ public enum StoragePanelType
     Launch
 }
 
-public class InventoryUIManager : MonoBehaviour
+public class InventoryUIManager : MonoBehaviour, IInjectable
 {
-    public static InventoryUIManager Instance { get; private set; }
-
     [Header("Data")]
-    public GlobalResourceDatabase resourceDatabase;
+    [SerializeField] private GlobalResourceDatabase resourceDatabase;
 
     [Serializable]
     public struct PanelConfig
@@ -25,17 +23,22 @@ public class InventoryUIManager : MonoBehaviour
     }
 
     [Header("Panel Mappings")]
-    public List<PanelConfig> panels = new List<PanelConfig>();
+    [SerializeField] private List<PanelConfig> panels = new List<PanelConfig>();
 
     private int currentTargetId = -1;
     private int currentPlayerId = -1;
     private List<StoragePanelType> activePanelTypes = new List<StoragePanelType>();
 
+    private CentralResourceHub resourceHub;
+
+    public void Inject(DependencyContainer container)
+    {
+        resourceHub = container.Get<CentralResourceHub>();
+        resourceHub.OnResourceChanged += HandleResourceChanged;
+    }
+
     private void Awake()
     {
-        Instance = this;
-
-        // Ensure resource are loaded
         if (resourceDatabase != null)
         {
             resourceDatabase.Initialize();
@@ -44,15 +47,12 @@ public class InventoryUIManager : MonoBehaviour
         CloseAllPanels();
     }
 
-    private void Start()
-    {
-        GameManager.ResourceHub.OnResourceChanged += HandleResourceChanged;
-    }
-
     private void OnDestroy()
     {
-        if (GameManager.ResourceHub != null)
-            GameManager.ResourceHub.OnResourceChanged -= HandleResourceChanged;
+        if (resourceHub != null)
+        {
+            resourceHub.OnResourceChanged -= HandleResourceChanged;
+        }
     }
 
     public void OpenUI(int targetStorageId, int playerStorageId, List<StoragePanelType> panelTypes)
@@ -63,7 +63,7 @@ public class InventoryUIManager : MonoBehaviour
 
         CloseAllPanels();
 
-        // Enable requested panels
+        // Turn on only requested panels
         foreach (var pType in activePanelTypes)
         {
             foreach (var config in panels)
@@ -76,12 +76,13 @@ public class InventoryUIManager : MonoBehaviour
             }
         }
 
-        // Show current data
+        // Show the latest data
         RefreshUI();
     }
 
     public void CloseUI()
     {
+        // Hide everything and reset our tracking variables
         CloseAllPanels();
         currentTargetId = -1;
         activePanelTypes.Clear();
@@ -89,13 +90,12 @@ public class InventoryUIManager : MonoBehaviour
 
     private void CloseAllPanels()
     {
+        // Go through every panel known, turn off and clear 
         foreach (var config in panels)
         {
             if (config.panelRoot != null)
             {
                 config.panelRoot.SetActive(false);
-
-                // Clean memory
                 var panelUI = config.panelRoot.GetComponent<InventoryPanelUI>();
                 if (panelUI != null) panelUI.Clear();
             }
@@ -104,7 +104,6 @@ public class InventoryUIManager : MonoBehaviour
 
     private void HandleResourceChanged(int storageId, int resourceId, int newAmount, int maxAmount)
     {
-        // If changed inventory is on screen
         if (currentTargetId != -1 && (storageId == currentTargetId || storageId == currentPlayerId))
         {
             RefreshUI();
@@ -113,7 +112,7 @@ public class InventoryUIManager : MonoBehaviour
 
     private void RefreshUI()
     {
-        // Every visible panel rebuild
+        // Every visible panel grab latest info and redraw
         foreach (var config in panels)
         {
             if (config.panelRoot != null && config.panelRoot.activeSelf)
@@ -121,7 +120,7 @@ public class InventoryUIManager : MonoBehaviour
                 var panelUI = config.panelRoot.GetComponent<InventoryPanelUI>();
                 if (panelUI != null)
                 {
-                    panelUI.Refresh(currentTargetId, currentPlayerId);
+                    panelUI.Refresh(currentTargetId, currentPlayerId, resourceHub, resourceDatabase);
                 }
             }
         }

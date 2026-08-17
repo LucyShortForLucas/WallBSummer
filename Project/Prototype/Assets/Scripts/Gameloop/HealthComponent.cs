@@ -2,11 +2,23 @@ using UnityEngine;
 
 public class HealthComponent : MonoBehaviour, IDamageable
 {
-    public int maxHealth = 100; // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
-    public int currentHealth;   // ^^^
+    [SerializeField] private int maxHealth = 100; 
+    [SerializeField] private int currentHealth;   
 
     public bool IsDead => currentHealth <= 0; // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
                                               // + VIOLATES Cs.S.2 - Avoid auto-implemented properties.
+
+    // Getters and Setters
+    public int MaxHealth
+    {
+        get => maxHealth;
+        set => maxHealth = value;
+    }
+    public int CurrentHealth
+    {
+        get => currentHealth;
+        set => currentHealth = value;
+    }
 
     public void Initialize(int startHealth)
     {

@@ -5,18 +5,24 @@ using UnityEngine;
 [RequireComponent(typeof(Melee))]
 public abstract class BaseRobotAI : MonoBehaviour
 {
-    // Data
-    public RobotStatsData stats;
-    public LayerMask enemyLayer;
+    [Header("Data")]
+    [SerializeField] private RobotStatsData stats;
+    [SerializeField] private LayerMask enemyLayer;
 
-    public LeaderRobot assignedLeader;
-    [HideInInspector] public Transform currentTarget;
-    [HideInInspector] public Vector3 tacticalWaypoint;
-    [HideInInspector] public bool holdAttack = false;
-    [HideInInspector] public float lastAttackTime = 0f;
+    [SerializeField] private LeaderRobot assignedLeader;
+    [HideInInspector][SerializeField] private Transform currentTarget;
+    [HideInInspector][SerializeField] private Vector3 tacticalWaypoint;
+    [HideInInspector][SerializeField] private bool holdAttack = false;
+    [HideInInspector][SerializeField] private float lastAttackTime = 0f;
 
-    // Debug 
-    public bool showDebugVisuals = true;
+    [Header("Lifecycle")]
+    [SerializeField] private float maxIdleTime = 120f;
+    [SerializeField] private float currentIdleTime = 0f;
+
+    [Header("Debug")]
+    [SerializeField] private bool showDebugVisuals = true;
+
+    private float scanTimer = 0f;
 
     // Components
     public IRobotMover Mover { get; private set; }
@@ -29,8 +35,15 @@ public abstract class BaseRobotAI : MonoBehaviour
     public IRobotState Idle { get; protected set; }
     public IRobotState Wander { get; protected set; }
     public IRobotState Attack { get; protected set; }
+    public IRobotState Despawn { get; protected set; }
 
-    private float scanTimer = 0f;
+    // Getters and Setters
+    public RobotStatsData Stats => stats;
+    public Vector3 TacticalWaypoint { get => tacticalWaypoint; set => tacticalWaypoint = value; }
+    public LeaderRobot AssignedLeader { get => assignedLeader; set => assignedLeader = value; }
+    public Transform CurrentTarget { get => currentTarget; set => currentTarget = value; }
+    public bool HoldAttack { get => holdAttack; set => holdAttack = value; }
+    public float LastAttackTime { get => lastAttackTime; set => lastAttackTime = value; }
 
     protected virtual void Awake()
     {
@@ -38,6 +51,8 @@ public abstract class BaseRobotAI : MonoBehaviour
         Health = GetComponent<HealthComponent>();
         Danger = GetComponent<DangerComponent>();
         MeleeWeapon = GetComponent<Melee>();
+
+        Despawn = new DespawnState();
     }
 
 
@@ -46,8 +61,8 @@ public abstract class BaseRobotAI : MonoBehaviour
         // Apply stats
         if (stats != null)
         {
-            Health.Initialize(stats.maxHealth);
-            Mover.SetSpeed(stats.moveSpeed);
+            Health.Initialize(stats.MaxHealth);
+            Mover.SetSpeed(stats.MoveSpeed);
         }
 
         InitializeRobot();
@@ -56,6 +71,20 @@ public abstract class BaseRobotAI : MonoBehaviour
     protected virtual void Update()
     {
         if (Health.IsDead) return;
+
+        if (CurrentState == Attack)
+        {
+            currentIdleTime = 0f;
+        }
+        else if (CurrentState != Despawn)
+        {
+            currentIdleTime += Time.deltaTime;
+            if (currentIdleTime >= maxIdleTime)
+            {
+                ChangeState(Despawn);
+                return;
+            }
+        }
 
         // Target scanning
         scanTimer += Time.deltaTime;
@@ -86,7 +115,7 @@ public abstract class BaseRobotAI : MonoBehaviour
     {
         if (stats == null) return null;
 
-        Collider[] enemies = Physics.OverlapSphere(transform.position, stats.detectionRadius, enemyLayer);
+        Collider[] enemies = Physics.OverlapSphere(transform.position, stats.DetectionRadius, enemyLayer);
         if (enemies.Length == 0) return null;
 
         Transform bestTarget = null;
@@ -153,7 +182,7 @@ public abstract class BaseRobotAI : MonoBehaviour
         // Leader can't join another leader ofc
         if (this is LeaderRobot) return;
 
-        Collider[] allies = Physics.OverlapSphere(transform.position, stats.detectionRadius, 1 << gameObject.layer);
+        Collider[] allies = Physics.OverlapSphere(transform.position, stats.DetectionRadius, 1 << gameObject.layer);
 
         foreach (Collider col in allies)
         {
@@ -179,9 +208,9 @@ public abstract class BaseRobotAI : MonoBehaviour
                 // Joining the squaddd
                 assignedLeader = foundLeader;
 
-                if (!assignedLeader.squad.Contains(this))
+                if (!assignedLeader.Squad.Contains(this))
                 {
-                    assignedLeader.squad.Add(this);
+                    assignedLeader.Squad.Add(this);
                 }
                 break;
             }
@@ -205,7 +234,7 @@ public abstract class BaseRobotAI : MonoBehaviour
 
         // Show detection range
         Gizmos.color = (CurrentState != null && CurrentState.GetType() == typeof(AttackState)) ? Color.red : Color.yellow;
-        float radius = stats != null ? stats.detectionRadius : 15f;
+        float radius = stats != null ? stats.DetectionRadius : 15f;
         Gizmos.DrawWireSphere(transform.position, radius);
 
         // Show assigned waypoint

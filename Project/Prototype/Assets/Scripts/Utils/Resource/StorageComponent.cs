@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StorageComponent : MonoBehaviour
+public class StorageComponent : MonoBehaviour, IInjectable
 {
     [Header("Ownership")]
     [SerializeField] private bool isPlayerOwned = true;
@@ -22,15 +22,19 @@ public class StorageComponent : MonoBehaviour
 
     public int StorageID { get; private set; }
 
-    private void Awake()
+    private CentralResourceHub resourceHub;
+
+    public void Inject(DependencyContainer container)
     {
+        resourceHub = container.Get<CentralResourceHub>();
+
         // Get unique ID from hub
-        StorageID = GameManager.ResourceHub.RegisterStorage(isPlayerOwned);
+        StorageID = resourceHub.RegisterStorage(isPlayerOwned);
 
         // Configure starting inventory slots
         foreach (var slot in initialSlots)
         {
-            GameManager.ResourceHub.SetupResourceSlot(
+            resourceHub.SetupResourceSlot(
                 StorageID,
                 slot.resourceId,
                 slot.maxCapacity,
@@ -38,19 +42,19 @@ public class StorageComponent : MonoBehaviour
                 slot.allowTaking
             );
 
-            // Add initial starting loot
+            // Add initial starting amount
             if (slot.startingAmount > 0)
             {
-                GameManager.ResourceHub.AddResource(StorageID, slot.resourceId, slot.startingAmount);
+                resourceHub.AddResource(StorageID, slot.resourceId, slot.startingAmount);
             }
         }
     }
 
     private void OnDestroy()
     {
-        if (GameManager.ResourceHub != null)
+        if (resourceHub != null)
         {
-            GameManager.ResourceHub.UnregisterStorage(StorageID);
+            resourceHub.UnregisterStorage(StorageID);
         }
     }
 }

@@ -8,8 +8,8 @@ public class FormationDirector : MonoBehaviour
         // Strongest in the front
         loyalBots.Sort((a, b) =>
         {
-            int healthTierA = a.Health.currentHealth / 25;
-            int healthTierB = b.Health.currentHealth / 25;
+            int healthTierA = a.Health.CurrentHealth / 25;
+            int healthTierB = b.Health.CurrentHealth / 25;
             int tierCompare = healthTierB.CompareTo(healthTierA);
 
             if (tierCompare == 0) return a.gameObject.GetEntityId().CompareTo(b.gameObject.GetEntityId());
@@ -21,46 +21,46 @@ public class FormationDirector : MonoBehaviour
         dirToDanger.Normalize();
 
         Vector3 rightLine = Vector3.Cross(Vector3.up, dirToDanger);
-        Vector3 centerAnchor = leaderTransform.position + (dirToDanger * (activeFormation.forwardOffset + (activeFormation.spacing * 2.5f)));
+        Vector3 centerAnchor = leaderTransform.position + (dirToDanger * (activeFormation.ForwardOffset + (activeFormation.Spacing * 2.5f)));
 
         for (int i = 0; i < loyalBots.Count; i++)
         {
             BaseRobotAI bot = loyalBots[i];
 
             // Calculate waypoints based on shape
-            if (activeFormation.shape == FormationData.FormationShape.Wall)
+            if (activeFormation.Shape == FormationData.FormationShape.Wall)
             {
                 float sideMultiplier = (i % 2 == 0) ? -1f : 1f;
                 float step = Mathf.Ceil(i / 2f);
-                float offsetAmount = step * sideMultiplier * activeFormation.spacing;
+                float offsetAmount = step * sideMultiplier * activeFormation.Spacing;
                 if (i == 0) offsetAmount = 0f;
-                bot.tacticalWaypoint = centerAnchor + (rightLine * offsetAmount);
+                bot.TacticalWaypoint = centerAnchor + (rightLine * offsetAmount);
             }
-            else if (activeFormation.shape == FormationData.FormationShape.Spear)
+            else if (activeFormation.Shape == FormationData.FormationShape.Spear)
             {
                 int rank = Mathf.CeilToInt(i / 2f);
                 float sideMultiplier = (i % 2 != 0) ? 1f : -1f;
                 if (i == 0) sideMultiplier = 0f;
 
-                Vector3 backwardOffset = -dirToDanger * (rank * activeFormation.spacing);
-                Vector3 lateralOffset = rightLine * (rank * sideMultiplier * activeFormation.spacing);
-                bot.tacticalWaypoint = centerAnchor + backwardOffset + lateralOffset;
+                Vector3 backwardOffset = -dirToDanger * (rank * activeFormation.Spacing);
+                Vector3 lateralOffset = rightLine * (rank * sideMultiplier * activeFormation.Spacing);
+                bot.TacticalWaypoint = centerAnchor + backwardOffset + lateralOffset;
             }
-            else if (activeFormation.shape == FormationData.FormationShape.Box)
+            else if (activeFormation.Shape == FormationData.FormationShape.Box)
             {
                 float angle = i * (Mathf.PI * 2f / loyalBots.Count);
                 Vector3 targetForward = dirToDanger * Mathf.Cos(angle);
                 Vector3 targetRight = rightLine * Mathf.Sin(angle);
-                Vector3 circleOffset = (targetForward + targetRight) * activeFormation.spacing;
-                bot.tacticalWaypoint = leaderTransform.position + circleOffset;
+                Vector3 circleOffset = (targetForward + targetRight) * activeFormation.Spacing;
+                bot.TacticalWaypoint = leaderTransform.position + circleOffset;
             }
 
             // Push waypoint away from danger if holding attack
-            if (bot.holdAttack)
+            if (bot.HoldAttack)
             {
-                Vector3 pushAway = (bot.tacticalWaypoint - dangerCenter).normalized;
+                Vector3 pushAway = (bot.TacticalWaypoint - dangerCenter).normalized;
                 pushAway.y = 0;
-                bot.tacticalWaypoint += pushAway * (activeFormation.spacing * 1.5f);
+                bot.TacticalWaypoint += pushAway * (activeFormation.Spacing * 1.5f);
             }
         }
     }
@@ -70,7 +70,7 @@ public class FormationDirector : MonoBehaviour
         float maxLagDistance = 0f;
         foreach (BaseRobotAI bot in loyalBots)
         {
-            float dist = Vector3.Distance(bot.transform.position, bot.tacticalWaypoint);
+            float dist = Vector3.Distance(bot.transform.position, bot.TacticalWaypoint);
             if (dist > maxLagDistance) maxLagDistance = dist;
         }
 
@@ -90,16 +90,16 @@ public class FormationDirector : MonoBehaviour
         // Adjust bot speed
         foreach (BaseRobotAI bot in loyalBots)
         {
-            float botLag = Vector3.Distance(bot.transform.position, bot.tacticalWaypoint);
-            float botSyncSpeed = bot.stats.moveSpeed;
+            float botLag = Vector3.Distance(bot.transform.position, bot.TacticalWaypoint);
+            float botSyncSpeed = bot.Stats.MoveSpeed;
 
             if (maxLagDistance > 2f)
             {
                 float speedMultiplier = Mathf.Clamp01((botLag + 1f) / (maxLagDistance + 0.1f));
-                botSyncSpeed = bot.stats.moveSpeed * speedMultiplier;
+                botSyncSpeed = bot.Stats.MoveSpeed * speedMultiplier;
             }
 
-            bot.Mover.SetSpeed(Mathf.Max(botSyncSpeed, bot.stats.moveSpeed * 0.2f));
+            bot.Mover.SetSpeed(Mathf.Max(botSyncSpeed, bot.Stats.MoveSpeed * 0.2f));
         }
     }
 }
