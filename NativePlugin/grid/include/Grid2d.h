@@ -8,6 +8,7 @@
 #include "Chunk2d.h"
 
 #include <functional>
+#include <bit>
 
 namespace grid {
 

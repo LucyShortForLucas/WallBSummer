@@ -26,37 +26,37 @@ public:
 	void load_chunk_asleep(ChunkCoord2d coord) {
 		std::apply([coord](auto&... grids) {
 			(grids.load_chunk_asleep(coord), ...);
-		});
+		}, m_Grids);
 	}
 
 	void wake_chunk(ChunkCoord2d coord) {
 		std::apply([coord](auto&... grids) {
 			(grids.wake_chunk(coord), ...);
-		});
+		}, m_Grids);
 	}
 
 	void sleep_chunk(ChunkCoord2d coord) {
 		std::apply([coord](auto&... grids) {
 			(grids.sleep_chunk(coord), ...);
-		});
+		}, m_Grids);
 	}
 
 	void load_chunks_asleep(ChunkRect rect) {
 		std::apply([rect](auto&... grids) {
 			(grids.load_chunks_asleep(rect), ...);
-		});
+		}, m_Grids);
 	}
 
 	void wake_chunks(ChunkRect rect) {
 		std::apply([rect](auto&... grids) {
 			(grids.wake_chunks(rect), ...);
-		});
+		}, m_Grids);
 	}
 
 	void sleep_chunks(ChunkRect rect) {
 		std::apply([rect](auto&... grids) {
 			(grids.sleep_chunks(rect), ...);
-		});
+		}, m_Grids);
 	}
 
 	// ---- Mass sync method

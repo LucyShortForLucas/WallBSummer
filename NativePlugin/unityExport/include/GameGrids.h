@@ -20,6 +20,6 @@ struct WaterTileType {
 
 }
 
-using FertilityGrid = grid::Grid2d<tile::Fertility>;
+using FertilityGrid = grid::MultiGrid2d<tile::Fertility>;
 
 using WaterGrid = grid::MultiGrid2d<tile::WaterContent, tile::WaterTileType>;

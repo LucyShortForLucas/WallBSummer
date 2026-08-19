@@ -8,13 +8,13 @@
 
 namespace grid {
 
-template <IsGridOrMultiGrid2d ...GridArgs>
+template <IsMultiGrid2d ...GridArgs>
 class GridWorld2d {
 public:
 	// ---- typedefs
 	
-	template <ValidGridData T>
-	using UpdateFunction = std::function<void(Chunk2d<T>*, Grid2d<T>*, float)>;
+	template <IsMultiGrid2d T>
+	using UpdateFunctionPtr = void(*)(T*, float);
 	
 	// ---- Ctor and grid lifetime methods
 	explicit GridWorld2d(AbstractChunkAlgoRunner* pRunner) : m_pAlgoRunner(pRunner) {
@@ -39,29 +39,64 @@ public:
 	}
 
 	// ---- Getters
-	template <IsGrid2d T>
-	T* get_grid() { return std::get<std::unique_ptr<T>>(m_Grids).get(); };
-
 	template <IsMultiGrid2d T>
 	T* get_multigrid() { return std::get<std::unique_ptr<T>>(m_Grids).get(); };
 
 	// ---- Update methods
 
 	void update(float deltaTime) {
-		(std::get<std::unique_ptr<GridArgs>>(m_Grids)->run_on_awake_chunk(
-			std::get<UpdateFunction<GridArgs>>(m_UpdateAlgos) ? std::get<UpdateFunction<GridArgs>>(m_UpdateAlgos) : [](Chunk2d<GridArgs>* c, Grid2d<GridArgs>* g) {},
-			deltaTime
-		), ...);
+		utils::for_each_pair(m_Grids, m_UpdateAlgos, [deltaTime](auto& pGrid, auto& updateFunc) {
+			if (updateFunc == nullptr || pGrid == nullptr) 
+				return;
+			updateFunc(pGrid.get(), deltaTime);
+		});
 	}
 
 	template <typename T>
-	void set_update(UpdateFunction<T>&& func) {
-		std::get<UpdateFunction<T>>(m_UpdateAlgos) = std::forward(func);
+	void set_update(UpdateFunctionPtr<T>&& func) {
+		std::get<UpdateFunctionPtr<T>>(m_UpdateAlgos) = std::forward(func);
+	}
+
+		// ---- Mass grid control functions
+	void load_chunk_asleep(ChunkCoord2d coord) {
+		std::apply([coord](auto&... grids) {
+			(grids->load_chunk_asleep(coord), ...);
+			}, m_Grids);
+	}
+
+	void wake_chunk(ChunkCoord2d coord) {
+		std::apply([coord](auto&... grids) {
+			(grids->wake_chunk(coord), ...);
+			}, m_Grids);
+	}
+
+	void sleep_chunk(ChunkCoord2d coord) {
+		std::apply([coord](auto&... grids) {
+			(grids->sleep_chunk(coord), ...);
+			}, m_Grids);
+	}
+
+	void load_chunks_asleep(ChunkRect rect) {
+		std::apply([rect](auto&... grids) {
+			(grids->load_chunks_asleep(rect), ...);
+			}, m_Grids);
+	}
+
+	void wake_chunks(ChunkRect rect) {
+		std::apply([rect](auto&... grids) {
+			(grids->wake_chunks(rect), ...);
+			}, m_Grids);
+	}
+
+	void sleep_chunks(ChunkRect rect) {
+		std::apply([rect](auto&... grids) {
+			(grids->sleep_chunks(rect), ...);
+			}, m_Grids);
 	}
 
 private:
 	std::tuple<std::unique_ptr<GridArgs>...> m_Grids{};
-	std::tuple<UpdateFunction<GridArgs>...> m_UpdateAlgos{};
+	std::tuple<UpdateFunctionPtr<GridArgs>...> m_UpdateAlgos{};
 	AbstractChunkAlgoRunner* m_pAlgoRunner;
 };
 

@@ -64,19 +64,19 @@ TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[gri
         // Within a single chunk
         Grid2d<TestType> v0Grid{ &f0 };
         testGrid.fill_tile_rect({ {4, 4}, 6, 4 }, v[0]);
-        REQUIRE(testGrid.get_tile_rect({ { 4, 4 }, 6, 4 }) == utils::make_filled_vector<6 * 4, TestType>(v[0]));
+        REQUIRE(testGrid.get_tile_rect({ { 4, 4 }, 6, 4 }) == std::vector<TestType>(6 * 4, v[0]));
         REQUIRE(testGrid.get_tile_rect({ { 4, 4 }, 6, 4 }) == v0Grid.get_tile_rect({ { 4, 4 }, 6, 4 }));
 
         // Across multiple chunks
         Grid2d<TestType> v1Grid{ &f1 };
         testGrid.fill_tile_rect({ { -4, -4 }, 20, 31 }, v[1]);
-        REQUIRE(testGrid.get_tile_rect({ { -4, -4 }, 20, 31 }) == utils::make_filled_vector<20 * 31, TestType>(v[1]));
+        REQUIRE(testGrid.get_tile_rect({ { -4, -4 }, 20, 31 }) == std::vector<TestType>(20 * 31, v[1]));
         REQUIRE(testGrid.get_tile_rect({ { -4, -4 }, 20, 31 }) == v1Grid.get_tile_rect({ { -4, -4 }, 20, 31 }));
 
         // Long and thin
         Grid2d<TestType> v2Grid{ &f2 };
         testGrid.fill_tile_rect({ { 4, -4 }, 300, 1 }, v[2]);
-        REQUIRE(testGrid.get_tile_rect({ { 4, -4 }, 300, 1 }) == utils::make_filled_vector<300 * 1, TestType>(v[2]));
+        REQUIRE(testGrid.get_tile_rect({ { 4, -4 }, 300, 1 }) == std::vector<TestType>(300, v[2]));
         REQUIRE(testGrid.get_tile_rect({ { 4, -4 }, 300, 1 }) == v2Grid.get_tile_rect({ { 4, -4 }, 300, 1 }));
 
         // Single tile rects, Side by side
@@ -250,15 +250,15 @@ TEST_CASE("Chunk Alghoritms") {
         } };
 
         testGrid.run_on_chunk({0, 0}, set_as_total_3x3);
-        REQUIRE(testGrid.get_tile_rect({ {0, 0}, CHUNK_WIDTH, CHUNK_WIDTH }) == utils::make_filled_vector<CHUNK_WIDTH * CHUNK_WIDTH, int>(900));
+        REQUIRE(testGrid.get_tile_rect({ {0, 0}, CHUNK_WIDTH, CHUNK_WIDTH }) == std::vector<int>(CHUNK_WIDTH * CHUNK_WIDTH, 900));
 
         testGrid.fill_tile_rect({ {0, 0}, CHUNK_WIDTH, CHUNK_WIDTH }, 0);
         testGrid.run_on_chunk({ 0, 0 }, set_as_total_3x3);
-        REQUIRE(testGrid.get_tile_rect({ {0, 0}, CHUNK_WIDTH, CHUNK_WIDTH }) == utils::make_filled_vector<CHUNK_WIDTH * CHUNK_WIDTH, int>(0));
+        REQUIRE(testGrid.get_tile_rect({ {0, 0}, CHUNK_WIDTH, CHUNK_WIDTH }) == std::vector<int>(CHUNK_WIDTH * CHUNK_WIDTH, 0));
 
         testGrid.set_tile({ 5, 5 }, 1);
         testGrid.run_on_chunk({ 0, 0 }, set_as_total_3x3);
-        REQUIRE( testGrid.get_tile_rect({ {4, 4}, 3, 3 }) == utils::make_filled_vector<9, int>(1));
+        REQUIRE( testGrid.get_tile_rect({ {4, 4}, 3, 3 }) == std::vector<int>(9, 1));
 
         testGrid.run_on_chunk({ 0, 0 }, set_as_total_3x3);
         REQUIRE(testGrid.get_tile_rect({ {2, 2}, 7, 7 }) == std::vector<int>{

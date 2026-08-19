@@ -16,12 +16,6 @@ make_filled_array_impl(const T& value, std::index_sequence<Is...>) {
     return { (static_cast<void>(Is), value)... };
 }
 
-template <typename T, std::size_t... Is>
-constexpr std::vector<T>
-make_filled_vector_impl(const T& value, std::index_sequence<Is...>) {
-    return { (static_cast<void>(Is), value)... };
-}
-
 }
 
 template <std::size_t N, typename T>
@@ -29,10 +23,6 @@ constexpr std::array<T, N> make_filled_array(const T& value) {
     return detail::make_filled_array_impl(value, std::make_index_sequence<N>{});
 }
 
-template <std::size_t N, typename T>
-constexpr std::vector<T> make_filled_vector(const T& value) {
-    return detail::make_filled_vector_impl(value, std::make_index_sequence<N>{});
-}
 
 inline int floor_div(int a, int b) {
     int q = a / b;
@@ -103,5 +93,22 @@ struct is_specialization_of : std::false_type {};
 
 template<template<typename...> class Template, typename... Args>
 struct is_specialization_of<Template<Args...>, Template> : std::true_type {};
+
+namespace detail {
+
+template <typename Tuple1, typename Tuple2, typename Func, std::size_t... I>
+void for_each_pair_impl(Tuple1& t1, Tuple2& t2, Func&& func, std::index_sequence<I...>) {
+    (func(std::get<I>(t1), std::get<I>(t2)), ...);
+}
+
+}
+
+template <typename Tuple1, typename Tuple2, typename Func>
+void for_each_pair(Tuple1& t1, Tuple2& t2, Func&& func) {
+    constexpr std::size_t N = std::tuple_size_v<std::decay_t<Tuple1>>;
+    static_assert(N == std::tuple_size_v<std::decay_t<Tuple2>>,
+        "Tuples must be the same length");
+    detail::for_each_pair_impl(t1, t2, std::forward<Func>(func), std::make_index_sequence<N>{});
+}
 
 }

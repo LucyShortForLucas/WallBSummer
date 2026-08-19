@@ -13,16 +13,15 @@
 
 using namespace grid;
 
-using GridTAggr = Grid2d<TestGridDataAggregate>;
-using GridTInt = Grid2d<int>;
 using MultiGridT1 = MultiGrid2d<std::string, std::bitset<4>, std::vector<int>>;
+using MultiGridT2 = MultiGrid2d<TestGridDataAggregate, int>;
 
 TEST_CASE("Gridworld basics") {
-	GridWorld2d<GridTAggr, GridTInt, MultiGridT1> testGridWorld{&sequentialChunkAlgoRunner};
+	GridWorld2d<MultiGridT1, MultiGridT2> testGridWorld{&sequentialChunkAlgoRunner};
 
 	testGridWorld.init_grids_default();
 
-	auto gridIntPtr{ testGridWorld.get_grid<GridTInt>() };
+	auto gridIntPtr{ testGridWorld.get_multigrid<MultiGridT2>()->get_grid<int>() };
 		
 	gridIntPtr->set_tile({ 5, 9 }, 99);
 
@@ -36,6 +35,7 @@ TEST_CASE("Gridworld basics") {
 
 	REQUIRE(stringGridPtr->get_tile({ 5,9 }) == TestValues<std::string>::v[0]);
 
+	testGridWorld.get_multigrid<MultiGridT1>()->load_chunk_asleep({1,1});
 }
 
 //TEST_CASE("Gridworld Update algos") {
