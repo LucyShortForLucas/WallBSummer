@@ -65,13 +65,13 @@ PLUGIN_API void manage_chunks(uint32_t worldId, uint32_t funcId,
 
 template <typename Mg, typename T>
 std::vector<T> GetTilesFromMultiGrid(uint32_t worldId, int32_t x, int32_t y, int32_t w, int32_t h) {
-	grid::Grid2d<T>* pGrid{ g_GridWorlds[worldId]->get_multigrid<Mg>()->get_grid<grid::Grid2d<T>>() };
+	grid::Grid2d<T>* pGrid{ g_GridWorlds[worldId]->get_multigrid<Mg>()->get_grid<T>() };
 	return pGrid->get_tile_rect({ {x,y}, w, h });
 }
 
 template <typename Mg, typename T>
 void GetTilesFromMultiGridAndTransformValue(uint32_t worldId, int32_t x, int32_t y, int32_t w, int32_t h, void* pOut) {
-	grid::Grid2d<T>* pGrid{ g_GridWorlds[worldId]->get_multigrid<Mg>()->get_grid< grid::Grid2d<T>>() };
+	grid::Grid2d<T>* pGrid{ g_GridWorlds[worldId]->get_multigrid<Mg>()->get_grid< T>() };
 	std::vector<T> tiles{ pGrid->get_tile_rect({ {x,y}, w, h }) };
 	std::ranges::transform(tiles, static_cast<decltype(T::value)*>(pOut), [](const T& w) { return w.value; });
 }
@@ -92,7 +92,7 @@ PLUGIN_API void get_tile_data(uint32_t worldId, uint32_t tileDataType,
 
 template <typename Mg, typename T>
 void fill_tiles_in_multiGrid(uint32_t worldId, int32_t x, int32_t y, int32_t w, int32_t h, void* pIn) {
-	grid::Grid2d<T>* pGrid{ g_GridWorlds[worldId]->get_multigrid<Mg>()->get_grid<grid::Grid2d<T>>() };
+	grid::Grid2d<T>* pGrid{ g_GridWorlds[worldId]->get_multigrid<Mg>()->get_grid<T>() };
 	pGrid->fill_tile_rect({ {x,y},w,h }, T{ *static_cast<const decltype(T::value)*>(pIn) });
 }
 

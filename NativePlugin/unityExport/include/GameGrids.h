@@ -15,7 +15,7 @@ struct WaterContent {
 };
 
 struct WaterTileType {
-	int8_t type;
+	int8_t value;
 };
 
 }
