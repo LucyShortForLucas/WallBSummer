@@ -6,14 +6,23 @@ public class FormationData : ScriptableObject
     public enum FormationShape { Spear, Wall, Box }
 
     [Header("Shape")]
-    public FormationShape shape = FormationShape.Wall;
+    [SerializeField] private FormationShape shape = FormationShape.Wall;
 
     [Header("Command Distances")]
-    public float safeCommandDistance = 15f;
-    public float breakFormationDistance = 6f;
-    public float recallDistance = 25f;
+    [SerializeField] private float safeCommandDistance = 15f;
+    [SerializeField] private float breakFormationDistance = 6f;
+    [SerializeField] private float recallDistance = 25f;
 
     [Header("Structural Math")]
-    public float spacing = 2.5f;
-    public float forwardOffset = 5f;
+    [SerializeField] private float spacing = 2.5f;
+    [SerializeField] private float forwardOffset = 5f;
+
+    // Getters and Setters
+    public FormationShape Shape { get => shape; }
+    public float SafeCommandDistance { get => safeCommandDistance; }
+    public float BreakFormationDistance { get => breakFormationDistance; }
+    public float RecallDistance { get => recallDistance; }
+    public float Spacing { get => spacing; }
+    public float ForwardOffset { get => forwardOffset; }
+
 }

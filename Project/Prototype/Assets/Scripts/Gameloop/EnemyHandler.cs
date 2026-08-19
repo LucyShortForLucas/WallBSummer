@@ -1,42 +1,41 @@
 using UnityEngine;
 
-public class EnemyHandler : MonoBehaviour
+public class EnemyHandler : MonoBehaviour, IInjectable
 {
     [Header("Wave State")]
     private int daysUntilNextWave = 0;
 
     [Header("Enemy Prefabs")]
-    public GameObject leaderPrefab; // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
-    public GameObject minionPrefab;   // ^^^
+    [SerializeField] private GameObject leaderPrefab;
+    [SerializeField] private GameObject minionPrefab;
 
     [Header("Spawning Rules")]
-    public float spawnMapRadius = 100f; // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
-    public LayerMask alliesLayer;       // ^^^
-    public float safeDistance = 30f;    // ^^^ 
-                                        // Lucy: If you want these in the inspector, use the [[SerializeField]] or [[SerializeReference]] property.
-                                        // These properties should not be modifiable from references to this script in other classes
+    [SerializeField] private float spawnMapRadius = 100f;
+    [SerializeField] private LayerMask alliesLayer;
+    [SerializeField] private float safeDistance = 30f;
 
-    private void Start()
+    private TimeManager timeManager;
+
+    public void Inject(DependencyContainer container)
     {
+        timeManager = container.Get<TimeManager>();
+
+        timeManager.OnDayAdvanced += HandleDayAdvanced;
+
         daysUntilNextWave = 0;
 
-        if (GameManager.Instance != null)
+        if (daysUntilNextWave <= 0)
         {
-            GameManager.Instance.OnDayAdvanced += HandleDayAdvanced;
-
-            if (daysUntilNextWave <= 0)
-            {
-                TriggerWave(GameManager.Instance.currentDay);
-                daysUntilNextWave = Random.Range(1, 4);
-            }
+            TriggerWave(timeManager.currentDay);
+            daysUntilNextWave = Random.Range(1, 4);
         }
     }
 
     private void OnDestroy()
     {
-        if (GameManager.Instance != null)
+        if (timeManager != null)
         {
-            GameManager.Instance.OnDayAdvanced -= HandleDayAdvanced;
+            timeManager.OnDayAdvanced -= HandleDayAdvanced;
         }
     }
 
@@ -54,7 +53,6 @@ public class EnemyHandler : MonoBehaviour
     private void TriggerWave(int currentDay)
     {
         int leaderCount = 1 + (currentDay / 30);
-
         int minionsPerLeader = Mathf.Min(10, 2 + (currentDay / 10));
 
         Debug.Log($"Wave timeeeeeee, Spawning {leaderCount} Leaders with {minionsPerLeader} minions each");
@@ -62,7 +60,6 @@ public class EnemyHandler : MonoBehaviour
         for (int i = 0; i < leaderCount; i++)
         {
             Vector3 spawnPos = FindSafeSpawnPosition();
-
             Instantiate(leaderPrefab, spawnPos, Quaternion.identity);
 
             for (int m = 0; m < minionsPerLeader; m++)
@@ -92,12 +89,4 @@ public class EnemyHandler : MonoBehaviour
 
         return new Vector3(spawnMapRadius, 0, 0);
     }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(Vector3.zero, spawnMapRadius);
-    }
-#endif
 }

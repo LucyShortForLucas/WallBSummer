@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(HealthComponent))]
 public class DangerComponent : MonoBehaviour
 {
-    public float baseDanger = 50f; // VIOLATES Cs.S.1 - Avoid declaring public fields in a class
+    [SerializeField] private float baseDanger = 50f; 
 
     private HealthComponent healthComponent;
 
@@ -16,9 +16,9 @@ public class DangerComponent : MonoBehaviour
     {
         get
         {
-            if (healthComponent == null || healthComponent.maxHealth <= 0) return 0f;
+            if (healthComponent == null || healthComponent.MaxHealth <= 0) return 0f;
 
-            float healthRatio = (float)healthComponent.currentHealth / healthComponent.maxHealth;
+            float healthRatio = (float)healthComponent.CurrentHealth / healthComponent.MaxHealth;
             return baseDanger * healthRatio;
         }
     }

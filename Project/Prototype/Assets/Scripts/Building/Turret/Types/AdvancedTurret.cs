@@ -3,8 +3,8 @@ using System.Collections;
 
 public class AdvancedTurret : BaseTurret
 {
-    public int burstCount = 3;
-    public float timeBetweenBurstShots = 0.1f;
+    [SerializeField] private int burstCount = 3;
+    [SerializeField] private float timeBetweenBurstShots = 0.1f;
 
     private bool isBursting = false;
 
@@ -21,7 +21,7 @@ public class AdvancedTurret : BaseTurret
     {
         StartCoroutine(FireBurstRoutine());
 
-        nextFireTime = Time.time + stats.fireRate;
+        nextFireTime = Time.time + Stats.FireRate;
     }
 
     private IEnumerator FireBurstRoutine()
@@ -32,14 +32,14 @@ public class AdvancedTurret : BaseTurret
         {
             if (currentTarget == null) break;
 
-            if (projectilePrefab != null && projectileStats != null)
+            if (ProjectilePrefab != null && ProjectileStats != null)
             {
-                GameObject bulletObj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+                GameObject bulletObj = Instantiate(ProjectilePrefab, FirePoint.position, FirePoint.rotation);
                 IProjectile bullet = bulletObj.GetComponent<IProjectile>();
 
                 if (bullet != null)
                 {
-                    bullet.Initialize(firePoint.forward, projectileStats, this.transform);
+                    bullet.Initialize(FirePoint.forward, ProjectileStats, this.transform);
                 }
             }
 

@@ -4,16 +4,16 @@ public class BasicTurret : BaseTurret
 {
     protected override void Fire()
     {
-        if (projectilePrefab == null || projectileStats == null) return;
+        if (ProjectilePrefab == null || ProjectileStats == null) return;
 
-        GameObject bulletObj = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+        GameObject bulletObj = Instantiate(ProjectilePrefab, FirePoint.position, FirePoint.rotation);
         IProjectile bullet = bulletObj.GetComponent<IProjectile>();
 
         if (bullet != null)
         {
-            bullet.Initialize(firePoint.forward, projectileStats, this.transform);
+            bullet.Initialize(FirePoint.forward, ProjectileStats, this.transform);
         }
 
-        nextFireTime = Time.time + stats.fireRate;
+        nextFireTime = Time.time + Stats.FireRate;
     }
 }

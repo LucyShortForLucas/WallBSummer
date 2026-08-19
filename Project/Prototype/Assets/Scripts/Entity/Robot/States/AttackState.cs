@@ -13,7 +13,7 @@ public class AttackState : IRobotState
     public void UpdateState(BaseRobotAI robot)
     {
         // Return idle if target lost
-        if (robot.currentTarget == null)
+        if (robot.CurrentTarget == null)
         {
             robot.ChangeState(robot.Idle);
             return;
@@ -21,12 +21,12 @@ public class AttackState : IRobotState
 
         float distanceToTarget = Vector3.Distance(robot.transform.position, robot.GetTargetEdge());
 
-        if (distanceToTarget <= robot.stats.attackRange)
+        if (distanceToTarget <= robot.Stats.AttackRange)
         {
             // Stop and attack if in range
             robot.Mover.StopMovement();
 
-            if (Time.time >= robot.lastAttackTime + robot.stats.attackCooldown)
+            if (Time.time >= robot.LastAttackTime + robot.Stats.AttackCooldown)
             {
                 ExecuteAttack(robot);
             }
@@ -45,9 +45,9 @@ public class AttackState : IRobotState
 
     private void ExecuteAttack(BaseRobotAI robot)
     {
-        robot.lastAttackTime = Time.time;
+        robot.LastAttackTime = Time.time;
 
-        robot.PerformMeleeAttack(robot.stats.attackDamage);
+        robot.PerformMeleeAttack(robot.Stats.AttackDamage);
     }
 
     private void MoveToTarget(BaseRobotAI robot)
@@ -57,9 +57,9 @@ public class AttackState : IRobotState
 
         pathUpdateTimer = pathUpdateDelay;
 
-        if (robot.holdAttack && robot.tacticalWaypoint != Vector3.zero)
+        if (robot.HoldAttack && robot.TacticalWaypoint != Vector3.zero)
         {
-            robot.Mover.MoveTo(robot.tacticalWaypoint);
+            robot.Mover.MoveTo(robot.TacticalWaypoint);
         }
         else
         {

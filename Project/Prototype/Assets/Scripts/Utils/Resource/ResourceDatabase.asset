@@ -13,9 +13,18 @@ MonoBehaviour:
   m_Name: ResourceDatabase
   m_EditorClassIdentifier: Assembly-CSharp::GlobalResourceDatabase
   allResources:
-  - id: 0
-    resourceName: Scrap
-    icon: {fileID: 21300000, guid: 7d0d216f9f969ba468cebf9dce8bf0d5, type: 3}
   - id: 1
+    resourceName: 'Scrap Metal '
+    icon: {fileID: 21300000, guid: 7d0d216f9f969ba468cebf9dce8bf0d5, type: 3}
+  - id: 2
+    resourceName: Mechanical Scrap
+    icon: {fileID: 21300000, guid: 7563501f86e40e844956325fedb428d2, type: 3}
+  - id: 3
+    resourceName: Electronic Scrap
+    icon: {fileID: 21300000, guid: 8e88f3c1642fc3644b1140afbd76279c, type: 3}
+  - id: 4
+    resourceName: Seeds
+    icon: {fileID: 21300000, guid: 6fe1b4a6eb2f8134da4dc4f6c6c8151d, type: 3}
+  - id: 5
     resourceName: Food
     icon: {fileID: 21300000, guid: a6352fee5b4496640b74311c587eb70e, type: 3}

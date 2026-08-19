@@ -7,15 +7,17 @@ public enum StoragePanelType
     BigInOut,
     SmallInOut,
     Out,
-    Launch
+    Launch,
+    Recipes, 
+    Craft
 }
 
-public class InventoryUIManager : MonoBehaviour
+public class InventoryUIManager : MonoBehaviour, IInjectable
 {
-    public static InventoryUIManager Instance { get; private set; }
-
     [Header("Data")]
-    public GlobalResourceDatabase resourceDatabase;
+    [SerializeField] private GlobalResourceDatabase resourceDatabase;
+    [SerializeField] private GlobalRecipeDatabase recipeDatabase;
+
 
     [Serializable]
     public struct PanelConfig
@@ -25,50 +27,54 @@ public class InventoryUIManager : MonoBehaviour
     }
 
     [Header("Panel Mappings")]
-    public List<PanelConfig> panels = new List<PanelConfig>();
+    [SerializeField] private List<PanelConfig> panels = new List<PanelConfig>();
 
-    private int currentTargetId = -1;
     private int currentPlayerId = -1;
-    private List<StoragePanelType> activePanelTypes = new List<StoragePanelType>();
+
+    private Dictionary<StoragePanelType, int> activePanels = new Dictionary<StoragePanelType, int>();
+
+    private CentralResourceHub resourceHub;
+
+    // Getters and Setters
+    public GlobalResourceDatabase ResourceDatabase { get => resourceDatabase; set => resourceDatabase = value; }
+    public FactoryInteractable CurrentFactory { get; set; }
+    public DropBuildingInteractable CurrentDropBuilding { get; set; }
+
+    public void Inject(DependencyContainer container)
+    {
+        resourceHub = container.Get<CentralResourceHub>();
+        resourceHub.OnResourceChanged += HandleResourceChanged;
+    }
 
     private void Awake()
     {
-        Instance = this;
-
-        // Ensure resource are loaded
-        if (resourceDatabase != null)
-        {
-            resourceDatabase.Initialize();
-        }
+        if (resourceDatabase != null) resourceDatabase.Initialize();
+        if (recipeDatabase != null) recipeDatabase.Initialize();
 
         CloseAllPanels();
-    }
-
-    private void Start()
-    {
-        GameManager.ResourceHub.OnResourceChanged += HandleResourceChanged;
     }
 
     private void OnDestroy()
     {
-        if (GameManager.ResourceHub != null)
-            GameManager.ResourceHub.OnResourceChanged -= HandleResourceChanged;
+        if (resourceHub != null)
+        {
+            resourceHub.OnResourceChanged -= HandleResourceChanged;
+        }
     }
 
-    public void OpenUI(int targetStorageId, int playerStorageId, List<StoragePanelType> panelTypes)
+    public void OpenUI(int playerStorageId, Dictionary<StoragePanelType, int> requestedPanels)
     {
-        currentTargetId = targetStorageId;
         currentPlayerId = playerStorageId;
-        activePanelTypes = new List<StoragePanelType>(panelTypes);
+        activePanels = new Dictionary<StoragePanelType, int>(requestedPanels);
 
         CloseAllPanels();
 
-        // Enable requested panels
-        foreach (var pType in activePanelTypes)
+        // Turn on requested panels
+        foreach (var kvp in activePanels)
         {
             foreach (var config in panels)
             {
-                if (config.panelType == pType && config.panelRoot != null)
+                if (config.panelType == kvp.Key && config.panelRoot != null)
                 {
                     config.panelRoot.SetActive(true);
                     break;
@@ -76,26 +82,24 @@ public class InventoryUIManager : MonoBehaviour
             }
         }
 
-        // Show current data
         RefreshUI();
     }
 
     public void CloseUI()
     {
+        // Hide everything and reset our tracking variables
         CloseAllPanels();
-        currentTargetId = -1;
-        activePanelTypes.Clear();
+        activePanels.Clear();
     }
 
     private void CloseAllPanels()
     {
+        // Go through every panel known, turn off and clear 
         foreach (var config in panels)
         {
             if (config.panelRoot != null)
             {
                 config.panelRoot.SetActive(false);
-
-                // Clean memory
                 var panelUI = config.panelRoot.GetComponent<InventoryPanelUI>();
                 if (panelUI != null) panelUI.Clear();
             }
@@ -104,8 +108,7 @@ public class InventoryUIManager : MonoBehaviour
 
     private void HandleResourceChanged(int storageId, int resourceId, int newAmount, int maxAmount)
     {
-        // If changed inventory is on screen
-        if (currentTargetId != -1 && (storageId == currentTargetId || storageId == currentPlayerId))
+        if (storageId == currentPlayerId || activePanels.ContainsValue(storageId))
         {
             RefreshUI();
         }
@@ -113,16 +116,28 @@ public class InventoryUIManager : MonoBehaviour
 
     private void RefreshUI()
     {
-        // Every visible panel rebuild
         foreach (var config in panels)
         {
             if (config.panelRoot != null && config.panelRoot.activeSelf)
             {
+                // Inventory Panels
                 var panelUI = config.panelRoot.GetComponent<InventoryPanelUI>();
-                if (panelUI != null)
+                if (panelUI != null && activePanels.TryGetValue(config.panelType, out int targetId))
                 {
-                    panelUI.Refresh(currentTargetId, currentPlayerId);
+                    panelUI.Refresh(targetId, currentPlayerId, resourceHub, resourceDatabase);
                 }
+
+                // Recipe Panels
+                var recipePanel = config.panelRoot.GetComponent<RecipePanelUI>();
+                if (recipePanel != null) recipePanel.Refresh(this, recipeDatabase);
+
+                // Crafting Panels
+                var craftPanel = config.panelRoot.GetComponent<CraftPanelUI>();
+                if (craftPanel != null) craftPanel.Refresh(this, resourceHub);
+
+                // Launch Panels 
+                var launchPanel = config.panelRoot.GetComponent<LaunchPanelUI>();
+                if (launchPanel != null) launchPanel.Refresh(this);
             }
         }
     }

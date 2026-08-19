@@ -1,31 +1,50 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LaunchPanelUI : MonoBehaviour
 {
-    public static LaunchPanelUI Instance { get; private set; }
-
     [Header("UI Elements")]
-    public Button launchButton;
+    [SerializeField] private Button launchButton;
 
-    public static event Action OnLaunchPressed;
+    private InventoryUIManager uiManager;
+    private bool isInitialized = false;
 
-    private void Awake()
+    public void Refresh(InventoryUIManager manager)
     {
-        Instance = this;
+        uiManager = manager;
 
-        if (launchButton != null)
+        if (!isInitialized)
         {
-            launchButton.onClick.AddListener(() => OnLaunchPressed?.Invoke());
+            // Subscribe
+            if (launchButton != null)
+            {
+                launchButton.onClick.AddListener(OnLaunchClicked);
+            }
+            isInitialized = true;
         }
     }
 
-    public void SetLaunchInteractable(bool isInteractable)
+    private void OnLaunchClicked()
     {
-        if (launchButton != null)
+        // Trigger
+        if (uiManager != null && uiManager.CurrentDropBuilding != null)
         {
-            launchButton.interactable = isInteractable;
+            uiManager.CurrentDropBuilding.TriggerLaunch();
+        }
+    }
+
+    private void Update()
+    {
+        if (uiManager == null || uiManager.CurrentDropBuilding == null || launchButton == null) return;
+
+        // Update launch button state
+        if (uiManager.CurrentDropBuilding.IsWaiting)
+        {
+            launchButton.interactable = false;
+        }
+        else
+        {
+            launchButton.interactable = uiManager.CurrentDropBuilding.CanLaunch;
         }
     }
 }

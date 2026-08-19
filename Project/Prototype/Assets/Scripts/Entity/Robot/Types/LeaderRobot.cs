@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 [RequireComponent(typeof(GroundMover))]
 [RequireComponent(typeof(TargetAssigner))]
@@ -9,20 +10,23 @@ public class LeaderRobot : BaseRobotAI
     public enum TacticalStance { Offensive, Neutral, Defensive }
 
     [Header("Tactics Playbook")]
-    public StrategyProfile strategyProfile;
-    public List<BaseRobotAI> squad = new List<BaseRobotAI>();
+    [SerializeField] private StrategyProfile strategyProfile;
+    [SerializeField] private List<BaseRobotAI> squad = new List<BaseRobotAI>();
 
     [Header("Dynamic Strategy")]
-    public TacticalStance currentStance = TacticalStance.Neutral;
-    public float currentWinrate = 1f;
-    public float lowHealthRetreatThreshold = 0.3f;
+    [SerializeField] private TacticalStance currentStance = TacticalStance.Neutral;
+    [SerializeField] private float currentWinrate = 1f;
+    [SerializeField] private float lowHealthRetreatThreshold = 0.3f;
 
-    private FormationData activeFormation;
-    private HashSet<Transform> knownThreats = new HashSet<Transform>();
-    private float smoothedCommandDistance = -1f;
+    [SerializeField] private FormationData activeFormation;
+    [SerializeField] private HashSet<Transform> knownThreats = new HashSet<Transform>();
+    [SerializeField] private float smoothedCommandDistance = -1f;
 
-    private TargetAssigner assigner;
-    private FormationDirector director;
+    [SerializeField] private TargetAssigner assigner;
+    [SerializeField] private FormationDirector director;
+
+    // Getters and setters
+    public List<BaseRobotAI> Squad => squad;
 
     protected override void Awake()
     {
@@ -67,7 +71,7 @@ public class LeaderRobot : BaseRobotAI
         Vector3 dangerCenter = GetDangerCenter(out List<Transform> validThreats);
 
         // Decide Stance & Move Leader
-        bool isEscortProtocolActive = ((float)Health.currentHealth / stats.maxHealth) <= lowHealthRetreatThreshold && currentStance == TacticalStance.Offensive;
+        bool isEscortProtocolActive = ((float)Health.CurrentHealth / Stats.MaxHealth) <= lowHealthRetreatThreshold && currentStance == TacticalStance.Offensive;
         UpdateLeaderWaypoint(dangerCenter, isEscortProtocolActive);
 
         // Sort & Split Squad
@@ -76,11 +80,10 @@ public class LeaderRobot : BaseRobotAI
             float d1 = a.GetComponent<DangerComponent>() != null ? a.GetComponent<DangerComponent>().CurrentDanger : 0f;
             float d2 = b.GetComponent<DangerComponent>() != null ? b.GetComponent<DangerComponent>().CurrentDanger : 0f;
             int compare = d2.CompareTo(d1);
-            return compare == 0 ? a.gameObject.GetInstanceID().CompareTo(b.gameObject.GetInstanceID()) : compare;
+            return compare == 0 ? a.gameObject.GetEntityId().CompareTo(b.gameObject.GetEntityId()) : compare;
         });
 
-        squad.Sort((a, b) => a.gameObject.GetInstanceID().CompareTo(b.gameObject.GetInstanceID()));
-
+        squad.Sort((a, b) => a.gameObject.GetEntityId().CompareTo(b.gameObject.GetEntityId()));
         List<BaseRobotAI> attackers = new List<BaseRobotAI>();
         List<BaseRobotAI> escorts = new List<BaseRobotAI>();
 
@@ -92,18 +95,18 @@ public class LeaderRobot : BaseRobotAI
         }
 
         // Assign Targets
-        assigner.AssignEscorts(escorts, transform, currentTarget);
+        assigner.AssignEscorts(escorts, transform, CurrentTarget);
 
         if (currentStance == TacticalStance.Offensive)
-            assigner.AssignProportionalTargets(attackers, validThreats, currentTarget);
+            assigner.AssignProportionalTargets(attackers, validThreats, CurrentTarget);
         else
-            foreach (var bot in attackers) bot.currentTarget = currentTarget;
+            foreach (var bot in attackers) bot.CurrentTarget = CurrentTarget;
 
         // Enforce Engagement Rules
         List<BaseRobotAI> loyalBots = new List<BaseRobotAI>();
 
         // If Offensive and close to danger, drop formation and unleash the brawlers
-        bool isBrawling = currentStance == TacticalStance.Offensive && Vector3.Distance(transform.position, dangerCenter) < (activeFormation.safeCommandDistance * 1.5f);
+        bool isBrawling = currentStance == TacticalStance.Offensive && Vector3.Distance(transform.position, dangerCenter) < (activeFormation.SafeCommandDistance * 1.5f);
 
         foreach (BaseRobotAI bot in attackers)
         {
@@ -112,8 +115,8 @@ public class LeaderRobot : BaseRobotAI
             if (isBrawling)
             {
                 // Swarm target freely
-                bot.holdAttack = false;
-                bot.Mover.SetSpeed(bot.stats.moveSpeed);
+                bot.HoldAttack = false;
+                bot.Mover.SetSpeed(bot.Stats.MoveSpeed);
             }
             else
             {
@@ -121,22 +124,22 @@ public class LeaderRobot : BaseRobotAI
                 float distanceToLeader = Vector3.Distance(bot.transform.position, transform.position);
                 float distanceToEnemy = Vector3.Distance(bot.transform.position, bot.GetTargetEdge());
 
-                float activeBreakDistance = (currentStance == TacticalStance.Offensive) ? activeFormation.breakFormationDistance : bot.stats.attackRange;
-                float activeRecallDistance = (currentStance == TacticalStance.Offensive) ? activeFormation.recallDistance : activeFormation.recallDistance * 0.5f;
+                float activeBreakDistance = (currentStance == TacticalStance.Offensive) ? activeFormation.BreakFormationDistance : bot.Stats.AttackRange;
+                float activeRecallDistance = (currentStance == TacticalStance.Offensive) ? activeFormation.RecallDistance : activeFormation.RecallDistance * 0.5f;
 
                 if (distanceToLeader > activeRecallDistance)
                 {
-                    bot.holdAttack = true;
+                    bot.HoldAttack = true;
                     loyalBots.Add(bot);
                 }
                 else if (distanceToEnemy <= activeBreakDistance)
                 {
-                    bot.holdAttack = false;
-                    bot.Mover.SetSpeed(bot.stats.moveSpeed);
+                    bot.HoldAttack = false;
+                    bot.Mover.SetSpeed(bot.Stats.MoveSpeed);
                 }
                 else
                 {
-                    bot.holdAttack = true;
+                    bot.HoldAttack = true;
                     loyalBots.Add(bot);
                 }
             }
@@ -148,7 +151,7 @@ public class LeaderRobot : BaseRobotAI
         if (loyalBots.Count > 0)
         {
             director.ApplyFormation(loyalBots, dangerCenter, activeFormation, transform);
-            director.SynchronizeSpeeds(loyalBots, stats.moveSpeed, Mover, tacticalWaypoint, transform, activeFormation.breakFormationDistance);
+            director.SynchronizeSpeeds(loyalBots, Stats.MoveSpeed, Mover, TacticalWaypoint, transform, activeFormation.BreakFormationDistance);
         }
     }
 
@@ -172,13 +175,13 @@ public class LeaderRobot : BaseRobotAI
 
     private void UpdateLeaderWaypoint(Vector3 dangerCenter, bool isEscortActive)
     {
-        float targetCommandDistance = activeFormation.safeCommandDistance;
+        float targetCommandDistance = activeFormation.SafeCommandDistance;
 
         // Calculate target distance
-        if (isEscortActive) targetCommandDistance = activeFormation.safeCommandDistance * 2.5f;
-        else if (currentStance == TacticalStance.Offensive) targetCommandDistance = stats.attackRange * 0.8f;
-        else if (currentStance == TacticalStance.Defensive) targetCommandDistance *= strategyProfile.defensiveDistanceMultiplier;
-        else if (currentStance == TacticalStance.Neutral) targetCommandDistance *= strategyProfile.neutralDistanceMultiplier;
+        if (isEscortActive) targetCommandDistance = activeFormation.SafeCommandDistance * 2.5f;
+        else if (currentStance == TacticalStance.Offensive) targetCommandDistance = Stats.AttackRange * 0.8f;
+        else if (currentStance == TacticalStance.Defensive) targetCommandDistance *= strategyProfile.DefensiveDistanceMultiplier;
+        else if (currentStance == TacticalStance.Neutral) targetCommandDistance *= strategyProfile.NeutralDistanceMultiplier;
 
         if (smoothedCommandDistance < 0f) smoothedCommandDistance = targetCommandDistance;
         smoothedCommandDistance = Mathf.Lerp(smoothedCommandDistance, targetCommandDistance, Time.deltaTime * 0.5f);
@@ -190,13 +193,13 @@ public class LeaderRobot : BaseRobotAI
         // Update waypoint and attack hold flag
         if (!isEscortActive && currentStance == TacticalStance.Offensive)
         {
-            tacticalWaypoint = dangerCenter - (dirToDanger.normalized * smoothedCommandDistance);
-            holdAttack = false;
+            TacticalWaypoint = dangerCenter - (dirToDanger.normalized * smoothedCommandDistance);
+            HoldAttack = false;
         }
         else
         {
-            tacticalWaypoint = dangerCenter + (-dirToDanger.normalized * smoothedCommandDistance);
-            holdAttack = true;
+            TacticalWaypoint = dangerCenter + (-dirToDanger.normalized * smoothedCommandDistance);
+            HoldAttack = true;
         }
     }
 
@@ -225,7 +228,7 @@ public class LeaderRobot : BaseRobotAI
             }
         }
 
-        if (closestThreat != null) currentTarget = closestThreat;
+        if (closestThreat != null) CurrentTarget = closestThreat;
 
         if (enemyPower < 0.1f) enemyPower = 0.1f;
         currentWinrate = squadPower / enemyPower;
@@ -247,9 +250,9 @@ public class LeaderRobot : BaseRobotAI
         List<FormationData> pool = null;
 
         // Select pool matching stance
-        if (currentStance == TacticalStance.Offensive) pool = strategyProfile.offensiveFormations;
-        else if (currentStance == TacticalStance.Neutral) pool = strategyProfile.neutralFormations;
-        else if (currentStance == TacticalStance.Defensive) pool = strategyProfile.defensiveFormations;
+        if (currentStance == TacticalStance.Offensive) pool = strategyProfile.OffensiveFormations;
+        else if (currentStance == TacticalStance.Neutral) pool = strategyProfile.NeutralFormations;
+        else if (currentStance == TacticalStance.Defensive) pool = strategyProfile.DefensiveFormations;
 
         if (pool != null && pool.Count > 0)
         {
