@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(StorageComponent))]
 public class DropBuildingInteractable : InteractableComponent, IInjectable
 {
     [Serializable]
@@ -24,18 +23,13 @@ public class DropBuildingInteractable : InteractableComponent, IInjectable
     [SerializeField] private List<DropTier> buildingTiers = new List<DropTier>();
     private int currentTierIndex = 0;
 
-    [Header("UI Configuration")]
-    [SerializeField] private List<StoragePanelType> panelsToOpen = new List<StoragePanelType>
-    {
-        StoragePanelType.SmallInOut,
-        StoragePanelType.Out,
-        StoragePanelType.Launch
-    };
+    [Header("Storage Configuration")]
+    [SerializeField] private StorageComponent inventoryStorage;
+    [SerializeField] private StorageComponent outputStorage;
 
     [Header("Interaction Settings")]
     [SerializeField] private float closeDistance = 5f;
 
-    private StorageComponent myStorage;
     private bool isInteracting = false;
     private GameObject currentInteractor;
 
@@ -44,37 +38,24 @@ public class DropBuildingInteractable : InteractableComponent, IInjectable
 
     private CentralResourceHub resourceHub;
     private InventoryUIManager uiManager;
-    private LaunchPanelUI launchUI;
+
+    public bool CanLaunch => AreInputsFull();
+    public bool IsWaiting => isWaitingForCollection;
 
     public void Inject(DependencyContainer container)
     {
         resourceHub = container.Get<CentralResourceHub>();
         uiManager = container.Get<InventoryUIManager>();
-        launchUI = container.Get<LaunchPanelUI>();
-
-        if (launchUI != null)
-        {
-            launchUI.OnLaunchPressed += HandleLaunch;
-        }
     }
 
     protected override void Awake()
     {
         base.Awake();
-        myStorage = GetComponent<StorageComponent>();
     }
 
     private void Start()
     {
         LoadTier(currentTierIndex);
-    }
-
-    private void OnDestroy()
-    {
-        if (launchUI != null)
-        {
-            launchUI.OnLaunchPressed -= HandleLaunch;
-        }
     }
 
     private void LoadTier(int index)
@@ -86,27 +67,28 @@ public class DropBuildingInteractable : InteractableComponent, IInjectable
         // Clear
         foreach (int oldId in activeResourceIds)
         {
-            resourceHub.SetupResourceSlot(myStorage.StorageID, oldId, 0, false, false, true);
+            resourceHub.SetupResourceSlot(inventoryStorage.StorageID, oldId, 0, false, false, true);
+            resourceHub.SetupResourceSlot(outputStorage.StorageID, oldId, 0, false, false, true);
         }
         activeResourceIds.Clear();
 
         // Set new inputs
         foreach (var input in tier.inputs)
         {
-            resourceHub.SetupResourceSlot(myStorage.StorageID, input.resourceId, input.amount, true, true, true);
+            resourceHub.SetupResourceSlot(inventoryStorage.StorageID, input.resourceId, input.amount, true, true, true);
             activeResourceIds.Add(input.resourceId);
         }
 
         // Set new outputs
         foreach (var output in tier.outputs)
         {
-            resourceHub.SetupResourceSlot(myStorage.StorageID, output.resourceId, output.amount, false, true, true);
+            resourceHub.SetupResourceSlot(outputStorage.StorageID, output.resourceId, output.amount, false, true, true);
             activeResourceIds.Add(output.resourceId);
-            resourceHub.ConsumeResource(myStorage.StorageID, output.resourceId, 9999);
+            resourceHub.ConsumeResource(outputStorage.StorageID, output.resourceId, 9999);
         }
     }
 
-    private void HandleLaunch()
+    public void TriggerLaunch()
     {
         if (!isInteracting || resourceHub == null) return;
         if (currentTierIndex >= buildingTiers.Count) return;
@@ -119,14 +101,14 @@ public class DropBuildingInteractable : InteractableComponent, IInjectable
             // Consume inputs
             foreach (var input in currentTier.inputs)
             {
-                resourceHub.ConsumeResource(myStorage.StorageID, input.resourceId, input.amount, true);
-                resourceHub.SetupResourceSlot(myStorage.StorageID, input.resourceId, input.amount, false, false, true);
+                resourceHub.ConsumeResource(inventoryStorage.StorageID, input.resourceId, input.amount, true);
+                resourceHub.SetupResourceSlot(inventoryStorage.StorageID, input.resourceId, input.amount, false, false, true);
             }
 
             // Generate outputs
             foreach (var output in currentTier.outputs)
             {
-                resourceHub.AddResource(myStorage.StorageID, output.resourceId, output.amount, true);
+                resourceHub.AddResource(outputStorage.StorageID, output.resourceId, output.amount, true);
             }
 
             isWaitingForCollection = true;
@@ -138,7 +120,7 @@ public class DropBuildingInteractable : InteractableComponent, IInjectable
         if (currentTierIndex >= buildingTiers.Count || resourceHub == null) return false;
 
         DropTier currentTier = buildingTiers[currentTierIndex];
-        var inventory = resourceHub.GetReadOnlyInventory(myStorage.StorageID);
+        var inventory = resourceHub.GetReadOnlyInventory(inventoryStorage.StorageID);
 
         if (inventory == null) return false;
 
@@ -162,7 +144,7 @@ public class DropBuildingInteractable : InteractableComponent, IInjectable
         if (currentTierIndex >= buildingTiers.Count || resourceHub == null) return true;
 
         DropTier currentTier = buildingTiers[currentTierIndex];
-        var inventory = resourceHub.GetReadOnlyInventory(myStorage.StorageID);
+        var inventory = resourceHub.GetReadOnlyInventory(outputStorage.StorageID);
 
         if (inventory == null) return true;
 
@@ -184,7 +166,16 @@ public class DropBuildingInteractable : InteractableComponent, IInjectable
         // Open UI
         if (playerStorage != null && uiManager != null)
         {
-            uiManager.OpenUI(myStorage.StorageID, playerStorage.StorageID, panelsToOpen);
+            uiManager.CurrentDropBuilding = this;
+
+            Dictionary<StoragePanelType, int> panelRequests = new Dictionary<StoragePanelType, int>
+            {
+                { StoragePanelType.SmallInOut, inventoryStorage.StorageID },
+                { StoragePanelType.Out, outputStorage.StorageID },
+                { StoragePanelType.Launch, 0 }
+            };
+
+            uiManager.OpenUI(playerStorage.StorageID, panelRequests);
             currentInteractor = interactor;
             isInteracting = true;
         }
@@ -200,21 +191,15 @@ public class DropBuildingInteractable : InteractableComponent, IInjectable
                 StopInteraction();
             }
 
-            // Update launch button state based on current tier status
+            // Check if empty then next tier
             if (isWaitingForCollection)
             {
-                if (launchUI != null) launchUI.SetLaunchInteractable(false);
-
                 if (AreOutputsEmpty())
                 {
                     isWaitingForCollection = false;
                     currentTierIndex++;
                     LoadTier(currentTierIndex);
                 }
-            }
-            else
-            {
-                if (launchUI != null) launchUI.SetLaunchInteractable(AreInputsFull());
             }
         }
     }

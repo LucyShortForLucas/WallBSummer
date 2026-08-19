@@ -17,6 +17,8 @@ public class TimeManager : MonoBehaviour
 
     public event Action<int> OnDayAdvanced;
 
+    public float TimePercent => dayTimer / secondsPerDay;
+
     private void Update()
     {
         dayTimer += Time.deltaTime;

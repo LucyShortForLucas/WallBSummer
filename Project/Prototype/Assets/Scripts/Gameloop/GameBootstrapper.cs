@@ -7,7 +7,7 @@ public class GameBootstrapper : MonoBehaviour
     [SerializeField] private TimeManager timeManager;
     [SerializeField] private EnemyHandler enemyHandler;
     [SerializeField] private InventoryUIManager uiManager;
-    [SerializeField] private LaunchPanelUI launchUI;
+    [SerializeField] private GlobalRecipeDatabase recipeDatabase;
 
     private CentralResourceHub resourceHub;
 
@@ -19,7 +19,6 @@ public class GameBootstrapper : MonoBehaviour
         container.Register(new CentralResourceHub());
         container.Register(timeManager);
         container.Register(uiManager);
-        container.Register(launchUI);
         container.Register(enemyHandler);
 
         var allScripts = FindObjectsByType<MonoBehaviour>();
