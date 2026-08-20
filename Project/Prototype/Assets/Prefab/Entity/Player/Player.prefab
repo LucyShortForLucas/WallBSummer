@@ -17,7 +17,12 @@ GameObject:
   - component: {fileID: 5213289227092959900}
   - component: {fileID: 364646643715022075}
   - component: {fileID: 4747049448087886128}
-  m_Layer: 0
+  - component: {fileID: 4057656910994089873}
+  - component: {fileID: 1083048026603448657}
+  - component: {fileID: 7053526154149921192}
+  - component: {fileID: 3543716709967237255}
+  - component: {fileID: 8856432103964378407}
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,3 +230,99 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &4057656910994089873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6886886208658951414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5b0fbe4bd7466f4abde1a7803667050, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StorageComponent
+  isPlayerOwned: 1
+  initialSlots:
+  - resourceId: 1
+    startingAmount: 50
+    maxCapacity: 100
+    allowStoring: 1
+    allowTaking: 1
+  - resourceId: 2
+    startingAmount: 10
+    maxCapacity: 100
+    allowStoring: 1
+    allowTaking: 1
+  - resourceId: 3
+    startingAmount: 0
+    maxCapacity: 100
+    allowStoring: 1
+    allowTaking: 1
+  - resourceId: 4
+    startingAmount: 10
+    maxCapacity: 100
+    allowStoring: 1
+    allowTaking: 1
+  - resourceId: 5
+    startingAmount: 0
+    maxCapacity: 100
+    allowStoring: 1
+    allowTaking: 1
+--- !u!114 &1083048026603448657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6886886208658951414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6717d3aa94e5384ca1628a86959ab97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteract
+--- !u!114 &7053526154149921192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6886886208658951414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4eccdd6dd64794b4eb6a79ac3049ff3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  hitboxSize: {x: 2, y: 2, z: 2}
+  hitboxDistance: 1.5
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  damageAmount: 50
+--- !u!114 &3543716709967237255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6886886208658951414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9004a8784fbacb4cbef6febd1ecb018, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
+  maxHealth: 100
+  currentHealth: 0
+--- !u!114 &8856432103964378407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6886886208658951414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2d53c64bccb44f4ba3074589f509b34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DangerComponent
+  baseDanger: 25
