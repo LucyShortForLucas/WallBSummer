@@ -14,6 +14,7 @@ public class EnemyHandler : MonoBehaviour, IInjectable
     [SerializeField] private float spawnMapRadius = 100f;
     [SerializeField] private LayerMask alliesLayer;
     [SerializeField] private float safeDistance = 30f;
+    [SerializeField] private int leaderSpawnStartDay = 5;
 
     [Header("Hive Memory")]
     [SerializeField] private int globalAggression = 0;
@@ -61,21 +62,34 @@ public class EnemyHandler : MonoBehaviour, IInjectable
 
     private void TriggerWave(int currentDay)
     {
-        int leaderCount = 1 + (currentDay / 30);
-        int minionsPerLeader = Mathf.Min(10, 2 + (currentDay / 10));
+        // Calculate groups based on days
+        int spawnGroups = 1 + (currentDay / 10);
 
-        Debug.Log($"Wave timeeeeeee, Spawning {leaderCount} Leaders with {minionsPerLeader} minions each");
+        // Check if long enough for leader
+        int leadersToSpawn = (currentDay >= leaderSpawnStartDay) ? 1 + (currentDay / 30) : 0;
+
+        // More minionsss
+        int minionsPerGroup = Mathf.Min(10, 2 + (currentDay / 5));
+
+        Debug.Log($"Wave triggered Day {currentDay}: Spawning {spawnGroups} groups ({leadersToSpawn} leaders total, {minionsPerGroup} minions per group).");
 
         Vector3? revengePos = GetRevengeTarget();
 
-        for (int i = 0; i < leaderCount; i++)
+        // Spawn loops
+        for (int i = 0; i < spawnGroups; i++)
         {
             Vector3 spawnPos = FindSafeSpawnPosition();
-            GameObject leaderObj = Instantiate(leaderPrefab, spawnPos, Quaternion.identity);
 
-            leaderObj.GetComponent<LeaderRobot>().SetupMemory(this, revengePos);
+            // Spawn leader if available
+            if (leadersToSpawn > 0)
+            {
+                GameObject leaderObj = Instantiate(leaderPrefab, spawnPos, Quaternion.identity);
+                leaderObj.GetComponent<LeaderRobot>().SetupMemory(this, revengePos);
+                leadersToSpawn--;
+            }
 
-            for (int m = 0; m < minionsPerLeader; m++)
+            // Spawn minions
+            for (int m = 0; m < minionsPerGroup; m++)
             {
                 Vector2 randomCircle = Random.insideUnitCircle * 5f;
                 Vector3 minionPos = spawnPos + new Vector3(randomCircle.x, 0, randomCircle.y);

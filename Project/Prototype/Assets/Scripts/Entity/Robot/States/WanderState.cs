@@ -8,7 +8,7 @@ public class WanderState : IRobotState
     public void EnterState(BaseRobotAI robot)
     {
         // Wander at halve speed
-        robot.Mover.SetSpeed(robot.Stats.MoveSpeed * 0.5f);
+        robot.Mover.SetSpeed(robot.Stats.MoveSpeed * 0.25f);
 
         totalWanderTime = Random.Range(8f, 15f);
         SetNewWanderDestination(robot);

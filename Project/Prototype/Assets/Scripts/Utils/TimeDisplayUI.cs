@@ -21,6 +21,6 @@ public class TimeDisplayUI : MonoBehaviour, IInjectable
 
         int currentHour = Mathf.FloorToInt(currentHourFloat);
 
-        timeText.text = $"{currentHour} Hour";
+        timeText.text = $"{currentHour} Hour, Day {timeManager.currentDay}";
     }
 }
