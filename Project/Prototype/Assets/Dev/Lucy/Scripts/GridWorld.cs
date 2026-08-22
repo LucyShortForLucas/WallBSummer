@@ -3,6 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 /// IMPORTANT: the 2d tile arrays this returns are indexed as [y,x]
 public class GridWorld: IDisposable
@@ -23,6 +24,26 @@ public class GridWorld: IDisposable
     private const uint NULLHANDLE = uint.MaxValue;
     public const int CHUNK_SIZE = 16;
     public const int CHUNK_DATA_SIZE = CHUNK_SIZE * CHUNK_SIZE;
+    public const float UNITS_PER_TILE = 1f;
+
+    // ---- Gridworld Helpers
+    public static Vector2Int PositionToTile(Vector2 pos)
+    {
+        pos /= new Vector2(UNITS_PER_TILE, UNITS_PER_TILE);
+        Vector2Int posInt = new(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y));
+        return posInt;
+    }
+    public static Vector2Int TileToChunk(Vector2Int tileCoord)
+    {
+        static int floorIntToChunk(int value) => Math.DivRem(value, GridWorld.CHUNK_SIZE, out var remainder) is var quotient
+        ? (remainder < 0 ? (quotient - 1) * GridWorld.CHUNK_SIZE : quotient * GridWorld.CHUNK_SIZE)
+        : 0;
+
+        tileCoord.x = floorIntToChunk(tileCoord.x) / GridWorld.CHUNK_SIZE;
+        tileCoord.y = floorIntToChunk(tileCoord.y) / GridWorld.CHUNK_SIZE;
+        return tileCoord;
+    }
+    public static Vector2Int PositionToChunk(Vector2 pos) => TileToChunk(PositionToTile(pos));
 
     // ------ Data --------------------
     private uint _handle = NULLHANDLE;
