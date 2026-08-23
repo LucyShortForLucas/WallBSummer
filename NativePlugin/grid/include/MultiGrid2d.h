@@ -62,8 +62,8 @@ public:
 	// ---- Mass sync method
 	void sync_halo() {
 		std::apply([](auto&... grids) {
-			(grids.sync_halo(), ...);
-		});
+			(grids.sync_dirty_halos(), ...);
+		}, m_Grids);
 	}
 
 	// ---- algo methods

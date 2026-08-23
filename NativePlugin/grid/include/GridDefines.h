@@ -24,6 +24,8 @@ constexpr int HALO_SW_INDEX{ CHUNK_DATA_WIDTH * (CHUNK_DATA_WIDTH - 1) };
 constexpr int HALO_NE_INDEX{ CHUNK_DATA_WIDTH - 1 };
 constexpr int HALO_SE_INDEX{ CHUNK_DATA_SIZE - 1 };
 
+constexpr float SEC_PER_UPDATE{ 0.1f };
+
 // ---- Enums
 /// A simple flag-enum (using a struct merely for scope) to denote the 8 neighbours of a 2d chunk.
 struct EdgeTileDir {
@@ -58,6 +60,5 @@ concept ValidGridData = requires { std::is_trivially_copy_assignable_v<T>; };
 template <typename T>
 concept ExecutionPolicy = requires {std::is_execution_policy_v<T>; };
 
-// ---- Stencils
 
 } // !grid

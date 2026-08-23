@@ -3,6 +3,8 @@
 #include "Chunk2d.h"
 #include "GridDefines.h"
 
+#include <array>
+
 namespace grid {
 
 // ---- Helper constants
@@ -39,25 +41,24 @@ void column_reduce_3x3(
 	}
 }
 
-template <typename R, typename T, typename OpCol, typename OpEdge> requires
-	std::invocable<OpCol, const R&, const R&, const R&> &&
-	std::invocable<OpEdge, const T&, const T&> &&
-	std::same_as<std::invoke_result_t<OpCol, const R&, const R&, const R&>, T> &&
-	std::same_as<std::invoke_result_t<OpEdge, const T&, const T&>, R>
+template <typename U, typename R, typename T, typename OpCol, typename OpEdge> requires
+std::invocable<OpCol, const R&, const R&, const R&>&&
+std::invocable<OpEdge, const U&, const U&>&&
+std::same_as<std::invoke_result_t<OpCol, const R&, const R&, const R&>, T>&&
+std::same_as<std::invoke_result_t<OpEdge, const U&, const U&>, R>
 void column_reduce_3x3_exclusive(
+	const std::array<U, CHUNK_DATA_SIZE>& in,
 	const std::array<R, CHUNK_DATA_SIZE>& intermediateIn,
 	std::array<T, CHUNK_DATA_SIZE>& out,
 	OpCol opCol, OpEdge opEdge
-	) {
+) {
 	for (int y{ 1 }; y <= CHUNK_WIDTH; ++y) {
-
 		const R* r0{ intermediateIn.data() + CHUNK_DATA_WIDTH * (y - 1) };
 		const R* r2{ intermediateIn.data() + CHUNK_DATA_WIDTH * (y + 1) };
 
 		for (int x{ 1 }; x <= CHUNK_WIDTH; ++x) {
-			
 			int index{ x + y * CHUNK_DATA_WIDTH };
-			auto r1v = opEdge(intermediateIn[index - 1], intermediateIn[index + 1]);
+			auto r1v = opEdge(in[index - 1], in[index + 1]);  // raw side neighbours now
 			out[index] = opCol(r0[x], r1v, r2[x]);
 		}
 	}

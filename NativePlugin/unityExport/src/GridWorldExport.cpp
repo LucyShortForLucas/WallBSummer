@@ -6,6 +6,7 @@
 
 #include "GameGrids.h"
 #include "GridWorldInfo.h"
+#include "Updates.h"
 
 using WorldType = grid::GridWorld2d<FertilityGrid, WaterGrid>;
 
@@ -21,7 +22,94 @@ std::vector<FnPtr<void, uint32_t>> g_worldTypeInitFuncs{
 		auto& pGrid {g_GridWorlds[worldId]};
 		pGrid->init_grids_default();
 		auto pFertilityGrid{ pGrid->get_multigrid<FertilityGrid>()->get_grid<tile::Fertility>() };
-		pFertilityGrid->fill_tile_rect({ {0,0}, 10, 10}, { gridWorldInfo.maxFertility });
+		const int f = gridWorldInfo.maxFertility;
+
+
+		// left block (still life, anchors the gun)
+		pFertilityGrid->fill_tile_rect({ {0, 4}, 2, 2 }, { f });
+
+		// left Q-shape
+		pFertilityGrid->fill_tile_rect({ {10, 4}, 1, 3 }, { f }); // (10,4)(10,5)(10,6)
+		pFertilityGrid->fill_tile_rect({ {11, 3}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {11, 7}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {12, 2}, 2, 1 }, { f }); // (12,2)(13,2)
+		pFertilityGrid->fill_tile_rect({ {12, 8}, 2, 1 }, { f }); // (12,8)(13,8)
+		pFertilityGrid->fill_tile_rect({ {14, 5}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {15, 3}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {15, 7}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {16, 4}, 1, 3 }, { f }); // (16,4)(16,5)(16,6)
+		pFertilityGrid->fill_tile_rect({ {17, 5}, 1, 1 }, { f });
+
+		// middle block
+		pFertilityGrid->fill_tile_rect({ {20, 2}, 2, 3 }, { f }); // (20,2)(21,2)(20,3)(21,3)(20,4)(21,4)
+		pFertilityGrid->fill_tile_rect({ {22, 1}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {22, 5}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {24, 0}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {24, 5}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {24, 6}, 1, 1 }, { f });
+
+		// right block (still life)
+		pFertilityGrid->fill_tile_rect({ {34, 2}, 2, 2 }, { f });
+
+		// left block
+		pFertilityGrid->fill_tile_rect({ {1, 65}, 2, 2 }, { f });
+
+		// left ship
+		pFertilityGrid->fill_tile_rect({ {11, 65}, 1, 3 }, { f });
+		pFertilityGrid->fill_tile_rect({ {12, 64}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {12, 68}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {13, 63}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {13, 69}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {14, 63}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {14, 69}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {15, 66}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {16, 64}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {16, 68}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {17, 65}, 1, 3 }, { f });
+		pFertilityGrid->fill_tile_rect({ {18, 66}, 1, 1 }, { f });
+
+		// right ship
+		pFertilityGrid->fill_tile_rect({ {21, 63}, 1, 3 }, { f });
+		pFertilityGrid->fill_tile_rect({ {22, 63}, 1, 3 }, { f });
+		pFertilityGrid->fill_tile_rect({ {23, 62}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {23, 66}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {25, 61}, 1, 2 }, { f });
+		pFertilityGrid->fill_tile_rect({ {25, 66}, 1, 2 }, { f });
+
+		// right ship
+		pFertilityGrid->fill_tile_rect({ {31, 63}, 1, 3 }, { f });
+		pFertilityGrid->fill_tile_rect({ {32, 63}, 1, 3 }, { f });
+		pFertilityGrid->fill_tile_rect({ {33, 62}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {33, 66}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {35, 61}, 1, 2 }, { f });
+		pFertilityGrid->fill_tile_rect({ {35, 66}, 1, 2 }, { f });
+
+		// right ship
+		pFertilityGrid->fill_tile_rect({ {51, -63}, 1, 3 }, { f });
+		pFertilityGrid->fill_tile_rect({ {52, -63}, 1, 3 }, { f });
+		pFertilityGrid->fill_tile_rect({ {53, -62}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {53, -66}, 1, 1 }, { f });
+		pFertilityGrid->fill_tile_rect({ {55, -61}, 1, 2 }, { f });
+		pFertilityGrid->fill_tile_rect({ {55, -66}, 1, 2 }, { f });
+
+		// right block
+		pFertilityGrid->fill_tile_rect({ {35, 33}, 2, 2 }, { f });
+
+		// right block
+		pFertilityGrid->fill_tile_rect({ {21, 65}, 3, 2 }, { f });
+
+		// right block
+		pFertilityGrid->fill_tile_rect({ {32, 44}, 3, 1 }, { f });
+
+		// right block
+		pFertilityGrid->fill_tile_rect({ {17, 8}, 2, 2 }, { f });
+
+
+		pFertilityGrid->sync_dirty_halos();
+
+		// right block (still life)
+		pFertilityGrid->fill_tile_rect({ {34, 62}, 2, 2 }, { f });
+		pGrid->set_update<FertilityGrid>(conway_fertility);
 	}
 };
 

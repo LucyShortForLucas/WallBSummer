@@ -53,6 +53,7 @@ void Grid2d<T>::fill_tile_rect(GridTileRect rect, T value) {
             chunkRect.second.coord.value.x+1, chunkRect.second.coord.value.y+1,
             chunkRect.second.width, chunkRect.second.height,
             value);
+        mark_chunk_dirty(chunk->coord, 255);
     }
 }
 
@@ -159,8 +160,8 @@ struct Sync {
         auto pSrcBuffer{ target.current_data_buffer().data()};       // We fetch pointers to the start of our buffers
         auto pDstBuffer{ neighbour.current_data_buffer().data()};   // so we can efficiently bulk copy from them 
                                                                    //  later with std::copy_n
-        auto src{ pSrcBuffer + CHUNK_NW_INDEX + 1};
-        auto dst{ pDstBuffer + HALO_SW_INDEX + 1};
+        auto src{ pSrcBuffer + CHUNK_SW_INDEX };
+        auto dst{ pDstBuffer + HALO_NW_INDEX + 1};
 
         std::copy_n(src, CHUNK_WIDTH, dst);
     }
@@ -179,8 +180,8 @@ struct Sync {
         auto pSrcBuffer{ target.current_data_buffer().data() };        // We fetch pointers to the start of our buffers
         auto pDstBuffer{ neighbour.current_data_buffer().data() };    // so we can efficiently bulk copy from them 
                                                                      //  later with std::copy_n
-        auto src{ pSrcBuffer + CHUNK_SW_INDEX +1 };
-        auto dst{ pDstBuffer + HALO_NW_INDEX + 1 };
+        auto src{ pSrcBuffer + CHUNK_NW_INDEX };
+        auto dst{ pDstBuffer + HALO_SW_INDEX + 1 };
 
         std::copy_n(src, CHUNK_WIDTH, dst);
     }
@@ -196,19 +197,16 @@ struct Sync {
     }
 
     static void sync_NE(Chunk2d<T>& target, Chunk2d<T>& neighbour) {
-        neighbour.current_data_buffer()[HALO_NE_INDEX] = target.current_data_buffer()[CHUNK_SW_INDEX];
-    }
-
-    static void sync_SE(Chunk2d<T>& target, Chunk2d<T>& neighbour) {
-        neighbour.current_data_buffer()[HALO_SE_INDEX] = target.current_data_buffer()[CHUNK_NW_INDEX];
-    }
-
-    static void sync_SW(Chunk2d<T>& target, Chunk2d<T>& neighbour) {
         neighbour.current_data_buffer()[HALO_SW_INDEX] = target.current_data_buffer()[CHUNK_NE_INDEX];
     }
-
-    static void sync_NW(Chunk2d<T>& target, Chunk2d<T>& neighbour) {
+    static void sync_SE(Chunk2d<T>& target, Chunk2d<T>& neighbour) {
         neighbour.current_data_buffer()[HALO_NW_INDEX] = target.current_data_buffer()[CHUNK_SE_INDEX];
+    }
+    static void sync_SW(Chunk2d<T>& target, Chunk2d<T>& neighbour) {
+        neighbour.current_data_buffer()[HALO_NE_INDEX] = target.current_data_buffer()[CHUNK_SW_INDEX];
+    }
+    static void sync_NW(Chunk2d<T>& target, Chunk2d<T>& neighbour) {
+        neighbour.current_data_buffer()[HALO_SE_INDEX] = target.current_data_buffer()[CHUNK_NW_INDEX];
     }
 
 };

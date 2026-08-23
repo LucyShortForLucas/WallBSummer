@@ -14,7 +14,7 @@ public:
 	// ---- typedefs
 	
 	template <IsMultiGrid2d T>
-	using UpdateFunctionPtr = void(*)(T*, float);
+	using UpdateFunctionPtr = void(*)(T*, int);
 	
 	// ---- Ctor and grid lifetime methods
 	explicit GridWorld2d(AbstractChunkAlgoRunner* pRunner) : m_pAlgoRunner(pRunner) {
@@ -45,16 +45,26 @@ public:
 	// ---- Update methods
 
 	void update(float deltaTime) {
-		utils::for_each_pair(m_Grids, m_UpdateAlgos, [deltaTime](auto& pGrid, auto& updateFunc) {
+		m_ElapsedUpdateTime += deltaTime;
+		if (m_ElapsedUpdateTime < SEC_PER_UPDATE)
+			return;
+		m_ElapsedUpdateTime -= SEC_PER_UPDATE;
+		++m_Frame;
+
+		utils::for_each_pair(m_Grids, m_UpdateAlgos, [this](auto& pGrid, auto& updateFunc) {
 			if (updateFunc == nullptr || pGrid == nullptr) 
 				return;
-			updateFunc(pGrid.get(), deltaTime);
+			updateFunc(pGrid.get(), m_Frame);
 		});
+
+		std::apply([](auto&... grids) {
+			(grids->sync_halo(), ...);
+			}, m_Grids);
 	}
 
 	template <typename T>
-	void set_update(UpdateFunctionPtr<T>&& func) {
-		std::get<UpdateFunctionPtr<T>>(m_UpdateAlgos) = std::forward(func);
+	void set_update(UpdateFunctionPtr<T> func) {
+		std::get<UpdateFunctionPtr<T>>(m_UpdateAlgos) = func;
 	}
 
 		// ---- Mass grid control functions
@@ -95,9 +105,11 @@ public:
 	}
 
 private:
+	AbstractChunkAlgoRunner* m_pAlgoRunner;
 	std::tuple<std::unique_ptr<GridArgs>...> m_Grids{};
 	std::tuple<UpdateFunctionPtr<GridArgs>...> m_UpdateAlgos{};
-	AbstractChunkAlgoRunner* m_pAlgoRunner;
+	float m_ElapsedUpdateTime{};
+	int m_Frame{};
 };
 
 } // !grid
