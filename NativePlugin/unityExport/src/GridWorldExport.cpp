@@ -5,6 +5,7 @@
 #include <GridWorld2d.h>
 
 #include "GameGrids.h"
+#include "GridWorldInfo.h"
 
 using WorldType = grid::GridWorld2d<FertilityGrid, WaterGrid>;
 
@@ -20,7 +21,7 @@ std::vector<FnPtr<void, uint32_t>> g_worldTypeInitFuncs{
 		auto& pGrid {g_GridWorlds[worldId]};
 		pGrid->init_grids_default();
 		auto pFertilityGrid{ pGrid->get_multigrid<FertilityGrid>()->get_grid<tile::Fertility>() };
-		pFertilityGrid->set_tile({0,0}, {1000});
+		pFertilityGrid->fill_tile_rect({ {0,0}, 10, 10}, { gridWorldInfo.maxFertility });
 	}
 };
 
@@ -107,4 +108,10 @@ PLUGIN_API void fill_tile_data(uint32_t worldId, uint32_t tileDataType,
 	int32_t width, int32_t height,
 	void* pIn) {
 	g_SetTileFuncs.at(tileDataType)(worldId, x, y, width, height, pIn);
+}
+
+// ---- Gridworld info
+
+PLUGIN_API GridWorldInfo get_gridworld_info() {
+	return gridWorldInfo;
 }

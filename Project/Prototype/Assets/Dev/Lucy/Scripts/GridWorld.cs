@@ -25,6 +25,7 @@ public class GridWorld: IDisposable
     public const int CHUNK_SIZE = 16;
     public const int CHUNK_DATA_SIZE = CHUNK_SIZE * CHUNK_SIZE;
     public const float UNITS_PER_TILE = 1f;
+    public static readonly GridWorldInfo INFO = NativeMethods.get_gridworld_info();
 
     // ---- Gridworld Helpers
     public static Vector2Int PositionToTile(Vector2 pos)
@@ -42,6 +43,11 @@ public class GridWorld: IDisposable
         tileCoord.x = floorIntToChunk(tileCoord.x) / GridWorld.CHUNK_SIZE;
         tileCoord.y = floorIntToChunk(tileCoord.y) / GridWorld.CHUNK_SIZE;
         return tileCoord;
+    }
+
+    public static Vector2Int ChunkToTile(Vector2Int chunkCoord)
+    {
+        return chunkCoord * CHUNK_SIZE;
     }
     public static Vector2Int PositionToChunk(Vector2 pos) => TileToChunk(PositionToTile(pos));
 
@@ -108,7 +114,7 @@ public class GridWorld: IDisposable
         return result;
     }
     public int[,] GetFertility(RectInt rect) => GetTileData<int>(rect, NativeMethods.TileDataType.Fertility);
-    public int[,] GetFertilityChunk(Vector2Int coord) => GetFertility(new RectInt(coord.x, coord.y, CHUNK_SIZE, CHUNK_SIZE));
+    public int[,] GetFertilityChunk(Vector2Int coord) => GetFertility(new RectInt(coord.x * CHUNK_SIZE, coord.y * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE));
     public int[,] GetWaterContent(RectInt rect) => GetTileData<int>(rect, NativeMethods.TileDataType.WaterContent);
     public int[,] GetWaterContentChunk(Vector2Int coord) => GetWaterContent(new RectInt(coord.x, coord.y, CHUNK_SIZE, CHUNK_SIZE));
     public WaterTileType[,] GetWaterType(RectInt rect) => GetTileData<WaterTileType>(rect, NativeMethods.TileDataType.WaterType);
@@ -125,6 +131,10 @@ public class GridWorld: IDisposable
     public void FillFertility(RectInt rect, int value) => FillTileData(rect, NativeMethods.TileDataType.Fertility, value);
     public void FillWaterContent(RectInt rect, int value) => FillTileData(rect, NativeMethods.TileDataType.WaterContent, value);
     public void FillWaterType(RectInt rect, WaterTileType value) => FillTileData(rect, NativeMethods.TileDataType.WaterType, value);
+
+    // ---- Build system stuff
+    private RectInt _buildAttemptRect = new();
+    public RectInt BuildAttemptRect { get => _buildAttemptRect; set => _buildAttemptRect = value; }
 
     // ------ Private P/Invoke Native Plugin Interop ------
     private static class NativeMethods
@@ -182,6 +192,10 @@ public class GridWorld: IDisposable
             int x, int y,
             int width, int height,
             IntPtr pIn);
+
+        [DllImport(DllName)]
+        public static extern GridWorldInfo get_gridworld_info();
+
     }
 }
 

@@ -1,6 +1,9 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.LightTransport;
 
 public class GridWorldSolidColorTileOverlay : MonoBehaviour
 {
@@ -11,6 +14,7 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
     [SerializeReference] private GameObject? _quadPrefab;
     [Tooltip("The gameobject given here will determine the center of the rect of chunks that is actually updated")]
     [SerializeReference] private GameObject? _focusObject;
+    [SerializeReference] private Material? _material;
 
     // ---- Config
     [SerializeField] private GridWorldSolidColorTileOverlayStrategies.StrategyName _strategyName = GridWorldSolidColorTileOverlayStrategies.StrategyName.Fertility;
@@ -26,7 +30,7 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
 
     public void InitChunkMesh(Vector2Int chunkCoord)
     {
-        if (_childQuadMeshes.ContainsKey(chunkCoord) || _quadPrefab == null)
+        if (_childQuadMeshes.ContainsKey(chunkCoord) || _quadPrefab == null || _textures == null)
             return;
 
         var go = Instantiate<GameObject>(_quadPrefab,
@@ -40,6 +44,14 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
             return;
         }
 
+        _textures.MakeChunkTexture(chunkCoord);
+
+        mr.sharedMaterial = _material;
+        var mpb = new MaterialPropertyBlock();
+        mr.GetPropertyBlock(mpb);
+        mpb.SetFloat("_Layer", _textures.GetTextureId(chunkCoord));
+        mr.SetPropertyBlock(mpb);
+
         _childQuadMeshes[chunkCoord] = mr;
     }
 
@@ -50,7 +62,7 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
             Vector3 focusPoint = _focusObject != null ? _focusObject.transform.position : Vector3.zero;
             Vector2 focusPoint2d = new(focusPoint.x, focusPoint.z);
             return new(
-                GridWorld.PositionToChunk(focusPoint2d) - _updateChunkRectExtents,
+                GridWorld.PositionToChunk(focusPoint2d) - _updateChunkRectExtents + Vector2Int.one,
                 _updateChunkRectExtents * 2 - Vector2Int.one
                 );
         } }
@@ -60,13 +72,26 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
     private void Awake()
     {
         _textures = new();
+        if (_material != null)
+        {
+            _material.SetTexture("_MainTex", _textures.TextureArray);
+        }
     }
     private void Start()
     {
-        InitChunkMesh(new Vector2Int(0, 0));
-        InitChunkMesh(new Vector2Int(1, 1));
-        InitChunkMesh(new Vector2Int(0, 1));
-        InitChunkMesh(new Vector2Int(1, 0));
+        RectInt rect = ChunkUpdateRect;
+        Vector2Int start = rect.position;
+        Vector2Int end = start + rect.size;
+
+        for (int y = start.y; y < end.y; ++y )
+        {
+            for (int x = start.x; x < end.x; ++x)
+            {
+                var coord = new Vector2Int(x, y);
+                InitChunkMesh(coord);
+                
+            }
+        }
     }
 
     private void LateUpdate()
@@ -74,24 +99,24 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
         _updateTimeElapsed += Time.deltaTime;
         if (_updateTimeElapsed < _minUpdateTime || _gridWorldHandler == null || _textures == null)
             return;
-
         _updateTimeElapsed = 0f;
 
-        var rect = ChunkUpdateRect;
+        RectInt rect = ChunkUpdateRect;
         Vector2Int start = rect.position;
         Vector2Int end = start + rect.size;
+        var strategy = GridWorldSolidColorTileOverlayStrategies.strategies[_strategyName];
+        var world = _gridWorldHandler.World;
+
         for (int y = start.y; y < end.y; ++y)
         {
             for (int x = start.x; x < end.x; ++x)
             {
                 Vector2Int chunkCoord = new(x, y);
-                GridWorldSolidColorTileOverlayStrategies.strategies[_strategyName].UpdateColors(
-                    _gridWorldHandler.World,
-                    chunkCoord,
-                    out var colors
-                    );
+                strategy.UpdateColors(world, chunkCoord, out var colors);
                 _textures.SetChunkColor(chunkCoord, colors);
             }
         }
+
+        _textures.UpdateDirtyTextures();
     }
 }

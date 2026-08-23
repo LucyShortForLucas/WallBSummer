@@ -20,7 +20,10 @@ public class GridWorldSolidColorTileTextures
     public void SetChunkColor(Vector2Int chunkCoord, Color32[] colors)
     {
         if (!_chunks.TryGetValue(chunkCoord, out Chunk chunk))
+        {
+            chunk = new();
             _chunks.Add(chunkCoord, chunk);
+        }
 
         chunk.colors = colors;
 
@@ -29,7 +32,10 @@ public class GridWorldSolidColorTileTextures
     public void MakeChunkTexture(Vector2Int chunkCoord)
     {
         if (!_chunks.TryGetValue(chunkCoord, out Chunk chunk))
+        {
+            chunk = new();
             _chunks.Add(chunkCoord, chunk);
+        }
 
         if (chunk.texId < 0)
             chunk.texId = NextTexId();
@@ -41,7 +47,7 @@ public class GridWorldSolidColorTileTextures
     {
         _chunks.TryGetValue(chunkCoord, out Chunk chunk);
 
-        if (chunk.texId < 0)
+        if (chunk == null || chunk.texId < 0)
             return;
 
         _freeTexIds.Push(chunk.texId);
@@ -67,14 +73,18 @@ public class GridWorldSolidColorTileTextures
     public int GetTextureId(Vector2Int chunkCoord)
     {
         _chunks.TryGetValue(chunkCoord, out Chunk chunk);
-        return chunk.texId;
+        return chunk != null ? chunk.texId : -1;
     }
 
     // ------ Data --------------------
 
     // ---- Chunk data
     private Dictionary<Vector2Int, Chunk> _chunks = new();
-    private Texture2DArray _textures = new Texture2DArray(GridWorld.CHUNK_SIZE, GridWorld.CHUNK_SIZE, 1024, TextureFormat.RGBA32, false);
+    private Texture2DArray _textures = new Texture2DArray(GridWorld.CHUNK_SIZE, GridWorld.CHUNK_SIZE, 1024, TextureFormat.RGBA32, false, false) 
+    { 
+        filterMode = FilterMode.Point,
+        wrapMode = TextureWrapMode.Clamp
+    };
 
     // ---- Helper data
     private List<Chunk> _dirtyChunks = new();
