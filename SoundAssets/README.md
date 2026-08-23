@@ -1,5 +1,5 @@
 # Intro 
-This document will cover everything related to sound & and it's design in our game. 
+This document will cover everything related to sound & it's design in our game. 
 The game's genres are open world, city builder and tower defense. The goal of the player is to revitalize the world to bring back all the greenery and plants.
 
 # Sound Tech Stack
