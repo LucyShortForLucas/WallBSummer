@@ -32,6 +32,12 @@ public class PlayerAttack : MonoBehaviour
         {
             Collider targetEnemy = hitEnemies[0];
 
+            BaseRobotAI robot = targetEnemy.GetComponentInParent<BaseRobotAI>();
+            if (robot != null)
+            {
+                robot.AlertUnderAttack(this.transform);
+            }
+
             IDamageable target = targetEnemy.GetComponentInParent<IDamageable>();
             if (target != null)
             {

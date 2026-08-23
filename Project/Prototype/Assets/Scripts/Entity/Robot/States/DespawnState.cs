@@ -16,10 +16,15 @@ public class DespawnState : IRobotState
             robot.AssignedLeader = null;
         }
 
-        // Pick a point far away behind them
-        Vector3 retreatDirection = -robot.transform.forward;
-        Vector3 despawnPoint = robot.transform.position + (retreatDirection * 30f);
+        // Walking away (as if not found anything)
+        Vector3 threatPos = robot.GetTargetEdge();
+        Vector3 fleeDirection = (robot.transform.position - threatPos).normalized;
+        fleeDirection.y = 0;
 
+        // Just move backwards
+        if (fleeDirection.sqrMagnitude < 0.1f) fleeDirection = -robot.transform.forward;
+
+        Vector3 despawnPoint = robot.transform.position + (fleeDirection * 30f);
         robot.Mover.MoveTo(despawnPoint);
     }
 

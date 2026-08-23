@@ -45,6 +45,8 @@ public abstract class BaseRobotAI : MonoBehaviour
     public bool HoldAttack { get => holdAttack; set => holdAttack = value; }
     public float LastAttackTime { get => lastAttackTime; set => lastAttackTime = value; }
 
+    public EnemyHandler WaveHandler { get; set; }
+
     protected virtual void Awake()
     {
         Mover = GetComponent<IRobotMover>();
@@ -115,6 +117,9 @@ public abstract class BaseRobotAI : MonoBehaviour
     {
         if (stats == null) return null;
 
+        // Ignore if isn't aggressive
+        if (WaveHandler != null && WaveHandler.GlobalAggression < 5) return null;
+
         Collider[] enemies = Physics.OverlapSphere(transform.position, stats.DetectionRadius, enemyLayer);
         if (enemies.Length == 0) return null;
 
@@ -159,6 +164,8 @@ public abstract class BaseRobotAI : MonoBehaviour
     {
         if (attacker != null)
         {
+            // Increase aggression
+            if (WaveHandler != null) WaveHandler.IncreaseAggression(2);
             ReportTarget(attacker);
         }
     }

@@ -8,6 +8,9 @@ public class AttackState : IRobotState
     public void EnterState(BaseRobotAI robot)
     {
         pathUpdateTimer = 0f;
+
+        // Use full speed
+        robot.Mover.SetSpeed(robot.Stats.MoveSpeed);
     }
 
     public void UpdateState(BaseRobotAI robot)

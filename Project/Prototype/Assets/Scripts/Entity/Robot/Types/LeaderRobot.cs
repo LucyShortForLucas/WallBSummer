@@ -25,6 +25,9 @@ public class LeaderRobot : BaseRobotAI
     [SerializeField] private TargetAssigner assigner;
     [SerializeField] private FormationDirector director;
 
+    private bool isRegrouping = false;
+    private Vector3? revengeTarget;
+
     // Getters and setters
     public List<BaseRobotAI> Squad => squad;
 
@@ -43,14 +46,46 @@ public class LeaderRobot : BaseRobotAI
         ChangeState(Idle);
     }
 
+    public void SetupMemory(EnemyHandler handler, Vector3? revengePos)
+    {
+        WaveHandler = handler;
+        revengeTarget = revengePos;
+    }
+
     public override void ReportTarget(Transform target)
     {
+        bool isNewTarget = target != null && !knownThreats.Contains(target);
         base.ReportTarget(target);
+
         if (target != null) knownThreats.Add(target);
+
+        // If finds the base/player, trigger regroup
+        if (isNewTarget && CurrentState != Attack)
+        {
+            isRegrouping = true;
+            Invoke(nameof(EndRegroup), 5f); // Wait 5 seconds
+        }
+    }
+
+    private void EndRegroup()
+    {
+        isRegrouping = false;
     }
 
     protected override void Update()
     {
+        if (Health.IsDead)
+        {
+            if (WaveHandler != null) WaveHandler.RecordLeaderDeath(transform.position);
+            return;
+        }
+
+        // If no targets, check if revenge waypoint to wander towards
+        if (CurrentTarget == null && revengeTarget.HasValue && CurrentState == Wander)
+        {
+            Mover.MoveTo(revengeTarget.Value);
+        }
+
         base.Update();
         if (CurrentState == Attack && knownThreats.Count > 0)
         {
@@ -106,12 +141,18 @@ public class LeaderRobot : BaseRobotAI
         List<BaseRobotAI> loyalBots = new List<BaseRobotAI>();
 
         // If Offensive and close to danger, drop formation and unleash the brawlers
-        bool isBrawling = currentStance == TacticalStance.Offensive && Vector3.Distance(transform.position, dangerCenter) < (activeFormation.SafeCommandDistance * 1.5f);
+        bool isBrawling = !isRegrouping && currentStance == TacticalStance.Offensive && Vector3.Distance(transform.position, dangerCenter) < (activeFormation.SafeCommandDistance * 1.5f);
 
         foreach (BaseRobotAI bot in attackers)
         {
             if (bot.CurrentState != bot.Attack) bot.ChangeState(bot.Attack);
 
+            if (isRegrouping)
+            {
+                // Force them back to leader
+                bot.HoldAttack = true;
+                loyalBots.Add(bot);
+            }
             if (isBrawling)
             {
                 // Swarm target freely
@@ -178,7 +219,8 @@ public class LeaderRobot : BaseRobotAI
         float targetCommandDistance = activeFormation.SafeCommandDistance;
 
         // Calculate target distance
-        if (isEscortActive) targetCommandDistance = activeFormation.SafeCommandDistance * 2.5f;
+        if (isRegrouping) targetCommandDistance = activeFormation.SafeCommandDistance * 3.5f;
+        else if (isEscortActive) targetCommandDistance = activeFormation.SafeCommandDistance * 2.5f;
         else if (currentStance == TacticalStance.Offensive) targetCommandDistance = Stats.AttackRange * 0.8f;
         else if (currentStance == TacticalStance.Defensive) targetCommandDistance *= strategyProfile.DefensiveDistanceMultiplier;
         else if (currentStance == TacticalStance.Neutral) targetCommandDistance *= strategyProfile.NeutralDistanceMultiplier;
@@ -191,7 +233,12 @@ public class LeaderRobot : BaseRobotAI
         if (dirToDanger.sqrMagnitude < 0.1f) dirToDanger = transform.forward;
 
         // Update waypoint and attack hold flag
-        if (!isEscortActive && currentStance == TacticalStance.Offensive)
+        if (isRegrouping)
+        {
+            TacticalWaypoint = dangerCenter + (-dirToDanger.normalized * smoothedCommandDistance);
+            HoldAttack = true;
+        }
+        else if (!isEscortActive && currentStance == TacticalStance.Offensive)
         {
             TacticalWaypoint = dangerCenter - (dirToDanger.normalized * smoothedCommandDistance);
             HoldAttack = false;

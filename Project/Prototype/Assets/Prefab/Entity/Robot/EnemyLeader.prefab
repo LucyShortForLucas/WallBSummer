@@ -234,7 +234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74efe8e81d3d7ca449302627ff78df90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LeaderRobot
-  stats: {fileID: 11400000, guid: ebf383f9e5cd3d5449c95ecc395ce0ad, type: 2}
+  stats: {fileID: 11400000, guid: 57ee2b3682438494e99aef06d897e66c, type: 2}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -243,9 +243,15 @@ MonoBehaviour:
   tacticalWaypoint: {x: 0, y: 0, z: 0}
   holdAttack: 0
   lastAttackTime: 0
+  maxIdleTime: 120
+  currentIdleTime: 0
   showDebugVisuals: 1
   strategyProfile: {fileID: 11400000, guid: 1ac4437eefdb00248bccce085fc50772, type: 2}
   squad: []
   currentStance: 1
   currentWinrate: 1
   lowHealthRetreatThreshold: 0.3
+  activeFormation: {fileID: 0}
+  smoothedCommandDistance: -1
+  assigner: {fileID: 0}
+  director: {fileID: 0}
