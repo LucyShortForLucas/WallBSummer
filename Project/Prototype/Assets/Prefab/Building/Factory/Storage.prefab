@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 2756835712873484562}
   - component: {fileID: 1334836899882424040}
   - component: {fileID: 2173169797790506234}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Storage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,12 +262,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StorageConnector
   isPlayerOwned: 1
   initialSlots:
-  - resourceId: 0
+  - resourceId: 1
     startingAmount: 50
     maxCapacity: 100
     allowStoring: 1
     allowTaking: 1
-  - resourceId: 1
+  - resourceId: 2
+    startingAmount: 0
+    maxCapacity: 100
+    allowStoring: 1
+    allowTaking: 1
+  - resourceId: 3
     startingAmount: 0
     maxCapacity: 100
     allowStoring: 1
@@ -305,8 +310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 852a697e34f6b0b4a873877ddc9f6bd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StorageInteractable
-  panelsToOpen: 00000000
-  closeDistance: 7
+  closeDistance: 5
 --- !u!208 &2756835712873484562
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -319,10 +323,10 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 0.5, y: 2, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 2, z: 0}
-  m_TimeToStationary: 0.5
+  m_TimeToStationary: 0
 --- !u!114 &1334836899882424040
 MonoBehaviour:
   m_ObjectHideFlags: 0

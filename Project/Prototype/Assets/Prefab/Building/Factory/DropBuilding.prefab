@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3460166997093136375}
   - component: {fileID: 7707497594879106179}
   - component: {fileID: 4356877362674444588}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DropBuilding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -158,22 +158,21 @@ MonoBehaviour:
   buildingTiers:
   - tierName: Tier 1
     inputs:
-    - resourceId: 1
+    - resourceId: 5
       amount: 10
     outputs:
-    - resourceId: 0
+    - resourceId: 1
       amount: 5
   - tierName: Tier 2
     inputs:
-    - resourceId: 1
+    - resourceId: 5
       amount: 25
     outputs:
-    - resourceId: 0
+    - resourceId: 1
       amount: 20
-  panelsToOpen: 010000000200000003000000
   inventoryStorage: {fileID: 5124713925676610085}
   outputStorage: {fileID: 3180923515246316916}
-  closeDistance: 7
+  closeDistance: 5
 --- !u!208 &3460166997093136375
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -186,10 +185,10 @@ NavMeshObstacle:
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5
+  m_TimeToStationary: 0
 --- !u!114 &7707497594879106179
 MonoBehaviour:
   m_ObjectHideFlags: 0

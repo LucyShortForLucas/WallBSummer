@@ -379,7 +379,7 @@ GameObject:
   - component: {fileID: 4705582106675382814}
   - component: {fileID: 3545355890623683188}
   - component: {fileID: 6032855587094687906}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FarmBuilding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -493,12 +493,12 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_Extents: {x: 0.5, y: 1.5, z: 0.5}
   m_MoveThreshold: 0.1
-  m_Carve: 0
+  m_Carve: 1
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5
+  m_TimeToStationary: 0
 --- !u!114 &3545355890623683188
 MonoBehaviour:
   m_ObjectHideFlags: 0
