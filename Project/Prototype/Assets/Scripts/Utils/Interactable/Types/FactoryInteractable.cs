@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class FactoryInteractable : InteractableComponent, IInjectable
 {
@@ -12,6 +13,9 @@ public class FactoryInteractable : InteractableComponent, IInjectable
 
     [Header("Interaction Settings")]
     [SerializeField] private float closeDistance = 5f;
+
+    public event Action OnOpenFactory;
+    public event Action OnCloseFactory;
 
     private bool isInteracting = false;
     private GameObject currentInteractor;
@@ -51,6 +55,7 @@ public class FactoryInteractable : InteractableComponent, IInjectable
             currentInteractor = interactor;
             isInteracting = true;
         }
+        OnOpenFactory?.Invoke();
     }
 
     private void Update()
@@ -74,6 +79,7 @@ public class FactoryInteractable : InteractableComponent, IInjectable
         if (uiManager != null)
         {
             uiManager.CloseUI();
+            OnCloseFactory?.Invoke();
         }
     }
 

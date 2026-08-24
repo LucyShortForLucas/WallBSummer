@@ -1,7 +1,10 @@
 using UnityEngine;
+using System;
 
 public class BasicTurret : BaseTurret
 {
+    public event Action OnFireBasicTurret;
+
     protected override void Fire()
     {
         if (ProjectilePrefab == null || ProjectileStats == null) return;
@@ -13,6 +16,8 @@ public class BasicTurret : BaseTurret
         {
             bullet.Initialize(FirePoint.forward, ProjectileStats, this.transform);
         }
+
+        OnFireBasicTurret?.Invoke();
 
         nextFireTime = Time.time + Stats.FireRate;
     }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class FarmPlot : InteractableComponent, IInjectable
 {
@@ -6,6 +7,8 @@ public class FarmPlot : InteractableComponent, IInjectable
     [SerializeField] private int requiredSeedId = 1;
     [SerializeField] private GameObject plantPrefab;
     [SerializeField] private Transform plantSpawnPoint;
+
+    public event Action OnPlantEvent;
 
     private GameObject currentPlant;
     private Collider plotCollider;
@@ -48,6 +51,8 @@ public class FarmPlot : InteractableComponent, IInjectable
                 Vector3 spawnPos = plantSpawnPoint != null ? plantSpawnPoint.position : transform.position;
                 currentPlant = Instantiate(plantPrefab, spawnPos, Quaternion.identity);
                 currentPlant.transform.SetParent(transform);
+
+                OnPlantEvent?.Invoke();
 
                 // Pass the Hub down to the newly spawned plant!
                 var plantScript = currentPlant.GetComponent<Plant>();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,9 @@ public class StorageInteractable : InteractableComponent, IInjectable
 {
     [Header("Interaction Settings")]
     [SerializeField] private float closeDistance = 5f;
+
+    public event Action OnOpenStorage;
+    public event Action OnCloseStorage;
 
     private StorageComponent myStorage;
 
@@ -42,6 +46,7 @@ public class StorageInteractable : InteractableComponent, IInjectable
             currentInteractor = interactor;
             isInteracting = true;
         }
+        OnOpenStorage?.Invoke();
     }
 
     private void Update()
@@ -66,6 +71,7 @@ public class StorageInteractable : InteractableComponent, IInjectable
         if (uiManager != null)
         {
             uiManager.CloseUI();
+            OnCloseStorage?.Invoke();
         }
     }
 
