@@ -34,7 +34,7 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
             return;
 
         var go = Instantiate<GameObject>(_quadPrefab,
-            new Vector3(chunkCoord.x * GridWorld.CHUNK_SIZE, 0, chunkCoord.y * GridWorld.CHUNK_SIZE),
+            new Vector3(chunkCoord.x * GridWorld.CHUNK_SIZE, transform.position.y, chunkCoord.y * GridWorld.CHUNK_SIZE),
             Quaternion.identity, transform);
 
         var mr = go.GetComponentInChildren<MeshRenderer>();

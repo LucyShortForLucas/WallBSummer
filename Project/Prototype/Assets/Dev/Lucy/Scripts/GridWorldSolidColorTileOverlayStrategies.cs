@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class GridWorldSolidColorTileOverlayStrategies
@@ -34,13 +35,19 @@ public static class GridWorldSolidColorTileOverlayStrategies
             int i = 0;
             foreach(int fertility in fertilityChunk)
             {
-                colors[i++] = GetGradientColor(Color.lawnGreen, 0.4f, 0.7f, fertility/info.maxFertility);
+                colors[i++] = GetGradientColor(Color.lawnGreen, 0.1f, 0.4f, fertility/info.maxFertility);
             }
         }
     }
 
     public class BuildStrat : IGridWorldSolidColorTileOverlayStrategy
     {
+        // ---- Build system state
+        private RectInt _buildAttemptRect = new();
+        public RectInt BuildAttemptRect { get => _buildAttemptRect; set => _buildAttemptRect = value; }
+        private bool _buildAllowed = true;
+        public bool BuildAllowed { get => _buildAllowed; set { _buildAllowed = value; } }
+
         public void UpdateColors(GridWorld world, Vector2Int chunkCoord, out Color32[] colors)
         {
             static RectInt GetOverlap(RectInt a, RectInt b)
@@ -60,20 +67,39 @@ public static class GridWorldSolidColorTileOverlayStrategies
 
             RectInt chunkBounds = new(GridWorld.ChunkToTile(chunkCoord), new Vector2Int(GridWorld.CHUNK_SIZE, GridWorld.CHUNK_SIZE));
 
-            RectInt overlap = GetOverlap(world.BuildAttemptRect, chunkBounds);
+            RectInt overlap = GetOverlap(_buildAttemptRect, chunkBounds);
+
+            Color32 buildableColor = _buildAllowed ?  Color.limeGreen : Color.red;
+            buildableColor.a = 100;
 
             overlap.x -= chunkBounds.x;
             overlap.y -= chunkBounds.y;
+
+            var obstructions = world.GetBuildObstructionTypeChunk(chunkCoord);
 
             for (int y = 0; y < GridWorld.CHUNK_SIZE; ++y)
             {
                 for (int x = 0; x < GridWorld.CHUNK_SIZE; ++x)
                 {
-                    int id = x + y * GridWorld.CHUNK_SIZE;
-                    Color32 buildableColor = Color.limeGreen;
-                    buildableColor.a = 100;
+                    var obstructionColor = new Color32(0, 0, 0, 0);
 
-                    colors[id] = overlap.Contains(new Vector2Int(x, y)) ? buildableColor : new Color32(0, 0, 0, 0);
+                    switch (obstructions[y, x])
+                    {
+                        case GridWorld.BuildObstructionType.Natural:
+                            Color32 grey = Color.black;
+                            grey.a = 50;
+                            obstructionColor =  grey;
+                            break;
+
+                        case GridWorld.BuildObstructionType.Building:
+                            Color32 yellow = Color.yellow;
+                            yellow.a = 50;
+                            obstructionColor = yellow;
+                            break;
+                    }
+
+                    int id = x + y * GridWorld.CHUNK_SIZE;
+                    colors[id] =  overlap.Contains(new Vector2Int(x, y)) ? buildableColor : obstructionColor;
                 }
             }
         }

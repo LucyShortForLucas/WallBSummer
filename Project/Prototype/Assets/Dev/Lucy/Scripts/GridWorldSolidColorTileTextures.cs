@@ -64,6 +64,7 @@ public class GridWorldSolidColorTileTextures
             chunk.dirty = false;
         }
         _textures.Apply();
+        _dirtyChunks.Clear();
     }
 
     // ---- Properties and getters

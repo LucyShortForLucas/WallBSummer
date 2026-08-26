@@ -7,8 +7,7 @@
 #include "GameGrids.h"
 #include "GridWorldInfo.h"
 #include "Updates.h"
-
-using WorldType = grid::GridWorld2d<FertilityGrid, WaterGrid>;
+#include "UnityDefines.h"
 
 std::vector<std::unique_ptr<WorldType>> g_GridWorlds{};
 
@@ -166,9 +165,10 @@ void GetTilesFromMultiGridAndTransformValue(uint32_t worldId, int32_t x, int32_t
 }
 
 std::vector<FnPtr<void, uint32_t, int32_t, int32_t, int32_t, int32_t, void*>> g_GetTileFuncs{
-	/* 0, water content*/	GetTilesFromMultiGridAndTransformValue<WaterGrid, tile::WaterContent>,
-	/* 1, water type*/		GetTilesFromMultiGridAndTransformValue<WaterGrid, tile::WaterTileType>,
-	/* 2, fertility*/		GetTilesFromMultiGridAndTransformValue<FertilityGrid, tile::Fertility>
+	/* 0, water content*/		GetTilesFromMultiGridAndTransformValue<WaterGrid, tile::WaterContent>,
+	/* 1, water type*/			GetTilesFromMultiGridAndTransformValue<WaterGrid, tile::WaterTileType>,
+	/* 2, fertility*/			GetTilesFromMultiGridAndTransformValue<FertilityGrid, tile::Fertility>,
+	/* 2, Build Obstruction*/	GetTilesFromMultiGridAndTransformValue<BuildGrid, tile::BuildObstructionType>
 };
 
 
@@ -186,9 +186,10 @@ void fill_tiles_in_multiGrid(uint32_t worldId, int32_t x, int32_t y, int32_t w, 
 }
 
 std::vector<FnPtr<void, uint32_t, int32_t, int32_t, int32_t, int32_t, void*>> g_SetTileFuncs{
-	/* 0, water content*/	fill_tiles_in_multiGrid<WaterGrid, tile::WaterContent>,
-	/* 1, water type*/		fill_tiles_in_multiGrid<WaterGrid, tile::WaterTileType>,
-	/* 2, fertility*/		fill_tiles_in_multiGrid<FertilityGrid, tile::Fertility>,
+	/* 0, water content*/		fill_tiles_in_multiGrid<WaterGrid, tile::WaterContent>,
+	/* 1, water type*/			fill_tiles_in_multiGrid<WaterGrid, tile::WaterTileType>,
+	/* 2, fertility*/			fill_tiles_in_multiGrid<FertilityGrid, tile::Fertility>,
+	/* 3, Build Obstruction*/	fill_tiles_in_multiGrid<BuildGrid, tile::BuildObstructionType>
 };
 
 PLUGIN_API void fill_tile_data(uint32_t worldId, uint32_t tileDataType,

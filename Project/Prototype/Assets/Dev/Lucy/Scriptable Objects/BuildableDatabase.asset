@@ -13,7 +13,13 @@ MonoBehaviour:
   m_Name: BuildableDatabase
   m_EditorClassIdentifier: Assembly-CSharp::BuildableDatabase
   _buildables:
-  - _name: Test Building
-    _building: {fileID: 3636144900929415445, guid: eae933f6cc5951648bdb4b6a8eadc144, type: 3}
-    _tileFootPrint: {x: 2, y: 2}
-    _placementOffset: {x: 0.25, y: 0.75, z: 0.25}
+  - name: Turrer
+    building: {fileID: 3636144900929415445, guid: eae933f6cc5951648bdb4b6a8eadc144, type: 3}
+    previewMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+    tileFootPrint: {x: 2, y: 5}
+    placementOffset: {x: 1, y: 0.5, z: 2.5}
+  - name: Test Cube
+    building: {fileID: 3636144900929415445, guid: eae933f6cc5951648bdb4b6a8eadc144, type: 3}
+    previewMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    tileFootPrint: {x: 8, y: 5}
+    placementOffset: {x: 3, y: 0.5, z: 3}

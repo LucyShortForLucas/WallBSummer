@@ -20,6 +20,13 @@ public class GridWorld: IDisposable
         NoWater = 4 // This tile cannot contain water.
     }
 
+    public enum BuildObstructionType : Byte
+    {
+        None,
+        Natural,
+        Building
+    };
+
     // ---- Constants 
     private const uint NULLHANDLE = uint.MaxValue;
     public const int CHUNK_SIZE = 16;
@@ -28,12 +35,18 @@ public class GridWorld: IDisposable
     public static readonly GridWorldInfo INFO = NativeMethods.get_gridworld_info();
 
     // ---- Gridworld Helpers
-    public static Vector2Int PositionToTile(Vector2 pos)
+    public static Vector2Int PositionToTile(Vector3 pos)
     {
-        pos /= new Vector2(UNITS_PER_TILE, UNITS_PER_TILE);
-        Vector2Int posInt = new(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y));
+        var pos2 = new Vector2(pos.x, pos.z);
+        pos2 /= new Vector2(UNITS_PER_TILE, UNITS_PER_TILE);
+        Vector2Int posInt = new(Mathf.FloorToInt(pos2.x), Mathf.FloorToInt(pos2.y));
         return posInt;
     }
+    public static Vector3 TileToPosition(Vector2Int tile, float y = 0)
+    {
+        return new Vector3(tile.x * UNITS_PER_TILE, y, tile.y * UNITS_PER_TILE);
+    }
+
     public static Vector2Int TileToChunk(Vector2Int tileCoord)
     {
         static int floorIntToChunk(int value) => Math.DivRem(value, GridWorld.CHUNK_SIZE, out var remainder) is var quotient
@@ -116,9 +129,11 @@ public class GridWorld: IDisposable
     public int[,] GetFertility(RectInt rect) => GetTileData<int>(rect, NativeMethods.TileDataType.Fertility);
     public int[,] GetFertilityChunk(Vector2Int coord) => GetFertility(new RectInt(coord.x * CHUNK_SIZE, coord.y * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE));
     public int[,] GetWaterContent(RectInt rect) => GetTileData<int>(rect, NativeMethods.TileDataType.WaterContent);
-    public int[,] GetWaterContentChunk(Vector2Int coord) => GetWaterContent(new RectInt(coord.x, coord.y, CHUNK_SIZE, CHUNK_SIZE));
+    public int[,] GetWaterContentChunk(Vector2Int coord) => GetWaterContent(new RectInt(coord.x * CHUNK_SIZE, coord.y * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE));
     public WaterTileType[,] GetWaterType(RectInt rect) => GetTileData<WaterTileType>(rect, NativeMethods.TileDataType.WaterType);
-    public WaterTileType[,] GetWaterTypeChunk(Vector2Int coord) => GetWaterType(new RectInt(coord.x, coord.y, CHUNK_SIZE, CHUNK_SIZE));
+    public WaterTileType[,] GetWaterTypeChunk(Vector2Int coord) => GetWaterType(new RectInt(coord.x * CHUNK_SIZE, coord.y * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE));
+    public BuildObstructionType[,] GetBuildObstructionType(RectInt rect) => GetTileData<BuildObstructionType>(rect, NativeMethods.TileDataType.BuildObstructionType);
+    public BuildObstructionType[,] GetBuildObstructionTypeChunk(Vector2Int coord) => GetBuildObstructionType(new RectInt(coord.x * CHUNK_SIZE, coord.y * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE));
 
     private unsafe void FillTileData<T>(RectInt rect, NativeMethods.TileDataType tileType, T value) where T : unmanaged
     {
@@ -131,10 +146,13 @@ public class GridWorld: IDisposable
     public void FillFertility(RectInt rect, int value) => FillTileData(rect, NativeMethods.TileDataType.Fertility, value);
     public void FillWaterContent(RectInt rect, int value) => FillTileData(rect, NativeMethods.TileDataType.WaterContent, value);
     public void FillWaterType(RectInt rect, WaterTileType value) => FillTileData(rect, NativeMethods.TileDataType.WaterType, value);
+    public void FillBuildObstructionType(RectInt rect, BuildObstructionType value) => FillTileData(rect, NativeMethods.TileDataType.BuildObstructionType, value);
 
     // ---- Build system stuff
     private RectInt _buildAttemptRect = new();
     public RectInt BuildAttemptRect { get => _buildAttemptRect; set => _buildAttemptRect = value; }
+    private bool _buildAllowed = true;
+    public bool BuildAllowed { get => _buildAllowed; set { _buildAllowed = value; } }
 
     // ------ Private P/Invoke Native Plugin Interop ------
     private static class NativeMethods
@@ -158,7 +176,8 @@ public class GridWorld: IDisposable
         {
             WaterContent = 0,
             WaterType = 1,
-            Fertility = 2
+            Fertility = 2,
+            BuildObstructionType = 3
         }
 
         // ---- World management
