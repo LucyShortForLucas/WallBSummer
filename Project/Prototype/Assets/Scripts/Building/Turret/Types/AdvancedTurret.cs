@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class AdvancedTurret : BaseTurret
 {
@@ -7,6 +8,8 @@ public class AdvancedTurret : BaseTurret
     [SerializeField] private float timeBetweenBurstShots = 0.1f;
 
     private bool isBursting = false;
+
+    public event Action OnFireAdvancedTurret;
 
     protected override void Update()
     {
@@ -19,6 +22,7 @@ public class AdvancedTurret : BaseTurret
 
     protected override void Fire()
     {
+        OnFireAdvancedTurret?.Invoke();
         StartCoroutine(FireBurstRoutine());
 
         nextFireTime = Time.time + Stats.FireRate;

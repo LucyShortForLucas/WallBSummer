@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class Plant : InteractableComponent
 {
@@ -27,6 +28,8 @@ public class Plant : InteractableComponent
     [SerializeField] private Color growingColor = new Color(0.5f, 1f, 0.5f);
     [SerializeField] private Color matureColor = new Color(0f, 0.5f, 0f);
     [SerializeField] private Color expiredColor = new Color(0.4f, 0.3f, 0.1f);
+
+    public event Action OnHarvestEvent;
 
     private PlantState currentState;
     private float ageTimer = 0f;
@@ -108,6 +111,7 @@ public class Plant : InteractableComponent
                 resourceHub.AddResource(playerStorage.StorageID, seedResourceId, 1, true);
             }
         }
+        OnHarvestEvent?.Invoke();
 
         Destroy(gameObject);
     }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class FactoryInteractable : InteractableComponent, IInjectable
 {
@@ -13,6 +14,12 @@ public class FactoryInteractable : InteractableComponent, IInjectable
     [Header("Interaction Settings")]
     [SerializeField] private float closeDistance = 5f;
 
+    [Header("Water Configuration")]
+    [SerializeField] private WaterComponent waterComponent;
+
+    public event Action OnOpenFactory;
+    public event Action OnCloseFactory;
+
     private bool isInteracting = false;
     private GameObject currentInteractor;
 
@@ -23,6 +30,7 @@ public class FactoryInteractable : InteractableComponent, IInjectable
     public StorageComponent InputStorage { get => inputStorage; }
     public StorageComponent OutputStorage { get => outputStorage; }
     public List<int> AllowedRecipeIds { get => allowedRecipeIds; }
+    public WaterComponent WaterComponent => waterComponent;
 
     public void Inject(DependencyContainer container)
     {
@@ -44,13 +52,15 @@ public class FactoryInteractable : InteractableComponent, IInjectable
                 { StoragePanelType.SmallInOut, inputStorage.StorageID },
                 { StoragePanelType.Out, outputStorage.StorageID },
                 { StoragePanelType.Recipes, 0 }, 
-                { StoragePanelType.Craft, 0 }    
+                { StoragePanelType.Craft, 0 },
+                { StoragePanelType.WaterUsage, 0 }
             };
 
             uiManager.OpenUI(playerStorage.StorageID, panelRequests);
             currentInteractor = interactor;
             isInteracting = true;
         }
+        OnOpenFactory?.Invoke();
     }
 
     private void Update()
@@ -74,6 +84,7 @@ public class FactoryInteractable : InteractableComponent, IInjectable
         if (uiManager != null)
         {
             uiManager.CloseUI();
+            OnCloseFactory?.Invoke();
         }
     }
 

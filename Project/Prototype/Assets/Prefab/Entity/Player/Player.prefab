@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4350143122477554689
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2882711596348243408}
+  m_Layer: 6
+  m_Name: TempPipeHold
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2882711596348243408
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4350143122477554689}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -2.75, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6158927389440954537}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6886886208658951414
 GameObject:
   m_ObjectHideFlags: 0
@@ -22,6 +53,8 @@ GameObject:
   - component: {fileID: 7053526154149921192}
   - component: {fileID: 3543716709967237255}
   - component: {fileID: 8856432103964378407}
+  - component: {fileID: 501581256189186815}
+  - component: {fileID: 6460425019566192065}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -41,7 +74,8 @@ Transform:
   m_LocalPosition: {x: 0.94905, y: 2.11, z: -18.93291}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2882711596348243408}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &814268135259369965
@@ -163,7 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83e8dbc921e94f34ba1a34060772df50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 5
+  moveSpeed: 6
   turnSpeed: 10
 --- !u!114 &5213289227092959900
 MonoBehaviour:
@@ -181,7 +215,7 @@ MonoBehaviour:
   orbitSensitivityX: 15
   orbitSmoothness: 10
   invertX: 0
-  returnToOriginalRotation: 1
+  returnToOriginalRotation: 0
   returnSpeed: 5
 --- !u!114 &364646643715022075
 MonoBehaviour:
@@ -326,3 +360,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DangerComponent
   baseDanger: 25
+--- !u!114 &501581256189186815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6886886208658951414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0f38cecee9b9474c9841ddff02e5035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerViews
+  globalVolume: {fileID: 0}
+  transitionSpeed: 150
+--- !u!114 &6460425019566192065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6886886208658951414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 505e8d9e2782cfe488ec5385ee6b8b6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPipeBuilder
+  interactRange: 5
+  pipeMaterial: {fileID: 2100000, guid: a65bca5f8b70d7440b106b8a10216fcc, type: 2}
+  pipeThickness: 0.5
+  pipeHoldPoint: {fileID: 2882711596348243408}

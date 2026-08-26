@@ -9,7 +9,8 @@ public enum StoragePanelType
     Out,
     Launch,
     Recipes, 
-    Craft
+    Craft,
+    WaterUsage
 }
 
 public class InventoryUIManager : MonoBehaviour, IInjectable
@@ -138,6 +139,10 @@ public class InventoryUIManager : MonoBehaviour, IInjectable
                 // Launch Panels 
                 var launchPanel = config.panelRoot.GetComponent<LaunchPanelUI>();
                 if (launchPanel != null) launchPanel.Refresh(this);
+
+                // Water Usage Panels
+                var waterPanel = config.panelRoot.GetComponent<WaterUsagePanelUI>();
+                if (waterPanel != null) waterPanel.Refresh(this);
             }
         }
     }
