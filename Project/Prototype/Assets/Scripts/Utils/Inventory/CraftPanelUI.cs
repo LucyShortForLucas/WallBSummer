@@ -48,6 +48,13 @@ public class CraftPanelUI : MonoBehaviour
         if (isCrafting || currentRecipe.id == 0 || uiManager.CurrentFactory == null) return;
 
         int inputId = uiManager.CurrentFactory.InputStorage.StorageID;
+        WaterComponent factoryWater = uiManager.CurrentFactory.WaterComponent;
+
+        if (factoryWater == null || factoryWater.CurrentWater < 10f)
+        {
+            Debug.Log("Craft Failed: Missing 10 Water");
+            return;
+        }
 
         // Check if enough resources
         foreach (var input in currentRecipe.inputs)
@@ -58,6 +65,9 @@ public class CraftPanelUI : MonoBehaviour
                 return;
             }
         }
+
+        // Comsume water
+        factoryWater.CurrentWater -= 10f;
 
         // Consume resources
         foreach (var input in currentRecipe.inputs)

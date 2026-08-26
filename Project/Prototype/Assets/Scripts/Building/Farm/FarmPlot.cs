@@ -8,6 +8,12 @@ public class FarmPlot : InteractableComponent, IInjectable
     [SerializeField] private GameObject plantPrefab;
     [SerializeField] private Transform plantSpawnPoint;
 
+    [Header("Water")]
+    [SerializeField] private WaterComponent waterComponent;
+    [SerializeField] private Renderer plotRenderer;
+    [SerializeField] private Color dryColor = new Color(0.6f, 0.4f, 0.2f);       
+    [SerializeField] private Color wateredColor = new Color(0.3f, 0.15f, 0.05f);
+
     public event Action OnPlantEvent;
 
     private GameObject currentPlant;
@@ -23,6 +29,8 @@ public class FarmPlot : InteractableComponent, IInjectable
     {
         base.Awake();
         plotCollider = GetComponent<Collider>();
+        waterComponent = GetComponent<WaterComponent>();
+        plotRenderer = GetComponent<Renderer>();
     }
 
     private void Update()
@@ -30,6 +38,11 @@ public class FarmPlot : InteractableComponent, IInjectable
         if (plotCollider != null)
         {
             plotCollider.enabled = (currentPlant == null);
+        }
+
+        if (plotRenderer != null && waterComponent != null)
+        {
+            plotRenderer.material.color = waterComponent.CurrentWater >= 1f ? wateredColor : dryColor;
         }
     }
 
@@ -41,9 +54,17 @@ public class FarmPlot : InteractableComponent, IInjectable
 
         if (playerStorage != null)
         {
+            if (waterComponent == null || waterComponent.CurrentWater < 1f)
+            {
+                return;
+            }
+
             // Check if player has requirements
             if (resourceHub.HasEnough(playerStorage.StorageID, requiredSeedId, 1))
             {
+                // Consume water
+                waterComponent.CurrentWater -= 1f;
+
                 // Consume seed
                 resourceHub.ConsumeResource(playerStorage.StorageID, requiredSeedId, 1, true);
 
