@@ -4,7 +4,7 @@ using UnityEngine;
 public class EnemyHandler : MonoBehaviour, IInjectable
 {
     [Header("Wave State")]
-    private int daysUntilNextWave = 0;
+    private int nextWaveDay = 0;
 
     [Header("Enemy Prefabs")]
     [SerializeField] private GameObject leaderPrefab;
@@ -32,13 +32,7 @@ public class EnemyHandler : MonoBehaviour, IInjectable
 
         timeManager.OnDayAdvanced += HandleDayAdvanced;
 
-        daysUntilNextWave = 0;
-
-        if (daysUntilNextWave <= 0)
-        {
-            TriggerWave(timeManager.currentDay);
-            daysUntilNextWave = Random.Range(1, 4);
-        }
+        nextWaveDay = Random.Range(2, 5);
     }
 
     private void OnDestroy()
@@ -51,12 +45,12 @@ public class EnemyHandler : MonoBehaviour, IInjectable
 
     private void HandleDayAdvanced(int currentDay)
     {
-        daysUntilNextWave--;
+        if (currentDay <= 1) return;
 
-        if (daysUntilNextWave <= 0)
+        if (currentDay >= nextWaveDay)
         {
             TriggerWave(currentDay);
-            daysUntilNextWave = Random.Range(1, 4);
+            nextWaveDay = currentDay + Random.Range(1, 4);
         }
     }
 
@@ -69,7 +63,7 @@ public class EnemyHandler : MonoBehaviour, IInjectable
         int leadersToSpawn = (currentDay >= leaderSpawnStartDay) ? 1 + (currentDay / 30) : 0;
 
         // More minionsss
-        int minionsPerGroup = Mathf.Min(10, 2 + (currentDay / 5));
+        int minionsPerGroup = Mathf.Min(10, 1 + (currentDay / 5));
 
         Debug.Log($"Wave triggered Day {currentDay}: Spawning {spawnGroups} groups ({leadersToSpawn} leaders total, {minionsPerGroup} minions per group).");
 
