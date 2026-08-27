@@ -49,8 +49,8 @@ public class InventoryUIManager : MonoBehaviour, IInjectable
 
     private void Awake()
     {
-        if (resourceDatabase != null) resourceDatabase.Initialize();
-        if (recipeDatabase != null) recipeDatabase.Initialize();
+        if (resourceDatabase != null) resourceDatabase.Initialize(); // BAD, databases should not require runtime initialization, this is why they're scriptable objects in the first place. 
+        if (recipeDatabase != null) recipeDatabase.Initialize();    // This currently make them (and things that rely on them) untestable -Lucy
 
         CloseAllPanels();
     }

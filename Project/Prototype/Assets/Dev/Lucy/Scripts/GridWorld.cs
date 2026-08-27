@@ -148,12 +148,6 @@ public class GridWorld: IDisposable
     public void FillWaterType(RectInt rect, WaterTileType value) => FillTileData(rect, NativeMethods.TileDataType.WaterType, value);
     public void FillBuildObstructionType(RectInt rect, BuildObstructionType value) => FillTileData(rect, NativeMethods.TileDataType.BuildObstructionType, value);
 
-    // ---- Build system stuff
-    private RectInt _buildAttemptRect = new();
-    public RectInt BuildAttemptRect { get => _buildAttemptRect; set => _buildAttemptRect = value; }
-    private bool _buildAllowed = true;
-    public bool BuildAllowed { get => _buildAllowed; set { _buildAllowed = value; } }
-
     // ------ Private P/Invoke Native Plugin Interop ------
     private static class NativeMethods
     {

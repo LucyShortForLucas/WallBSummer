@@ -4,7 +4,7 @@ using UnityEngine;
 public class WaterComponent : MonoBehaviour
 {
     [Header("Water Settings")]
-    [SerializeField] private float waterCapacity = 100f;
+    [SerializeField] private float waterCapacity = 100f; // NAME VIOLATION: Private fields should be prefixed with an underscore -> _waterCapacity
     [SerializeField] private float waterGenerator = 0f;
 
     [Header("Transform")]

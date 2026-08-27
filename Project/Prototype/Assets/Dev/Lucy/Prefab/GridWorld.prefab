@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &342083391023753055
+--- !u!1 &2196083858597999838
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8723593294109187357}
-  - component: {fileID: 6521983623781735261}
-  - component: {fileID: 8964908824978917617}
+  - component: {fileID: 4091903313052089763}
+  - component: {fileID: 7743843528705156125}
+  - component: {fileID: 6266132876148748926}
   m_Layer: 0
   m_Name: GridWorld
   m_TagString: Untagged
@@ -18,13 +18,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8723593294109187357
+--- !u!4 &4091903313052089763
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 342083391023753055}
+  m_GameObject: {fileID: 2196083858597999838}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0, z: 0}
@@ -33,34 +33,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6521983623781735261
+--- !u!114 &7743843528705156125
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 342083391023753055}
+  m_GameObject: {fileID: 2196083858597999838}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9fceeca8fd5b8b41bd3326d7c2b6c16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestComponent
---- !u!114 &8964908824978917617
+--- !u!114 &6266132876148748926
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 342083391023753055}
+  m_GameObject: {fileID: 2196083858597999838}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aab1ca34e796a524581c9cff29b35ccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridWorldSolidColorTileOverlay
-  _gridWorldHandler: {fileID: 6521983623781735261}
+  _gridWorldHandler: {fileID: 7743843528705156125}
   _quadPrefab: {fileID: 8707125521516475810, guid: 672d482092b664b479ee8033bea17cd9, type: 3}
-  _focusObject: {fileID: 342083391023753055}
+  _focusObject: {fileID: 2196083858597999838}
   _material: {fileID: 2100000, guid: 94da642d601d3594d9c714cdec504353, type: 2}
   _strategyName: 1
   _minUpdateTime: 0.1
-  _updateChunkRectExtents: {x: 5, y: 5}
+  _updateChunkRectExtents: {x: 10, y: 10}

@@ -13,13 +13,31 @@ MonoBehaviour:
   m_Name: BuildableDatabase
   m_EditorClassIdentifier: Assembly-CSharp::BuildableDatabase
   _buildables:
-  - name: Turrer
+  - name: Scrap Turret
+    description: A basic defense turret jury-rigged to blast away anything that moves
+    icon: {fileID: 0}
     building: {fileID: 3636144900929415445, guid: eae933f6cc5951648bdb4b6a8eadc144, type: 3}
     previewMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-    tileFootPrint: {x: 2, y: 5}
-    placementOffset: {x: 1, y: 0.5, z: 2.5}
-  - name: Test Cube
+    tileFootPrint: {x: 4, y: 4}
+    placementOffset: {x: 1, y: 2, z: 1}
+    requiresFertileSoil: 0
+    resourceCost:
+    - resource: 1
+      cost: 10
+    - resource: 2
+      cost: 5
+  - name: Advanced Turret
+    description: 'A stronger turret, built out of better-preserved components. '
+    icon: {fileID: 0}
     building: {fileID: 3636144900929415445, guid: eae933f6cc5951648bdb4b6a8eadc144, type: 3}
     previewMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
     tileFootPrint: {x: 8, y: 5}
     placementOffset: {x: 3, y: 0.5, z: 3}
+    requiresFertileSoil: 0
+    resourceCost:
+    - resource: 1
+      cost: 15
+    - resource: 2
+      cost: 5
+    - resource: 3
+      cost: 5

@@ -42,6 +42,7 @@ public static partial class CustomColors
 public class BuildSystem : MonoBehaviour
 {
 
+
     // ---- Unity object refs
     [Header("Scene agnostic references")]
     [SerializeReference] private BuildableDatabase? _buildableDatabase;
@@ -103,8 +104,6 @@ public class BuildSystem : MonoBehaviour
     // ---- Unity methods
     private void Update()
     {
-        TryToPlace(0); // FOR TESTING
-
         if (_camera == null || _tryingToPlaceBuildable == null || _gridWorldHandler == null || _gridWorldHandler.World == null 
             || _buildableDatabase == null || _previewFilter == null || _focus == null || _toolTipHandler == null
             || !Utils.GetTileAtMousePos(transform.position.y, _camera, out Vector2Int tile)
