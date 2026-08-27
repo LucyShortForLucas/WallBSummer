@@ -237,7 +237,7 @@ MonoBehaviour:
   stats: {fileID: 11400000, guid: 57ee2b3682438494e99aef06d897e66c, type: 2}
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   assignedLeader: {fileID: 0}
   currentTarget: {fileID: 0}
   tacticalWaypoint: {x: 0, y: 0, z: 0}
