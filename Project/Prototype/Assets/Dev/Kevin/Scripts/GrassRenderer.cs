@@ -58,7 +58,8 @@ public class GrassRenderer : MonoBehaviour
         // Generate only this chunk's instances.
         spawner.Generate(
             chunk,
-            gridGenerator.Chunks
+            gridGenerator.Chunks,
+            gridGenerator.StartPosition
         );
 
         Matrix4x4[] matrices =

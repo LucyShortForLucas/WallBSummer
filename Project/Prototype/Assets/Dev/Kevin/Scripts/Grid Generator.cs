@@ -16,11 +16,17 @@ public class GridGenerator : MonoBehaviour
     Vector2Int GetPlayerChunk()
     {
         int chunkX = Mathf.FloorToInt(
-            (player.transform.position.x - startPosition.x) / chunkSize
+            (player.transform.position.x
+                - startPosition.x
+                + chunkSize * 0.5f)
+            / chunkSize
         );
 
         int chunkZ = Mathf.FloorToInt(
-            (player.transform.position.z - startPosition.z) / chunkSize
+            (player.transform.position.z
+                - startPosition.z
+                + chunkSize * 0.5f)
+            / chunkSize
         );
 
         return new Vector2Int(chunkX, chunkZ);
@@ -147,7 +153,6 @@ public class GridGenerator : MonoBehaviour
         startPosition = new Vector3(player.transform.position.x, 0f, player.transform.position.z);
         
         previousPlayerChunk = GetPlayerChunk();
-
         LoadSurroundingChunks(previousPlayerChunk);
     }
 
@@ -160,7 +165,6 @@ public class GridGenerator : MonoBehaviour
         if (currentPlayerChunk != previousPlayerChunk)
         {
             previousPlayerChunk = currentPlayerChunk;
-
             LoadSurroundingChunks(currentPlayerChunk);
         }
     }
