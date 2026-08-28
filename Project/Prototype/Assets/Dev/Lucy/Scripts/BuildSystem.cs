@@ -39,27 +39,33 @@ public static partial class CustomColors
     public static readonly Color BlackTrans = new Color(0, 0, 0, 0.35f);
 }
 
-public class BuildSystem : MonoBehaviour
+public class BuildSystem : MonoBehaviour, IInjectable
 {
-
-
-    // ---- Unity object refs
+    // ---- Unity inspector object refs
     [Header("Scene agnostic references")]
     [SerializeReference] private BuildableDatabase? _buildableDatabase;
     [SerializeReference] private MeshFilter? _previewFilter;
     [SerializeReference] private GameObject? _gridOverlay;
 
-    [Header("Scene local references")]
-    [SerializeReference] private Camera? _camera;
-    [SerializeReference] private GridWorldHandler? _gridWorldHandler;
-    [SerializeReference] private Transform? _focus;
-    [SerializeReference] private TooltipHandler? _toolTipHandler;
-
+    // ---- Unity inspector fields
     [Header("Config")]
     [SerializeField] private float _buildRange = 10f;
 
+    // ---- Dependencies
+    private GridWorldHandler? _gridWorldHandler;
+    private TooltipHandler? _toolTipHandler;
+    private PlayerObjectRegistry? _playerObjectRegistry;
+    public void Inject(DependencyContainer container)
+    {
+        _gridWorldHandler = container.Get<GridWorldHandler>();
+        _toolTipHandler = container.Get<TooltipHandler>();
+        _playerObjectRegistry = container.Get<PlayerObjectRegistry>();
+    }
+
     // ---- State
     private BuildableDatabase.Buildable? _tryingToPlaceBuildable;
+    private bool _placingAllowed = false;
+    private RectInt _tryingToPlaceTileRect = new();
 
     // ---- Tooltips
     private TooltipHandler.Handle? _obstructedTooltip;
@@ -69,15 +75,14 @@ public class BuildSystem : MonoBehaviour
 
 
     // ---- Public API
-
-    public void TryToPlace(int id)
+    public void TryToPlace(BuildableDatabase.Buildable buildable)
     {
-        if (_previewFilter == null || _buildableDatabase == null || id >= _buildableDatabase.Count || _gridOverlay == null)
+        if (_previewFilter == null || _buildableDatabase == null || _gridOverlay == null)
             return;
 
-        _tryingToPlaceBuildable = _buildableDatabase[id];
+        _tryingToPlaceBuildable = buildable;
 
-        _previewFilter.mesh = _buildableDatabase[id].previewMesh;
+        _previewFilter.mesh = _tryingToPlaceBuildable?.previewMesh;
         _previewFilter.gameObject.SetActive(true);
         _gridOverlay.SetActive(true);
 
@@ -101,12 +106,33 @@ public class BuildSystem : MonoBehaviour
         Cursor.visible = true;
     }
 
+    public void PlaceCurrent()
+    {
+        if (_tryingToPlaceBuildable == null || !_placingAllowed || _gridWorldHandler == null || _gridWorldHandler.World == null)
+            return;
+
+        Vector3? nullableBuildingPosition = (new Vector3(_tryingToPlaceTileRect.position.x, transform.position.y, _tryingToPlaceTileRect.position.y) + _tryingToPlaceBuildable?.placementOffset);
+        if (nullableBuildingPosition == null)
+            return;
+
+        Vector3 buildingPosition = nullableBuildingPosition.Value;
+
+        _gridWorldHandler.World.FillBuildObstructionType(_tryingToPlaceTileRect, GridWorld.BuildObstructionType.Building);
+        Instantiate(_tryingToPlaceBuildable?.building, buildingPosition, Quaternion.identity);
+
+        _placingAllowed = false;
+    }
+
     // ---- Unity methods
     private void Update()
     {
-        if (_camera == null || _tryingToPlaceBuildable == null || _gridWorldHandler == null || _gridWorldHandler.World == null 
-            || _buildableDatabase == null || _previewFilter == null || _focus == null || _toolTipHandler == null
-            || !Utils.GetTileAtMousePos(transform.position.y, _camera, out Vector2Int tile)
+        if (_tryingToPlaceBuildable == null || _gridWorldHandler == null || _gridWorldHandler.World == null
+            || _buildableDatabase == null || _previewFilter == null || _toolTipHandler == null || _playerObjectRegistry == null)
+            return;
+
+        Camera? camera = _gridWorldHandler.MainCam;
+
+        if (camera == null || !Utils.GetTileAtMousePos(transform.position.y, camera, out Vector2Int tile)
             || Strats.strategies[StratNames.Building] is not Strats.BuildStrat buildstrat)
             return;
 
@@ -119,10 +145,10 @@ public class BuildSystem : MonoBehaviour
         _previewFilter.transform.position = GridWorld.TileToPosition(tile, transform.position.y) + buildable.placementOffset;
 
         // Check if building would be obstructed
-        RectInt buildingTileRect = new RectInt(tile, buildable.tileFootPrint);
-        buildstrat.BuildAttemptRect = buildingTileRect;
+        _tryingToPlaceTileRect = new RectInt(tile, buildable.tileFootPrint);
+        buildstrat.BuildAttemptRect = _tryingToPlaceTileRect;
         bool obstructed = false;
-        foreach (var obstruction in _gridWorldHandler.World.GetBuildObstructionType(buildingTileRect))
+        foreach (var obstruction in _gridWorldHandler.World.GetBuildObstructionType(_tryingToPlaceTileRect))
         {
             if (obstruction != GridWorld.BuildObstructionType.None)
             {
@@ -132,11 +158,11 @@ public class BuildSystem : MonoBehaviour
         }
 
         // Check if building would be out of range
-        float distance = Vector3.Distance(_focus.position, GridWorld.TileToPosition(tile));
+        float distance = _playerObjectRegistry.ClosestPlayerDistance(GridWorld.TileToPosition(tile));
         bool outOfRange = distance > _buildRange;
 
         // Handle obstructed or out of range
-        buildstrat.BuildAllowed = !obstructed && !outOfRange;
+        buildstrat.BuildAllowed = _placingAllowed = !obstructed && !outOfRange;
 
         if (obstructed && _obstructedTooltip.Empty)
             _obstructedTooltip.NewTooltip(_obstructedTooltipData);

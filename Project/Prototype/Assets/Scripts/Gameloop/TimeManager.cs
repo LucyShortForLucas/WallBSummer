@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 
-public class TimeManager : MonoBehaviour
-{
+public class TimeManager : MonoBehaviour // CONSIDER: 'Manager' is a poor way to name a class and brings to mind the
+{                                        // idea of a God-class. Consider instead a name like 'WorldTime' -Lucy
     [Header("Game State")]
     public int currentDay = 1;
 

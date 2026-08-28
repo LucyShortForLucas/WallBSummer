@@ -711,6 +711,7 @@ MonoBehaviour:
   _descr: {fileID: 6284471780448054759}
   _costRoot: {fileID: 2536615637162009712}
   _costPrefab: {fileID: 2424632910116842817, guid: 14cafb4d10977634ba0011eddf5d8b71, type: 3}
+  _button: {fileID: 2695047839829845367}
 --- !u!1 &8611459371385836719
 GameObject:
   m_ObjectHideFlags: 0

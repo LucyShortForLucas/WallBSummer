@@ -1,27 +1,39 @@
+#nullable enable
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class GameBootstrapper : MonoBehaviour
 {
     [Header("Scene Dependencies")]
-    [SerializeField] private TimeManager timeManager;
-    [SerializeField] private EnemyHandler enemyHandler;
-    [SerializeField] private InventoryUIManager uiManager;
-    [SerializeField] private GlobalRecipeDatabase recipeDatabase;
+    [SerializeReference] private TimeManager? _timeManager;
+    [SerializeReference] private EnemyHandler? _enemyHandler;
+    [SerializeReference] private InventoryUIManager? _uiManager;
+    [SerializeReference] private GlobalRecipeDatabase? _recipeDatabase;
+    [SerializeReference] private GridWorldHandler? _gridWorldHandler;
+    [SerializeReference] private TooltipHandler? _toolTipHandler;
+    [SerializeReference] private PlayerObjectRegistry? _playerObjectRegistry;
 
-    private CentralResourceHub resourceHub;
-
+   
     private void Awake()
     {
         DependencyContainer container = new DependencyContainer();
 
         //  Register systems
         container.Register(new CentralResourceHub());
-        container.Register(timeManager);
-        container.Register(uiManager);
-        container.Register(enemyHandler);
+        container.SafeRegister(_timeManager);
+        container.SafeRegister(_uiManager);
+        container.SafeRegister(_enemyHandler);
+        container.SafeRegister(_gridWorldHandler);
+        container.SafeRegister(_toolTipHandler);
+        container.SafeRegister(_playerObjectRegistry);
 
-        var allScripts = FindObjectsByType<MonoBehaviour>();
+        // Orphan all children
+        for (int i = transform.childCount - 1; i >= 0; --i)
+        {
+            transform.GetChild(i).SetParent(null);
+        }
+
+        var allScripts = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include);
 
         foreach (var script in allScripts)
         {

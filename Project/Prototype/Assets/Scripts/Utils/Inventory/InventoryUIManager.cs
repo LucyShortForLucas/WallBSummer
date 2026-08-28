@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum StoragePanelType
+public enum StoragePanelType    // CONSIDER: perhaps nest this enum inside the class below, to avoid polluting  the global namespace.
 {
     BigInOut,
     SmallInOut,
@@ -13,8 +13,10 @@ public enum StoragePanelType
     WaterUsage
 }
 
-public class InventoryUIManager : MonoBehaviour, IInjectable
-{
+public class InventoryUIManager : MonoBehaviour, IInjectable // CONSIDER: 'Manager' is a terrible way to name classes, bring to mind a god-class.
+{                                                            // Instead, consider naming a class after the one (main) thing it does. If it does
+                                                             // more than one fundamental thing, split it up into multiple classes. In this case,
+                                                             // consider a name like just 'InventoryUI'. This class doesn't manage anything. -Lucy
     [Header("Data")]
     [SerializeField] private GlobalResourceDatabase resourceDatabase;
     [SerializeField] private GlobalRecipeDatabase recipeDatabase;
@@ -50,7 +52,8 @@ public class InventoryUIManager : MonoBehaviour, IInjectable
     private void Awake()
     {
         if (resourceDatabase != null) resourceDatabase.Initialize(); // BAD, databases should not require runtime initialization, this is why they're scriptable objects in the first place. 
-        if (recipeDatabase != null) recipeDatabase.Initialize();    // This currently make them (and things that rely on them) untestable -Lucy
+        if (recipeDatabase != null) recipeDatabase.Initialize();    // This currently make them (and things that rely on them) untestable. Inventory UI should NOT be responsible for
+                                                                    // initializing data, especially data it does not own. -Lucy
 
         CloseAllPanels();
     }

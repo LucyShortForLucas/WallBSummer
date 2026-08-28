@@ -12,7 +12,9 @@ public class BuildableCostRecord : MonoBehaviour
 
     public void Populate(BuildableDatabase.Buildable.ResourceCost cost)
     {
-        if (_image != null && _resourceDatabase != null) _image.sprite = _resourceDatabase.GetResource((int)cost.resource).icon;
-        if (_tmPro != null) _tmPro.text = cost.cost.ToString();
+        if (_image != null && _resourceDatabase != null) 
+            _image.sprite = _resourceDatabase.GetResource((int)cost.resource).icon;
+        if (_tmPro != null) 
+            _tmPro.text = cost.cost.ToString();
     }
 }

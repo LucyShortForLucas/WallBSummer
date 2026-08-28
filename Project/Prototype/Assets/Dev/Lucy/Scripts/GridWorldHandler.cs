@@ -3,13 +3,22 @@ using UnityEngine;
 
 public class GridWorldHandler : MonoBehaviour
 {
-    private GridWorld? _world;
-    public GridWorld? World => _world;
 
-    void Start()
-    {
-        _world = GridWorld.TestGridWorld();
-    }
+    // ---- Config
+    [SerializeField] private float _worldFocalDepth = 20f;
+
+
+    // ---- Unity object refs
+    private Camera? _mainCam;
+
+    // --- API properties
+    public Camera? MainCam => _mainCam != null ? _mainCam : _mainCam = Camera.main;
+    public float FocalDepth { set => _worldFocalDepth = value; }
+    public Vector3 FocalPoint => MainCam.transform.position + MainCam.transform.forward * _worldFocalDepth;
+    public Vector2Int FocalTile => GridWorld.PositionToTile(FocalPoint);
+
+    private GridWorld? _world;
+    public GridWorld World => _world ??= GridWorld.TestGridWorld();
 
     private void OnDestroy()
     {
@@ -17,9 +26,8 @@ public class GridWorldHandler : MonoBehaviour
         _world.Dispose();
     }
 
-    void FixedUpdate()
+    void LateUpdate()
     {
-        if (_world == null) return;
-        _world.Update(Time.fixedDeltaTime);
+        World.Update(Time.fixedDeltaTime);
     }
 }

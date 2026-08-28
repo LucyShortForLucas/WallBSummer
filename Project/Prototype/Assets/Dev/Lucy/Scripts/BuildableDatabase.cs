@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuildableDatabase", menuName = "Database/BuildableDatabase")]
@@ -44,9 +45,16 @@ public class BuildableDatabase : ScriptableObject, IEnumerable<BuildableDatabase
 
     // ---- Database API
     [SerializeField] private List<Buildable> _buildables = new();
-
+    [SerializeReference] private List<BuildableDatabase> _children = new();
     public Buildable this[int i] => _buildables[i];
     public int Count => _buildables.Count;
+
+    public static BuildableDatabase Concatenate(BuildableDatabase first, BuildableDatabase second)
+    {
+        var result = Instantiate(first);
+        result._buildables.Concat(second._buildables);
+        return result;
+    }
 
     // ---- Enumerator interface implementation
     public IEnumerator<Buildable> GetEnumerator()

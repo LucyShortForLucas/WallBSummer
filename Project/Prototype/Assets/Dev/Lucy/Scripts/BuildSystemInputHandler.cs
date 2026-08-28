@@ -45,7 +45,12 @@ public class BuildSystemInputHandler : MonoBehaviour
 
     private void OnPlaceBuilding()
     {
-        print("Place  building!");
+        if (_buildSystem == null)
+            return;
+        
+        _buildSystem.PlaceCurrent();
+        _buildSystem.StopTryingToPlace();
+        _buildModeOn = false;
     }
 
 }

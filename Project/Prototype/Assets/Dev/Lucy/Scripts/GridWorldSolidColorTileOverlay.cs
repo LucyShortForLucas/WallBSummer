@@ -1,16 +1,12 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.LightTransport;
 
-public class GridWorldSolidColorTileOverlay : MonoBehaviour
+public class GridWorldSolidColorTileOverlay : MonoBehaviour, IInjectable
 {
     // ------ Inspector fields --------
 
     // ---- Unity object refs
-    [SerializeReference] private GridWorldHandler? _gridWorldHandler;
     [SerializeReference] private GameObject? _quadPrefab;
     [Tooltip("The gameobject given here will determine the center of the rect of chunks that is actually updated")]
     [SerializeReference] private GameObject? _focusObject;
@@ -20,6 +16,15 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
     [SerializeField] private GridWorldSolidColorTileOverlayStrategies.StrategyName _strategyName = GridWorldSolidColorTileOverlayStrategies.StrategyName.Fertility;
     [SerializeField] private float _minUpdateTime = 0.1f;
     [SerializeField] private Vector2Int _updateChunkRectExtents = new(5, 5);
+
+    // ---- Dependencies 
+    private GridWorld? _gridWorld;
+
+    public void Inject(DependencyContainer container)
+    {
+        var handler  = container.Get<GridWorldHandler>();
+        _gridWorld = handler != null ? handler.World : null;
+    }
 
     // ------ Data --------------------
     private GridWorldSolidColorTileTextures? _textures;
@@ -97,7 +102,7 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
     private void LateUpdate()
     {
         _updateTimeElapsed += Time.deltaTime;
-        if (_updateTimeElapsed < _minUpdateTime || _gridWorldHandler == null || _textures == null)
+        if (_updateTimeElapsed < _minUpdateTime || _gridWorld == null || _textures == null)
             return;
         _updateTimeElapsed = 0f;
 
@@ -105,14 +110,13 @@ public class GridWorldSolidColorTileOverlay : MonoBehaviour
         Vector2Int start = rect.position;
         Vector2Int end = start + rect.size;
         var strategy = GridWorldSolidColorTileOverlayStrategies.strategies[_strategyName];
-        var world = _gridWorldHandler.World;
 
         for (int y = start.y; y < end.y; ++y)
         {
             for (int x = start.x; x < end.x; ++x)
             {
                 Vector2Int chunkCoord = new(x, y);
-                strategy.UpdateColors(world, chunkCoord, out var colors);
+                strategy.UpdateColors(_gridWorld, chunkCoord, out var colors);
                 _textures.SetChunkColor(chunkCoord, colors);
             }
         }
