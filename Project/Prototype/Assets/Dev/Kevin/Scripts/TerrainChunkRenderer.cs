@@ -20,86 +20,36 @@ public class TerrainChunkRenderer : MonoBehaviour
         meshRenderer.material = terrainMaterial;
         propertyBlock = new MaterialPropertyBlock();
 
-        GenerateMesh(chunk);
+        SetupMesh(chunk);
         GenerateFertilityTexture(chunk, chunks);
         ApplyFertilityTexture();
     }
 
-    private void GenerateMesh(Chunk chunk)
+    private static Mesh terrainQuad;
+
+    private static Mesh GetTerrainQuad()
+    {
+        if (terrainQuad != null)
+            return terrainQuad;
+
+        GameObject temp = GameObject.CreatePrimitive(PrimitiveType.Quad);
+
+        terrainQuad = temp.GetComponent<MeshFilter>().sharedMesh;
+        terrainQuad.name = "Terrain Quad";
+
+        Destroy(temp);
+
+        return terrainQuad;
+    }
+
+    private void SetupMesh(Chunk chunk)
     {
         int chunkSize = chunk.cells.GetLength(0);
-
-        int verticesPerSide = chunkSize + 1;
-
-        Vector3[] vertices =
-            new Vector3[verticesPerSide * verticesPerSide];
-
-        Vector2[] uv =
-            new Vector2[vertices.Length];
-
-        int[] triangles =
-            new int[chunkSize * chunkSize * 6];
-
-        // Generate vertices
-        for (int z = 0; z <= chunkSize; z++)
-        {
-            for (int x = 0; x <= chunkSize; x++)
-            {
-                int vertexIndex =
-                    z * verticesPerSide + x;
-
-                vertices[vertexIndex] =
-                    new Vector3(x, 0, z);
-
-                uv[vertexIndex] =
-                    new Vector2(
-                        (float)x / chunkSize,
-                        (float)z / chunkSize
-                    );
-            }
-        }
-
-        // Generate triangles
-        int triangleIndex = 0;
-
-        for (int z = 0; z < chunkSize; z++)
-        {
-            for (int x = 0; x < chunkSize; x++)
-            {
-                int bottomLeft =
-                    z * verticesPerSide + x;
-
-                int bottomRight =
-                    bottomLeft + 1;
-
-                int topLeft =
-                    bottomLeft + verticesPerSide;
-
-                int topRight =
-                    topLeft + 1;
-
-                triangles[triangleIndex++] = bottomLeft;
-                triangles[triangleIndex++] = topLeft;
-                triangles[triangleIndex++] = topRight;
-
-                triangles[triangleIndex++] = bottomLeft;
-                triangles[triangleIndex++] = topRight;
-                triangles[triangleIndex++] = bottomRight;
-            }
-        }
-
-        Mesh mesh = new Mesh();
-
-        mesh.name = "Terrain Chunk Mesh";
-
-        mesh.vertices = vertices;
-        mesh.uv = uv;
-        mesh.triangles = triangles;
-
-        mesh.RecalculateNormals();
-
-        meshFilter.mesh = mesh;
+        Mesh mesh = GetTerrainQuad();
+        meshFilter.sharedMesh = mesh;
         meshCollider.sharedMesh = mesh;
+        transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+        transform.localScale = new Vector3(chunkSize, chunkSize, 1f);
     }
 
     public Texture2D fertilityTexture;
