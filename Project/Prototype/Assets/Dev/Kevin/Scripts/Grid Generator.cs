@@ -103,6 +103,7 @@ public class GridGenerator : MonoBehaviour
             startPosition.y,
             chunk.chunkPosition.y * chunkSize + startPosition.z
         );
+        chunkRenderers.Add(chunk.chunkPosition, chunkObject);
     }
 
     void LoadSurroundingChunks(Vector2Int playerChunk)
