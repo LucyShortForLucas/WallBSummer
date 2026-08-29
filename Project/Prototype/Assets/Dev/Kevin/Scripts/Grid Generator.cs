@@ -6,19 +6,27 @@ public class GridGenerator : MonoBehaviour
 {
     public GameObject player;
     public Material terrainMaterial;
-    private Vector3 startPosition;
+    [SerializeField] private Vector3 startPosition;
+    public Vector3 StartPosition => startPosition;
     private int chunkSize = 16;
     private Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
+    private Dictionary<Vector2Int, GameObject> chunkRenderers = new Dictionary<Vector2Int, GameObject>();
     public IReadOnlyDictionary<Vector2Int, Chunk> Chunks => chunks;
 
     Vector2Int GetPlayerChunk()
     {
         int chunkX = Mathf.FloorToInt(
-            (player.transform.position.x - startPosition.x) / chunkSize
+            (player.transform.position.x
+                - startPosition.x
+                + chunkSize * 0.5f)
+            / chunkSize
         );
 
         int chunkZ = Mathf.FloorToInt(
-            (player.transform.position.z - startPosition.z) / chunkSize
+            (player.transform.position.z
+                - startPosition.z
+                + chunkSize * 0.5f)
+            / chunkSize
         );
 
         return new Vector2Int(chunkX, chunkZ);
@@ -78,7 +86,7 @@ public class GridGenerator : MonoBehaviour
         }
 
         chunks.Add(chunkPosition, chunk);
-    ChunkCreated?.Invoke(chunk);
+        ChunkCreated?.Invoke(chunk);
     }
 
     void CreateTerrainRenderer(Chunk chunk, string id)
@@ -95,6 +103,7 @@ public class GridGenerator : MonoBehaviour
             startPosition.y,
             chunk.chunkPosition.y * chunkSize + startPosition.z
         );
+        chunkRenderers.Add(chunk.chunkPosition, chunkObject);
     }
 
     void LoadSurroundingChunks(Vector2Int playerChunk)
@@ -115,12 +124,25 @@ public class GridGenerator : MonoBehaviour
             }
         }
 
+        // Load chunks before rendering so neighboring data is available to sample
+        UpdateTerrainRenderers();
+    }
+
+    void UpdateTerrainRenderers()
+    {
         foreach (var pair in chunks)
         {
             Vector2Int position = pair.Key;
             Chunk chunk = pair.Value;
-            CreateTerrainRenderer(chunk, $"Chunk_{position.x}_{position.y}");
-        }   
+
+            if (!chunkRenderers.ContainsKey(position))
+            {
+                CreateTerrainRenderer(
+                    chunk,
+                    $"Chunk_{position.x}_{position.y}"
+                );
+            }
+        }
     }
 
     private Vector2Int previousPlayerChunk;
@@ -128,8 +150,10 @@ public class GridGenerator : MonoBehaviour
 
     void Start()
     {
+        // initialize grid where the player position is
+        startPosition = new Vector3(player.transform.position.x, 0f, player.transform.position.z);
+        
         previousPlayerChunk = GetPlayerChunk();
-
         LoadSurroundingChunks(previousPlayerChunk);
     }
 
@@ -142,7 +166,6 @@ public class GridGenerator : MonoBehaviour
         if (currentPlayerChunk != previousPlayerChunk)
         {
             previousPlayerChunk = currentPlayerChunk;
-
             LoadSurroundingChunks(currentPlayerChunk);
         }
     }

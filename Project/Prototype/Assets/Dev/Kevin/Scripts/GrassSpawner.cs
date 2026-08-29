@@ -26,7 +26,8 @@ public class GrassSpawner
 
     public void Generate(
         Chunk chunk,
-        IReadOnlyDictionary<Vector2Int, Chunk> chunks
+        IReadOnlyDictionary<Vector2Int, Chunk> chunks,
+        Vector3 startPosition
     )
     {
         instances.Clear();
@@ -59,9 +60,9 @@ public class GrassSpawner
 
                 Vector3 position =
                     new Vector3(
-                        cell.worldPosition.x,
-                        0f,
-                        cell.worldPosition.y
+                        cell.worldPosition.x + startPosition.x - chunkSize * 0.5f + 0.5f,
+                        startPosition.y,
+                        cell.worldPosition.y + startPosition.z - chunkSize * 0.5f + 0.5f
                     );
 
                 float scale =
