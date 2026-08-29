@@ -28,4 +28,10 @@ enum class BuildObstructionType : uint8_t {
     Building
 };
 
+enum class FertilitySpreadType : uint8_t {
+    Normal,
+    None,
+    Always
+};
+
 using WorldType = grid::GridWorld2d<FertilityGrid, WaterGrid, BuildGrid>;

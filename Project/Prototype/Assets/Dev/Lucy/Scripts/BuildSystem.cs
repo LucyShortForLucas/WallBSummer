@@ -1,9 +1,9 @@
 #nullable enable
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-using Strats = GridWorldSolidColorTileOverlayStrategies;
+using static BuildableDatabase;
 using StratNames = GridWorldSolidColorTileOverlayStrategies.StrategyName;
+using Strats = GridWorldSolidColorTileOverlayStrategies;
 
 public static partial class Utils
 {
@@ -46,6 +46,7 @@ public class BuildSystem : MonoBehaviour, IInjectable
     [SerializeReference] private BuildableDatabase? _buildableDatabase;
     [SerializeReference] private MeshFilter? _previewFilter;
     [SerializeReference] private GameObject? _gridOverlay;
+    [SerializeReference] private StorageComponent? _mainPlayerStorage;
 
     // ---- Unity inspector fields
     [Header("Config")]
@@ -55,11 +56,14 @@ public class BuildSystem : MonoBehaviour, IInjectable
     private GridWorldHandler? _gridWorldHandler;
     private TooltipHandler? _toolTipHandler;
     private PlayerObjectRegistry? _playerObjectRegistry;
+    private CentralResourceHub? _resourceHub;
+
     public void Inject(DependencyContainer container)
     {
         _gridWorldHandler = container.Get<GridWorldHandler>();
         _toolTipHandler = container.Get<TooltipHandler>();
         _playerObjectRegistry = container.Get<PlayerObjectRegistry>();
+        _resourceHub = container.Get<CentralResourceHub>();
     }
 
     // ---- State
@@ -72,6 +76,8 @@ public class BuildSystem : MonoBehaviour, IInjectable
     private TooltipHandler.TooltipData _obstructedTooltipData = new("Obstructed!", Color.red, CustomColors.BlackTrans);
     private TooltipHandler.Handle? _outOfRangeTooltip;
     private TooltipHandler.TooltipData _outOfRangeTooltipData = new("Out of range!", Color.red, CustomColors.BlackTrans);
+    private TooltipHandler.Handle? _insufficientResourcesTooltip;
+    private TooltipHandler.TooltipData _insufficientResourcesTooltipData = new("Insufficient resources!", Color.red, CustomColors.BlackTrans);
 
 
     // ---- Public API
@@ -102,18 +108,29 @@ public class BuildSystem : MonoBehaviour, IInjectable
 
         _obstructedTooltip?.RemoveTooltip();
         _outOfRangeTooltip?.RemoveTooltip();
+        _insufficientResourcesTooltip?.RemoveTooltip();
 
         Cursor.visible = true;
     }
 
     public void PlaceCurrent()
     {
-        if (_tryingToPlaceBuildable == null || !_placingAllowed || _gridWorldHandler == null || _gridWorldHandler.World == null)
+        if (_tryingToPlaceBuildable == null ||  !_placingAllowed || _gridWorldHandler == null || _gridWorldHandler.World == null
+            || _mainPlayerStorage == null || _resourceHub == null)
             return;
 
+        var buildable = _tryingToPlaceBuildable.Value;
+
         Vector3? nullableBuildingPosition = (new Vector3(_tryingToPlaceTileRect.position.x, transform.position.y, _tryingToPlaceTileRect.position.y) + _tryingToPlaceBuildable?.placementOffset);
+        
         if (nullableBuildingPosition == null)
             return;
+
+        foreach (var cost in buildable.resourceCost)
+        {
+            if (!_resourceHub.ConsumeResource(_mainPlayerStorage.StorageID, (int)cost.resource, cost.cost))
+                return;
+        }
 
         Vector3 buildingPosition = nullableBuildingPosition.Value;
 
@@ -126,8 +143,10 @@ public class BuildSystem : MonoBehaviour, IInjectable
     // ---- Unity methods
     private void Update()
     {
+        // Null checks
         if (_tryingToPlaceBuildable == null || _gridWorldHandler == null || _gridWorldHandler.World == null
-            || _buildableDatabase == null || _previewFilter == null || _toolTipHandler == null || _playerObjectRegistry == null)
+            || _buildableDatabase == null || _previewFilter == null || _toolTipHandler == null || _playerObjectRegistry == null
+            || _resourceHub == null || _mainPlayerStorage == null)
             return;
 
         Camera? camera = _gridWorldHandler.MainCam;
@@ -136,9 +155,12 @@ public class BuildSystem : MonoBehaviour, IInjectable
             || Strats.strategies[StratNames.Building] is not Strats.BuildStrat buildstrat)
             return;
 
+        // Tooltip handle init
         _obstructedTooltip ??= _toolTipHandler.NewHandle();
         _outOfRangeTooltip ??= _toolTipHandler.NewHandle();
+        _insufficientResourcesTooltip ??= _toolTipHandler.NewHandle();
 
+        // unpack non-nullable buildable
         var buildable = _tryingToPlaceBuildable.Value;
 
         // Handle mesh preview
@@ -161,8 +183,16 @@ public class BuildSystem : MonoBehaviour, IInjectable
         float distance = _playerObjectRegistry.ClosestPlayerDistance(GridWorld.TileToPosition(tile));
         bool outOfRange = distance > _buildRange;
 
-        // Handle obstructed or out of range
-        buildstrat.BuildAllowed = _placingAllowed = !obstructed && !outOfRange;
+        // Check if enough resources
+        bool notEnoughResources = false;
+        foreach (var cost in buildable.resourceCost)
+        {
+            if (!_resourceHub.HasEnough(_mainPlayerStorage.StorageID, (int)cost.resource, cost.cost))
+                notEnoughResources = true;
+        }
+
+        // Handle obstructed or out of range or not enough resources
+        buildstrat.BuildAllowed = _placingAllowed = !obstructed && !outOfRange && !notEnoughResources;
 
         if (obstructed && _obstructedTooltip.Empty)
             _obstructedTooltip.NewTooltip(_obstructedTooltipData);
@@ -173,5 +203,10 @@ public class BuildSystem : MonoBehaviour, IInjectable
             _outOfRangeTooltip.NewTooltip(_outOfRangeTooltipData);
         else if (!outOfRange)
             _outOfRangeTooltip.RemoveTooltip();
+
+        if (notEnoughResources && _insufficientResourcesTooltip.Empty)
+            _insufficientResourcesTooltip.NewTooltip(_insufficientResourcesTooltipData);
+        else if (!notEnoughResources)
+            _insufficientResourcesTooltip.RemoveTooltip();
     }
 }

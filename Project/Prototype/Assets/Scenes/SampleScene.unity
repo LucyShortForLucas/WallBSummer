@@ -171,6 +171,10 @@ PrefabInstance:
       propertyPath: _mainPlayerStorage
       value: 
       objectReference: {fileID: 1237744076}
+    - target: {fileID: 4577945778147802924, guid: 7b59c4d4d3b8bf44dbcc38a73c54379f, type: 3}
+      propertyPath: _mainPlayerStorage
+      value: 
+      objectReference: {fileID: 1237744076}
     - target: {fileID: 7681011265958673089, guid: 7b59c4d4d3b8bf44dbcc38a73c54379f, type: 3}
       propertyPath: m_Name
       value: BuildSystem

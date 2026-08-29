@@ -27,11 +27,12 @@ public class BuildSystemInputHandler : MonoBehaviour
 
     private void ExitBuildMode()
     {
-        if (_buildSystemUIRoot == null || !_buildModeOn)
+        if (_buildSystemUIRoot == null || !_buildModeOn || _buildSystem == null)
             return;
 
         _buildModeOn = false;
         _buildSystemUIRoot.SetActive(false);
+        _buildSystem.StopTryingToPlace();
     }
 
     // ---- Unity Input messages
@@ -49,8 +50,6 @@ public class BuildSystemInputHandler : MonoBehaviour
             return;
         
         _buildSystem.PlaceCurrent();
-        _buildSystem.StopTryingToPlace();
-        _buildModeOn = false;
     }
 
 }

@@ -109,6 +109,21 @@ std::vector<FnPtr<void, uint32_t>> g_worldTypeInitFuncs{
 		// right block (still life)
 		pFertilityGrid->fill_tile_rect({ {34, 62}, 2, 2 }, { f });
 		pGrid->set_update<FertilityGrid>(conway_fertility);
+	},
+	/* 2, prototype */ [](uint32_t worldId) {
+		auto& pGrid {g_GridWorlds[worldId]};
+		pGrid->init_grids_default();
+		pGrid->wake_chunks({{-32, -32}, 32, 32});
+		auto pFertilityGrid{ pGrid->get_multigrid<FertilityGrid>()->get_grid<tile::Fertility>() };
+		auto pWaterTypeGrid{ pGrid->get_multigrid<FertilityGrid>()->get_grid<tile::WaterTileType>() };
+		const int f = gridWorldInfo.maxFertility;
+
+		const auto sourceWaterTile{ tile::WaterTileType{ static_cast<int>(WaterTileType::WaterSource) } };
+		pWaterTypeGrid->fill_tile_rect({ {-3, -3}, 6, 6 }, sourceWaterTile);
+		pWaterTypeGrid->fill_tile_rect({ {-4, -4}, 3, 3 }, sourceWaterTile);
+		pWaterTypeGrid->fill_tile_rect({ {1, 1}, 2, 2 }, sourceWaterTile);
+		const tile::Fertility maxFertileTile{ tile::Fertility{gridWorldInfo.maxFertility} };
+		pFertilityGrid->fill_tile_rect({ {1, 1}, 2, 2 }, maxFertileTile);
 	}
 };
 
@@ -165,10 +180,11 @@ void GetTilesFromMultiGridAndTransformValue(uint32_t worldId, int32_t x, int32_t
 }
 
 std::vector<FnPtr<void, uint32_t, int32_t, int32_t, int32_t, int32_t, void*>> g_GetTileFuncs{
-	/* 0, water content*/		GetTilesFromMultiGridAndTransformValue<WaterGrid, tile::WaterContent>,
-	/* 1, water type*/			GetTilesFromMultiGridAndTransformValue<WaterGrid, tile::WaterTileType>,
-	/* 2, fertility*/			GetTilesFromMultiGridAndTransformValue<FertilityGrid, tile::Fertility>,
-	/* 2, Build Obstruction*/	GetTilesFromMultiGridAndTransformValue<BuildGrid, tile::BuildObstructionType>
+	/* 0, water content*/			GetTilesFromMultiGridAndTransformValue<WaterGrid, tile::WaterContent>,
+	/* 1, water type*/				GetTilesFromMultiGridAndTransformValue<WaterGrid, tile::WaterTileType>,
+	/* 2, fertility*/				GetTilesFromMultiGridAndTransformValue<FertilityGrid, tile::Fertility>,
+	/* 3, Build Obstruction*/		GetTilesFromMultiGridAndTransformValue<BuildGrid, tile::BuildObstructionType>,
+	/* 4, Fertility Spread Type*/	GetTilesFromMultiGridAndTransformValue<BuildGrid, tile::FertilitySpreadType>
 };
 
 
@@ -186,10 +202,11 @@ void fill_tiles_in_multiGrid(uint32_t worldId, int32_t x, int32_t y, int32_t w, 
 }
 
 std::vector<FnPtr<void, uint32_t, int32_t, int32_t, int32_t, int32_t, void*>> g_SetTileFuncs{
-	/* 0, water content*/		fill_tiles_in_multiGrid<WaterGrid, tile::WaterContent>,
-	/* 1, water type*/			fill_tiles_in_multiGrid<WaterGrid, tile::WaterTileType>,
-	/* 2, fertility*/			fill_tiles_in_multiGrid<FertilityGrid, tile::Fertility>,
-	/* 3, Build Obstruction*/	fill_tiles_in_multiGrid<BuildGrid, tile::BuildObstructionType>
+	/* 0, water content*/			fill_tiles_in_multiGrid<WaterGrid, tile::WaterContent>,
+	/* 1, water type*/				fill_tiles_in_multiGrid<WaterGrid, tile::WaterTileType>,
+	/* 2, fertility*/				fill_tiles_in_multiGrid<FertilityGrid, tile::Fertility>,
+	/* 3, Build Obstruction*/		fill_tiles_in_multiGrid<BuildGrid, tile::BuildObstructionType>,
+	/* 4, Fertility Spread Type*/	fill_tiles_in_multiGrid<BuildGrid, tile::FertilitySpreadType>
 };
 
 PLUGIN_API void fill_tile_data(uint32_t worldId, uint32_t tileDataType,

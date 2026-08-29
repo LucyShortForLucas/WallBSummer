@@ -56,3 +56,46 @@ void conway_fertility(FertilityGrid* pGrid, int) {
 
 	pGrid->run_on_awake_chunks<tile::Fertility>(gameOfLife);
 }
+
+void fertility_spread(FertilityGrid* pGrid, int) {
+	auto spreadFertility = [](grid::Chunk2d<tile::Fertility>* pChunk, grid::Grid2d<tile::Fertility>* pGrid, const grid::Grid2d<tile::FertilitySpreadType>* const pTypeGrid) {
+		std::array<bool, grid::CHUNK_DATA_SIZE> intermediate;
+		std::array<bool, grid::CHUNK_DATA_SIZE> fertility_allowed;
+
+		auto at_least_one_min_fertility{ [](const tile::Fertility a, const tile::Fertility b, const tile::Fertility c) -> bool {
+			return a.value > gridWorldInfo.minFertilityToSpread
+				|| b.value > gridWorldInfo.minFertilityToSpread
+				|| c.value > gridWorldInfo.minFertilityToSpread;
+		} };
+
+		auto reduce_bool{ [](const bool a, const bool b, const bool c) -> bool {
+			return a || b || c;
+		} };
+
+		auto& readBuffer{ pChunk->read_buffer() };
+		auto& writeBuffer{ pChunk->write_buffer() };
+		grid::row_reduce_3x3(readBuffer, intermediate, at_least_one_min_fertility);
+		grid::column_reduce_3x3(intermediate, fertility_allowed, reduce_bool);
+
+		auto typeGridData{pTypeGrid->get_chunk_data_if_loaded(pChunk->coord)};
+
+		if (typeGridData != nullptr)
+			for (int i{}; i < fertility_allowed.size(); ++i) {
+				auto spreadType = static_cast<FertilitySpreadType>(typeGridData->at(i).value);
+				fertility_allowed[i] = (fertility_allowed[i] || spreadType == FertilitySpreadType::Always)
+					&& !(spreadType != FertilitySpreadType::None);
+			}
+
+		int i{ -1 };
+		while (++i < grid::CHUNK_DATA_SIZE) {
+			writeBuffer[i] = readBuffer[i];
+			if (fertility_allowed[i])
+				writeBuffer[i].value += 1;
+		}
+
+		pChunk->swap_buffers();
+		pGrid->mark_chunk_dirty(pChunk->coord, 255);
+	};
+
+	pGrid->run_on_awake_chunks<tile::Fertility>(spreadFertility, pGrid->get_grid<tile::FertilitySpreadType>());
+}

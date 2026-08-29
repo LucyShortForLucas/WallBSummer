@@ -83,11 +83,8 @@ public class BuildSystemUI : MonoBehaviour, IInjectable
         if (_buildSystem == null || _resourceHub == null || _mainPlayerStorage == null)
             return;
 
-        foreach (var cost in buildable.resourceCost)
-        {
-            if (!_resourceHub.ConsumeResource(_mainPlayerStorage.StorageID, (int)cost.resource, cost.cost))
-                return;
-        }
+        if (!BuildableCostMet(buildable))
+            return;
 
         _buildSystem.TryToPlace(buildable);
 

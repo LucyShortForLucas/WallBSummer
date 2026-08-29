@@ -260,5 +260,12 @@ void Grid2d<T>::mark_chunk_dirty(ChunkCoord2d coord, uint8_t dirtyFlags) {
     chunk.dirtyEdges |= dirtyFlags;
 }
 
+template <ValidGridData T>
+const std::array<T, CHUNK_DATA_SIZE>* Grid2d<T>::get_chunk_data_if_loaded(ChunkCoord2d coord) const {
+    if (!m_Chunks.contains(coord))
+        return nullptr;
+
+    return &m_Chunks.at(coord)->read_buffer();
+}
 
 }

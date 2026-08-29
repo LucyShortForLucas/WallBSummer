@@ -85,6 +85,8 @@ public:
 	std::vector<T>	get_tile_rect(GridTileRect rect);
 	void			fill_tile_rect(GridTileRect rect, T value); 
 
+	const std::array<T, CHUNK_DATA_SIZE>* get_chunk_data_if_loaded(ChunkCoord2d coord) const;
+
 	// ---- Chunk algorithm methods
 	template <typename F, typename ...Args> requires Chunk2dAlgorithm<F, T, Args...>
 	void run_on_chunk(ChunkCoord2d chunkCoord, F&& func, Args&&... args);

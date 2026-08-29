@@ -10,6 +10,10 @@ struct Fertility {
 	int32_t value;
 };
 
+struct FertilitySpreadType {
+	uint8_t value;
+};
+
 struct WaterContent {
 	int32_t value;
 };
@@ -24,7 +28,7 @@ struct BuildObstructionType {
 
 }
 
-using FertilityGrid = grid::MultiGrid2d<tile::Fertility>;
+using FertilityGrid = grid::MultiGrid2d<tile::Fertility, tile::FertilitySpreadType>;
 
 using WaterGrid = grid::MultiGrid2d<tile::WaterContent, tile::WaterTileType>;
 
