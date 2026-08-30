@@ -735,6 +735,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1322565740301245621}
   - component: {fileID: 4577945778147802924}
+  - component: {fileID: 2887125984728987582}
   m_Layer: 0
   m_Name: BuildSystem
   m_TagString: Untagged
@@ -776,7 +777,24 @@ MonoBehaviour:
   _buildableDatabase: {fileID: 11400000, guid: d64b1ddcab85d9c4a9dc647aab99c310, type: 2}
   _previewFilter: {fileID: 6259291417182727304}
   _gridOverlay: {fileID: 7239122132021201782}
+  _mainPlayerStorage: {fileID: 0}
   _buildRange: 25
+--- !u!114 &2887125984728987582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7681011265958673089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae8e502637838b8408e01f4362cabe7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingSystemAudioEvents
+  _placeEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 962101829e8b15048af1559f0f7fcbfa, type: 2}
 --- !u!1 &7754696613128040697
 GameObject:
   m_ObjectHideFlags: 0

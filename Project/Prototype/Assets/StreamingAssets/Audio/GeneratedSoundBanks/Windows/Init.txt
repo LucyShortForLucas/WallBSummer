@@ -1,5 +1,19 @@
+State Group	ID	Name			Wwise Object Path	Notes
+	2764240573	Combat			\Default Work Unit\Combat	
+
+State	ID	Name	State Group			Notes
+	748895195	None	Combat			
+	2452206122	False	Combat			
+	3053630529	True	Combat			
+
 Audio Bus	ID	Name			Wwise Object Path	Notes
+	85412153	Ambience			\Default Work Unit\Main Audio Bus\Ambience	
+	212919962	Turrets			\Default Work Unit\Main Audio Bus\Turrets	
+	1069431850	Player			\Default Work Unit\Main Audio Bus\Player	
+	2242381963	Enemies			\Default Work Unit\Main Audio Bus\Enemies	
 	2246998526	Main Audio Bus			\Default Work Unit\Main Audio Bus	
+	2431462441	Factories			\Default Work Unit\Main Audio Bus\Factories	
+	3991942870	Music			\Default Work Unit\Main Audio Bus\Music	
 
 Audio Devices	ID	Name	Type				Notes
 	2317455096	No_Output	No Output			

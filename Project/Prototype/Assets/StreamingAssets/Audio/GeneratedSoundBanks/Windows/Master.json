@@ -10,11 +10,59 @@
     "Type": "User",
     "GUID": "{A71A4991-68E7-457B-A1D0-5EB7B176AF0C}",
     "Language": "SFX",
-    "Hash": "{81280AE0-EBD0-B374-7BAD-6F81AB3193DE}",
+    "Hash": "{F2DC2267-C239-C87D-843F-4E1BCBF73FC2}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Master",
     "ShortName": "Master",
     "Path": "Master.bnk",
     "Media": [
+     {
+      "Id": "232304993",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "InventoryCloseStyle.wav",
+      "CachePath": "DD/{DD2D866F-E313-1131-FCD5-6B549801A7EB}.wem"
+     },
+     {
+      "Id": "306037462",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "InventoryOpenBase.wav",
+      "CachePath": "35/{35C371E7-71B3-B741-850A-0A58CCCB61C0}.wem"
+     },
+     {
+      "Id": "307192898",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "TurretStyle-001.wav",
+      "CachePath": "23/{23E29B12-A58F-47DE-C9A8-FC79AE89BC3E}.wem"
+     },
+     {
+      "Id": "324676758",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "TurretStyle-003.wav",
+      "CachePath": "A6/{A6640AF3-222F-14BF-9717-D34E6164D1E5}.wem"
+     },
+     {
+      "Id": "447971901",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "TurretBase-002.wav",
+      "CachePath": "1A/{1A8DC759-DE23-61BA-07ED-B9F654D1E997}.wem"
+     },
+     {
+      "Id": "533403446",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "PlaceStyle.wav",
+      "CachePath": "26/{262FF9BE-37AA-CDEF-1C29-D08C99497742}.wem"
+     },
      {
       "Id": "616443019",
       "Language": "SFX",
@@ -22,9 +70,163 @@
       "Location": "Memory",
       "ShortName": "BadToTheBone.wav",
       "CachePath": "6E/{6E3BCD52-B934-2F98-F8A8-D87CE7B22E73}.wem"
+     },
+     {
+      "Id": "654893353",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "PlaceBase.wav",
+      "CachePath": "61/{6185DBDB-D6C6-4378-24BC-6BA126606C2B}.wem"
+     },
+     {
+      "Id": "656306846",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "InventoryCloseBase.wav",
+      "CachePath": "0C/{0CFCB692-B010-D0DE-B0AD-68F70F9B420F}.wem"
+     },
+     {
+      "Id": "757154895",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "DesertTemp.wav",
+      "CachePath": "1C/{1C8F04F0-2D14-D204-20E6-2A956253634B}.wem"
+     },
+     {
+      "Id": "776163752",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "TurretBase-003.wav",
+      "CachePath": "99/{9969493D-30C1-F1FA-66BD-57B2F8474DE7}.wem"
+     },
+     {
+      "Id": "777327380",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "InventoryOpenStyle.wav",
+      "CachePath": "3A/{3AE2F5FF-6894-6876-B5E4-9CA893577FCB}.wem"
+     },
+     {
+      "Id": "785512542",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "TurretStyle-002.wav",
+      "CachePath": "D1/{D11C9316-FC67-5EEE-EA34-59AA37628DB2}.wem"
+     },
+     {
+      "Id": "910507173",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "TurretBase-001.wav",
+      "CachePath": "C0/{C06807D7-1138-0359-AC2D-5A6A1CD29853}.wem"
+     },
+     {
+      "Id": "943670292",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "PlantingStyle.wav",
+      "CachePath": "F4/{F426E514-2418-B92B-A703-1C9B999F65B0}.wem"
+     },
+     {
+      "Id": "1011641975",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "PlantingBase.wav",
+      "CachePath": "09/{09E7DA4C-034E-38B3-738F-40F55876B467}.wem"
      }
     ],
     "Events": [
+     {
+      "Id": "85412153",
+      "Name": "Ambience",
+      "ObjectPath": "\\Events\\Default Work Unit\\Ambience",
+      "GUID": "{284E678E-C8AA-4D61-939E-FF3A3FAAC1C2}",
+      "DurationType": "OneShot",
+      "DurationMin": "305.9929",
+      "DurationMax": "305.9929",
+      "MediaRefs": [
+       {
+        "Id": "757154895"
+       }
+      ]
+     },
+     {
+      "Id": "1577974710",
+      "Name": "BuildingPlace",
+      "ObjectPath": "\\Events\\Default Work Unit\\BuildingPlace",
+      "GUID": "{E8EEDF3B-1479-4384-A52C-C1C35C726C46}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.7333333",
+      "DurationMax": "1.7333333",
+      "MediaRefs": [
+       {
+        "Id": "533403446"
+       },
+       {
+        "Id": "654893353"
+       }
+      ]
+     },
+     {
+      "Id": "3127519445",
+      "Name": "InventoryClose",
+      "ObjectPath": "\\Events\\Default Work Unit\\InventoryClose",
+      "GUID": "{6D4EE853-1A0E-4C77-98E1-0E193244943F}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.1",
+      "DurationMax": "2.1",
+      "MediaRefs": [
+       {
+        "Id": "232304993"
+       },
+       {
+        "Id": "656306846"
+       }
+      ]
+     },
+     {
+      "Id": "1373752575",
+      "Name": "InventoryOpen",
+      "ObjectPath": "\\Events\\Default Work Unit\\InventoryOpen",
+      "GUID": "{934FEB06-F8F2-41D3-84F1-0F5C7FAABAE2}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.5666667",
+      "DurationMax": "1.5666667",
+      "MediaRefs": [
+       {
+        "Id": "306037462"
+       },
+       {
+        "Id": "777327380"
+       }
+      ]
+     },
+     {
+      "Id": "2919123772",
+      "Name": "Planting",
+      "ObjectPath": "\\Events\\Default Work Unit\\Planting",
+      "GUID": "{259AAF48-43CB-40B4-B0A1-90C91BB97321}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.455625",
+      "DurationMax": "1.455625",
+      "MediaRefs": [
+       {
+        "Id": "943670292"
+       },
+       {
+        "Id": "1011641975"
+       }
+      ]
+     },
      {
       "Id": "1097980931",
       "Name": "TestEvent",
@@ -36,10 +238,47 @@
         "Id": "616443019"
        }
       ]
+     },
+     {
+      "Id": "493550803",
+      "Name": "TurretShot",
+      "ObjectPath": "\\Events\\Default Work Unit\\TurretShot",
+      "GUID": "{24145924-5942-4262-AA97-DFB360AAD8D8}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.9552083",
+      "DurationMax": "1.9666667",
+      "MediaRefs": [
+       {
+        "Id": "307192898"
+       },
+       {
+        "Id": "324676758"
+       },
+       {
+        "Id": "447971901"
+       },
+       {
+        "Id": "776163752"
+       },
+       {
+        "Id": "785512542"
+       },
+       {
+        "Id": "910507173"
+       }
+      ]
+     }
+    ],
+    "GameParameters": [
+     {
+      "Id": "1241519613",
+      "Name": "Fertility",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\Fertility",
+      "GUID": "{81A2625A-9392-4300-A278-BE8EE5940AE2}"
      }
     ]
    }
   ],
-  "FileHash": "{E18A38E4-0547-A81E-13DB-458B90EDF10B}"
+  "FileHash": "{3D97A20C-2D91-3E65-A23D-E8362049BD91}"
  }
 }

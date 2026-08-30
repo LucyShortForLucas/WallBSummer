@@ -213,6 +213,7 @@ GameObject:
   - component: {fileID: 5556869359554837075}
   - component: {fileID: 1569501874986046982}
   - component: {fileID: 7376040492233956613}
+  - component: {fileID: 5112396776814268503}
   m_Layer: 6
   m_Name: Turret
   m_TagString: Untagged
@@ -305,6 +306,22 @@ MonoBehaviour:
   barrel: {fileID: 7793565609166072539}
   firePoint: {fileID: 8262199542783426872}
   projectilePrefab: {fileID: 3041499663993135508, guid: 18aebe3953d06b34bb890461df20f5f0, type: 3}
+--- !u!114 &5112396776814268503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2048181224289364501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b8c7f3d12e44f14e9eb31f8c076f046, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TurretAudioEvents
+  _turretShotEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 3f92b8557d783b64abd70222dae787fa, type: 2}
 --- !u!1 &4919374726262515422
 GameObject:
   m_ObjectHideFlags: 0

@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 2756835712873484562}
   - component: {fileID: 1334836899882424040}
   - component: {fileID: 2173169797790506234}
+  - component: {fileID: 8520204413206780957}
   m_Layer: 6
   m_Name: Storage
   m_TagString: Untagged
@@ -354,3 +355,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DangerComponent
   baseDanger: 0
+--- !u!114 &8520204413206780957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3585548435327155510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd9a871f76d572e4c9d5b2e3142434fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryInteractionsAudioEvents
+  _inventoryOpenEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: b5f484c1cb96c264e8a199be16a19da8, type: 2}
+  _inventoryCloseEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 5753f48284cb5e24cad64b3735107660, type: 2}

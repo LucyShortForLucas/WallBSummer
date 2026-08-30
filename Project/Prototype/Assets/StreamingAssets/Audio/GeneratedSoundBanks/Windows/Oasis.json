@@ -1,0 +1,21 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "697305512",
+    "Type": "User",
+    "GUID": "{AECAB55A-D24A-4AC6-AE5B-7124204501FD}",
+    "Language": "SFX",
+    "Hash": "{A718B8A9-3909-68E4-98F7-6E732E06D442}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\Oasis",
+    "ShortName": "Oasis",
+    "Path": "Oasis.bnk"
+   }
+  ],
+  "FileHash": "{BC6FF94C-A177-1C4A-1FBF-304E39E378CD}"
+ }
+}

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 753134176036120951}
   - component: {fileID: 6610318928206658243}
   - component: {fileID: 5353643776621076799}
+  - component: {fileID: 958621997893255009}
   m_Layer: 0
   m_Name: FarmPlot
   m_TagString: Untagged
@@ -174,6 +175,22 @@ MonoBehaviour:
   waterReceiver: {fileID: 1050327849757066807}
   connectedNodes: []
   currentWater: 0
+--- !u!114 &958621997893255009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5784207029061357082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bcd6d8d523d0f84aa5b7bd02018b0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FarmingAudioEvents
+  _plantingEvent:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: f58200f6f28b70a428013d94c0af0285, type: 2}
 --- !u!1 &5883364909341629927
 GameObject:
   m_ObjectHideFlags: 0
