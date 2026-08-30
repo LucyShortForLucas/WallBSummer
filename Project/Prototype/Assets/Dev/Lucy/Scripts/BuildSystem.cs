@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static BuildableDatabase;
@@ -58,13 +59,19 @@ public class BuildSystem : MonoBehaviour, IInjectable
     private PlayerObjectRegistry? _playerObjectRegistry;
     private CentralResourceHub? _resourceHub;
 
+    private DependencyContainer _dependencies = new();
+
     public void Inject(DependencyContainer container)
     {
         _gridWorldHandler = container.Get<GridWorldHandler>();
         _toolTipHandler = container.Get<TooltipHandler>();
         _playerObjectRegistry = container.Get<PlayerObjectRegistry>();
         _resourceHub = container.Get<CentralResourceHub>();
+        _dependencies = container;
     }
+
+    // ---- Events
+    public event Action<string>? OnBuildingPlaced;
 
     // ---- State
     private BuildableDatabase.Buildable? _tryingToPlaceBuildable;
@@ -91,8 +98,6 @@ public class BuildSystem : MonoBehaviour, IInjectable
         _previewFilter.mesh = _tryingToPlaceBuildable?.previewMesh;
         _previewFilter.gameObject.SetActive(true);
         _gridOverlay.SetActive(true);
-
-        if (_gridWorldHandler != null && _gridWorldHandler.World != null) _gridWorldHandler.World.FillBuildObstructionType(new RectInt(-32, -32, 32, 32), GridWorld.BuildObstructionType.Natural);
 
         Cursor.visible = false;
     }
@@ -135,9 +140,19 @@ public class BuildSystem : MonoBehaviour, IInjectable
         Vector3 buildingPosition = nullableBuildingPosition.Value;
 
         _gridWorldHandler.World.FillBuildObstructionType(_tryingToPlaceTileRect, GridWorld.BuildObstructionType.Building);
-        Instantiate(_tryingToPlaceBuildable?.building, buildingPosition, Quaternion.identity);
+        var go = Instantiate(_tryingToPlaceBuildable?.building, buildingPosition, Quaternion.identity);
+
+        if (go == null)
+            return;
+
+        foreach(IInjectable injectable in go.GetComponentsInChildren<IInjectable>())
+        {
+            injectable.Inject(_dependencies);
+        }
 
         _placingAllowed = false;
+
+        OnBuildingPlaced?.Invoke(buildable.name);
     }
 
     // ---- Unity methods

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: BasicTurret
   m_EditorClassIdentifier: Assembly-CSharp::TurretStatsData
   priority: 0
-  detectionRadius: 30
-  minRange: 4
-  maxHealth: 250
-  fireRate: 1.5
+  detectionRadius: 40
+  minRange: 1
+  maxHealth: 500
+  fireRate: 0.75
   turnSpeed: 8
   maxDepression: -15
   maxElevation: 45

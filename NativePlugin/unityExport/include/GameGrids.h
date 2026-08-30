@@ -7,23 +7,23 @@
 namespace tile {
 
 struct Fertility {
-	int32_t value;
+	int32_t value{};
 };
 
 struct FertilitySpreadType {
-	uint8_t value;
+	uint8_t value{};
 };
 
 struct WaterContent {
-	int32_t value;
+	int32_t value{};
 };
 
 struct WaterTileType {
-	int8_t value;
+	int8_t value{};
 };
 
 struct BuildObstructionType {
-	int8_t value;
+	int8_t value{};
 };
 
 }

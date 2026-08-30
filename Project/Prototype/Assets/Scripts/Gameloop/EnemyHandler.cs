@@ -54,7 +54,7 @@ public class EnemyHandler : MonoBehaviour, IInjectable
         }
     }
 
-    private void TriggerWave(int currentDay)
+    public void TriggerWave(int currentDay)
     {
         // Calculate groups based on days
         int spawnGroups = 1 + (currentDay / 10);

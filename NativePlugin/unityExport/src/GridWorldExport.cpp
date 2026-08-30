@@ -113,17 +113,20 @@ std::vector<FnPtr<void, uint32_t>> g_worldTypeInitFuncs{
 	/* 2, prototype */ [](uint32_t worldId) {
 		auto& pGrid {g_GridWorlds[worldId]};
 		pGrid->init_grids_default();
-		pGrid->wake_chunks({{-32, -32}, 32, 32});
+		pGrid->wake_chunks({{-16, -16}, 32, 32});
 		auto pFertilityGrid{ pGrid->get_multigrid<FertilityGrid>()->get_grid<tile::Fertility>() };
-		auto pWaterTypeGrid{ pGrid->get_multigrid<FertilityGrid>()->get_grid<tile::WaterTileType>() };
+		auto pWaterTypeGrid{ pGrid->get_multigrid<WaterGrid>()->get_grid<tile::WaterTileType>() };
 		const int f = gridWorldInfo.maxFertility;
 
 		const auto sourceWaterTile{ tile::WaterTileType{ static_cast<int>(WaterTileType::WaterSource) } };
 		pWaterTypeGrid->fill_tile_rect({ {-3, -3}, 6, 6 }, sourceWaterTile);
 		pWaterTypeGrid->fill_tile_rect({ {-4, -4}, 3, 3 }, sourceWaterTile);
-		pWaterTypeGrid->fill_tile_rect({ {1, 1}, 2, 2 }, sourceWaterTile);
+		pWaterTypeGrid->fill_tile_rect({ {2, 2}, 2, 2 }, sourceWaterTile);
+
 		const tile::Fertility maxFertileTile{ tile::Fertility{gridWorldInfo.maxFertility} };
-		pFertilityGrid->fill_tile_rect({ {1, 1}, 2, 2 }, maxFertileTile);
+		pFertilityGrid->fill_tile_rect({ {-5, -5}, 10, 10 }, maxFertileTile);
+
+		pGrid->set_update(fertility_spread);
 	}
 };
 
@@ -184,7 +187,7 @@ std::vector<FnPtr<void, uint32_t, int32_t, int32_t, int32_t, int32_t, void*>> g_
 	/* 1, water type*/				GetTilesFromMultiGridAndTransformValue<WaterGrid, tile::WaterTileType>,
 	/* 2, fertility*/				GetTilesFromMultiGridAndTransformValue<FertilityGrid, tile::Fertility>,
 	/* 3, Build Obstruction*/		GetTilesFromMultiGridAndTransformValue<BuildGrid, tile::BuildObstructionType>,
-	/* 4, Fertility Spread Type*/	GetTilesFromMultiGridAndTransformValue<BuildGrid, tile::FertilitySpreadType>
+	/* 4, Fertility Spread Type*/	GetTilesFromMultiGridAndTransformValue<FertilityGrid, tile::FertilitySpreadType>
 };
 
 
@@ -206,7 +209,7 @@ std::vector<FnPtr<void, uint32_t, int32_t, int32_t, int32_t, int32_t, void*>> g_
 	/* 1, water type*/				fill_tiles_in_multiGrid<WaterGrid, tile::WaterTileType>,
 	/* 2, fertility*/				fill_tiles_in_multiGrid<FertilityGrid, tile::Fertility>,
 	/* 3, Build Obstruction*/		fill_tiles_in_multiGrid<BuildGrid, tile::BuildObstructionType>,
-	/* 4, Fertility Spread Type*/	fill_tiles_in_multiGrid<BuildGrid, tile::FertilitySpreadType>
+	/* 4, Fertility Spread Type*/	fill_tiles_in_multiGrid<FertilityGrid, tile::FertilitySpreadType>
 };
 
 PLUGIN_API void fill_tile_data(uint32_t worldId, uint32_t tileDataType,

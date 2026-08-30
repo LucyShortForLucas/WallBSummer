@@ -78,6 +78,11 @@ public class GridWorld: IDisposable
         return new GridWorld((uint)NativeMethods.WorldInitType.Test);
     }
 
+    public static GridWorld PrototyperGridWorld()
+    {
+        return new GridWorld((uint)NativeMethods.WorldInitType.Prototype);
+    }
+
     public void Dispose()
     {
         NativeMethods.destroy_gridworld(_handle);
@@ -156,7 +161,8 @@ public class GridWorld: IDisposable
         public enum WorldInitType : uint
         {
             Default = 0,
-            Test = 1
+            Test = 1,
+            Prototype = 2
         }
 
         public enum ChunkStateOp : uint

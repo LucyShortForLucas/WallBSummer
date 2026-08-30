@@ -160,8 +160,8 @@ struct Sync {
         auto pSrcBuffer{ target.current_data_buffer().data()};       // We fetch pointers to the start of our buffers
         auto pDstBuffer{ neighbour.current_data_buffer().data()};   // so we can efficiently bulk copy from them 
                                                                    //  later with std::copy_n
-        auto src{ pSrcBuffer + CHUNK_SW_INDEX };
-        auto dst{ pDstBuffer + HALO_NW_INDEX + 1};
+        auto src{ pSrcBuffer + CHUNK_NW_INDEX };
+        auto dst{ pDstBuffer + HALO_SW_INDEX + 1};
 
         std::copy_n(src, CHUNK_WIDTH, dst);
     }
@@ -180,8 +180,8 @@ struct Sync {
         auto pSrcBuffer{ target.current_data_buffer().data() };        // We fetch pointers to the start of our buffers
         auto pDstBuffer{ neighbour.current_data_buffer().data() };    // so we can efficiently bulk copy from them 
                                                                      //  later with std::copy_n
-        auto src{ pSrcBuffer + CHUNK_NW_INDEX };
-        auto dst{ pDstBuffer + HALO_SW_INDEX + 1 };
+        auto src{ pSrcBuffer + CHUNK_SW_INDEX };
+        auto dst{ pDstBuffer + HALO_NW_INDEX + 1 };
 
         std::copy_n(src, CHUNK_WIDTH, dst);
     }
@@ -222,14 +222,14 @@ void Grid2d<T>::sync_dirty_halos() {
     using Sync = detail::Sync<T>;
 
     static constexpr std::array<DirEntry, 8> syncFuncTable = {
-        /*N */ DirEntry{ChunkCoord2d{ 0,  1}, Sync::sync_N },
+        /*N */ DirEntry{ChunkCoord2d{ 0, -1}, Sync::sync_N },
         /*E */ DirEntry{ChunkCoord2d{ 1,  0}, Sync::sync_E },
-        /*S */ DirEntry{ChunkCoord2d{ 0, -1}, Sync::sync_S },
+        /*S */ DirEntry{ChunkCoord2d{ 0,  1}, Sync::sync_S },
         /*W */ DirEntry{ChunkCoord2d{-1,  0}, Sync::sync_W },
-        /*NE*/ DirEntry{ChunkCoord2d{ 1,  1}, Sync::sync_NE},
-        /*SE*/ DirEntry{ChunkCoord2d{ 1, -1}, Sync::sync_SE},
-        /*SW*/ DirEntry{ChunkCoord2d{-1, -1}, Sync::sync_SW},
-        /*NW*/ DirEntry{ChunkCoord2d{-1,  1}, Sync::sync_NW}
+        /*NE*/ DirEntry{ChunkCoord2d{ 1, -1}, Sync::sync_NE},
+        /*SE*/ DirEntry{ChunkCoord2d{ 1,  1}, Sync::sync_SE},
+        /*SW*/ DirEntry{ChunkCoord2d{-1,  1}, Sync::sync_SW},
+        /*NW*/ DirEntry{ChunkCoord2d{-1, -1}, Sync::sync_NW}
     };
 
     for (auto& coord : m_DirtyChunks) {

@@ -81,7 +81,7 @@ public class GridWorldSolidColorTileTextures
 
     // ---- Chunk data
     private Dictionary<Vector2Int, Chunk> _chunks = new();
-    private Texture2DArray _textures = new Texture2DArray(GridWorld.CHUNK_SIZE, GridWorld.CHUNK_SIZE, 1024, TextureFormat.RGBA32, false, false) 
+    private Texture2DArray _textures = new Texture2DArray(GridWorld.CHUNK_SIZE, GridWorld.CHUNK_SIZE, 2048, TextureFormat.RGBA32, false, false) 
     { 
         filterMode = FilterMode.Point,
         wrapMode = TextureWrapMode.Clamp

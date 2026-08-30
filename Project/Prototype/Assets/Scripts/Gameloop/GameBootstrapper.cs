@@ -13,13 +13,16 @@ public class GameBootstrapper : MonoBehaviour
     [SerializeReference] private TooltipHandler? _toolTipHandler;
     [SerializeReference] private PlayerObjectRegistry? _playerObjectRegistry;
 
-   
+    public CentralResourceHub ResourceHub; // TEMP, remove in production
+
     private void Awake()
     {
         DependencyContainer container = new DependencyContainer();
 
+        ResourceHub = new CentralResourceHub();
+
         //  Register systems
-        container.Register(new CentralResourceHub());
+        container.Register(ResourceHub);
         container.SafeRegister(_timeManager);
         container.SafeRegister(_uiManager);
         container.SafeRegister(_enemyHandler);

@@ -281,6 +281,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Debug",
+            "id": "4eb05988-7720-482c-8df7-83c4a4eff56f",
+            "actions": [
+                {
+                    "name": "Spawn Wave",
+                    "type": "Button",
+                    "id": "94a5b264-13aa-408d-b42e-55de9aa63394",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "05745ac6-b149-494a-abc0-1b3004b2c8fe",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Spawn Wave",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

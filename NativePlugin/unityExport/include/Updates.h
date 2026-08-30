@@ -4,6 +4,7 @@
 #include <GameGrids.h>
 #include <GridAlgorithms.h>
 #include <GridWorldInfo.h>
+#include <random>
 
 void conway_fertility(FertilityGrid* pGrid, int) {
 	pGrid->wake_chunks({ {-10, -10}, 20, 20 });
@@ -74,24 +75,40 @@ void fertility_spread(FertilityGrid* pGrid, int) {
 
 		auto& readBuffer{ pChunk->read_buffer() };
 		auto& writeBuffer{ pChunk->write_buffer() };
+
 		grid::row_reduce_3x3(readBuffer, intermediate, at_least_one_min_fertility);
 		grid::column_reduce_3x3(intermediate, fertility_allowed, reduce_bool);
 
 		auto typeGridData{pTypeGrid->get_chunk_data_if_loaded(pChunk->coord)};
 
-		if (typeGridData != nullptr)
-			for (int i{}; i < fertility_allowed.size(); ++i) {
-				auto spreadType = static_cast<FertilitySpreadType>(typeGridData->at(i).value);
-				fertility_allowed[i] = (fertility_allowed[i] || spreadType == FertilitySpreadType::Always)
-					&& !(spreadType != FertilitySpreadType::None);
+		class BitCoinFlipper {
+		public:
+			bool flip() {
+				if (bitsLeft == 0) {
+					buffer = gen();
+					bitsLeft = 64;
+				}
+				bool result = buffer & 1ULL;
+				buffer >>= 1;
+				--bitsLeft;
+				return result;
 			}
 
-		int i{ -1 };
-		while (++i < grid::CHUNK_DATA_SIZE) {
-			writeBuffer[i] = readBuffer[i];
-			if (fertility_allowed[i])
-				writeBuffer[i].value += 1;
-		}
+		private:
+			std::mt19937_64 gen{ std::random_device{}() };
+			uint64_t buffer = 0;
+			int bitsLeft = 0;
+		} thread_local flipper;
+
+		if (typeGridData != nullptr)
+			for (int i{}; i < fertility_allowed.size(); ++i) {
+				writeBuffer[i] = readBuffer.at(i);
+				auto spreadType = static_cast<FertilitySpreadType>(typeGridData->at(i).value);
+				if (spreadType == FertilitySpreadType::None)
+					writeBuffer[i].value = 0;
+				else if ((fertility_allowed[i] || spreadType == FertilitySpreadType::Always) && flipper.flip())
+					writeBuffer[i].value += 1;
+			}
 
 		pChunk->swap_buffers();
 		pGrid->mark_chunk_dirty(pChunk->coord, 255);

@@ -14,11 +14,11 @@ public class GridWorldHandler : MonoBehaviour
     // --- API properties
     public Camera? MainCam => _mainCam != null ? _mainCam : _mainCam = Camera.main;
     public float FocalDepth { set => _worldFocalDepth = value; }
-    public Vector3 FocalPoint => MainCam.transform.position + MainCam.transform.forward * _worldFocalDepth;
+    public Vector3 FocalPoint => MainCam ? MainCam.transform.position + MainCam.transform.forward * _worldFocalDepth : Vector3.zero;
     public Vector2Int FocalTile => GridWorld.PositionToTile(FocalPoint);
 
     private GridWorld? _world;
-    public GridWorld World => _world ??= GridWorld.TestGridWorld();
+    public GridWorld World => _world ??= GridWorld.PrototyperGridWorld();
 
     private void OnDestroy()
     {
@@ -28,6 +28,6 @@ public class GridWorldHandler : MonoBehaviour
 
     void LateUpdate()
     {
-        World.Update(Time.fixedDeltaTime);
+        World.Update(Time.deltaTime);
     }
 }

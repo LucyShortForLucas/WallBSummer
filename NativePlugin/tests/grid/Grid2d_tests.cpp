@@ -159,10 +159,10 @@ TEMPLATE_TEST_CASE("Basic Grid Funcionality works across arbitrary types", "[gri
                 REQUIRE(buffer[i * CHUNK_DATA_WIDTH] == v[3]);
             }
 
-            REQUIRE(buffer[HALO_SW_INDEX] == v[0]);
-            REQUIRE(buffer[HALO_NW_INDEX] == v[1]);
-            REQUIRE(buffer[HALO_NE_INDEX] == v[2]);
-            REQUIRE(buffer[HALO_SE_INDEX] == v[3]);
+            REQUIRE(buffer[HALO_SW_INDEX] == v[2]);
+            REQUIRE(buffer[HALO_NW_INDEX] == v[3]);
+            REQUIRE(buffer[HALO_NE_INDEX] == v[0]);
+            REQUIRE(buffer[HALO_SE_INDEX] == v[1]);
         });
     }
 }

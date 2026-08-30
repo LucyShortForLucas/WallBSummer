@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BasicProjectile
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileStatsData
   moveSpeed: 50
-  damage: 15
+  damage: 20
   lifetime: 4
   targetLayer:
     serializedVersion: 2

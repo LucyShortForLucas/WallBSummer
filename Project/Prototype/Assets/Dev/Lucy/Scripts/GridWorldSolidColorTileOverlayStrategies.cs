@@ -35,7 +35,7 @@ public static class GridWorldSolidColorTileOverlayStrategies
             int i = 0;
             foreach(int fertility in fertilityChunk)
             {
-                colors[i++] = GetGradientColor(Color.lawnGreen, 0.1f, 0.4f, fertility/info.maxFertility);
+                colors[i++] = GetGradientColor(Color.lawnGreen, 0.1f, 0.4f, (float)fertility/(float)info.maxFertility);
             }
         }
     }
@@ -105,12 +105,36 @@ public static class GridWorldSolidColorTileOverlayStrategies
         }
     }
 
+    class PrototypeStrategy : IGridWorldSolidColorTileOverlayStrategy
+    {
+        public void UpdateColors(GridWorld world, Vector2Int chunkCoord, out Color32[] colors)
+        {
+            GridWorldInfo info = GridWorld.INFO;
+            int[,] fertilityChunk = world.GetFertilityChunk(chunkCoord);
+            GridWorld.WaterTileType[,] waterTypeChunk = world.GetWaterTypeChunk(chunkCoord);
+            colors = new Color32[GridWorld.CHUNK_DATA_SIZE];
+
+            for (int y = 0; y < GridWorld.CHUNK_SIZE; ++y)
+            {
+                for (int x = 0; x < GridWorld.CHUNK_SIZE; ++x)
+                {
+                    int fertility = fertilityChunk[y, x];
+                    int ci = x + y * GridWorld.CHUNK_SIZE;
+                    GridWorld.WaterTileType waterType = waterTypeChunk[y, x];
+
+                    colors[ci] = waterType == GridWorld.WaterTileType.WaterSource ? Color.lightBlue : GetGradientColor(Color.lawnGreen, 0f, 1f, (float)fertility / info.maxFertility);
+                }
+            }
+        }
+    }
+
     public enum StrategyName
     {
         None,
         Fertility,
         WaterContent,
-        Building
+        Building,
+        Prototype
     }
 
     public static readonly Dictionary<StrategyName, IGridWorldSolidColorTileOverlayStrategy> strategies =
@@ -118,6 +142,7 @@ public static class GridWorldSolidColorTileOverlayStrategies
         {
             new(StrategyName.None, new NoStrat()),
             new(StrategyName.Fertility, new FertilityStrat()),
-            new(StrategyName.Building, new BuildStrat())
+            new(StrategyName.Building, new BuildStrat()),
+            new(StrategyName.Prototype, new PrototypeStrategy())
         });
 }

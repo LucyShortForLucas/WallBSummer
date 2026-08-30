@@ -127,11 +127,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Plant
   timeToMature: 30
-  timeToExpire: 60
-  timeToDestroy: 90
+  timeToExpire: 600
+  timeToDestroy: 700
   seedResourceId: 4
   foodResourceId: 5
-  matureSeedYield: 1
+  matureSeedYield: 2
   matureFoodYield: 2
   targetRenderer: {fileID: 6351107930669473454}
   growingColor: {r: 0.5, g: 1, b: 0.5, a: 1}

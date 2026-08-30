@@ -1,7 +1,36 @@
+using System;
+using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class HealthComponent : MonoBehaviour, IDamageable
 {
+    // ----- [LUCY/PROTOTYPE] Strategy pattern for death -----
+    public enum DeathStrategy // This is a quick and dirty hardoded implementation, not meant to be permanent
+    {
+        None,
+        DropScrap,
+        Respawn 
+    }
+    private Dictionary<DeathStrategy, Action> strategies = 
+        new(new KeyValuePair<DeathStrategy, Action>[]
+        {
+            new(DeathStrategy.DropScrap, static () =>
+            {
+                var sc = GameObject.Find("Player").GetComponent<StorageComponent>(); // Never do this normally, kill after prototype 
+                var database = GameObject.Find("[BOOTSTRAPPER]").GetComponent<GameBootstrapper>().ResourceHub;
+                database.AddResource(sc.StorageID, 1, 1, true);
+                if (UnityEngine.Random.Range(0,2) == 1) // 50% 
+                    database.AddResource(sc.StorageID, 2, 1, true);
+                if (UnityEngine.Random.Range(0,5) == 1) // 25%
+                    database.AddResource(sc.StorageID, 3, 1, true);
+
+            }), 
+            new(DeathStrategy.None, static () => { }),
+            new(DeathStrategy.Respawn, static () => { }),
+        });
+
+    [SerializeField] private DeathStrategy deathStrat= DeathStrategy.None;
     [SerializeField] private int maxHealth = 100; 
     [SerializeField] private int currentHealth;   
 
@@ -35,7 +64,16 @@ public class HealthComponent : MonoBehaviour, IDamageable
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            Destroy(gameObject); // Lucy: Should the entire GameObject ALWAYS be destroyed the moment we hit 0? 
+
+            strategies[deathStrat]();
+
+            if (deathStrat != DeathStrategy.Respawn)
+                Destroy(gameObject);
+            else
+            {
+                currentHealth = maxHealth;
+                transform.position = new Vector3(-10, 1, -5);
+            }
         }
     }
 }
