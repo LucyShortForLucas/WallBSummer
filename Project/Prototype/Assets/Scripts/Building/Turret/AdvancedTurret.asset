@@ -15,8 +15,8 @@ MonoBehaviour:
   priority: 0
   detectionRadius: 20
   minRange: 2
-  maxHealth: 400
-  fireRate: 1.5
+  maxHealth: 800
+  fireRate: 1
   turnSpeed: 8
   maxDepression: -15
   maxElevation: 45

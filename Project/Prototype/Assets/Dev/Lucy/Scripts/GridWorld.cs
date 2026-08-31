@@ -11,7 +11,7 @@ public class GridWorld: IDisposable
     // ------ Static api --------------
 
     // ---- enums
-    public enum WaterTileType: Byte
+    public enum WaterTileType: byte
     {
         GroundWater = 0, // The water of this tile exists underground, like in soil
         FlowingWater = 1, // The water of this tile flows, like in a river. 
@@ -20,9 +20,16 @@ public class GridWorld: IDisposable
         NoWater = 4 // This tile cannot contain water.
     }
 
-    public enum BuildObstructionType : Byte
+    public enum FertilityType : byte
     {
+        Normal = 0,
         None,
+        Always,
+    }
+
+    public enum BuildObstructionType : byte
+    {
+        None = 0,
         Natural,
         Building
     };
@@ -133,6 +140,8 @@ public class GridWorld: IDisposable
     }
     public int[,] GetFertility(RectInt rect) => GetTileData<int>(rect, NativeMethods.TileDataType.Fertility);
     public int[,] GetFertilityChunk(Vector2Int coord) => GetFertility(new RectInt(coord.x * CHUNK_SIZE, coord.y * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE));
+    public FertilityType[,] GetFertilityType(RectInt rect) => GetTileData<FertilityType>(rect, NativeMethods.TileDataType.FertilityType);
+    public FertilityType[,] GetFertilityTypeChunk(Vector2Int coord) => GetFertilityType(new RectInt(coord.x * CHUNK_SIZE, coord.y * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE));
     public int[,] GetWaterContent(RectInt rect) => GetTileData<int>(rect, NativeMethods.TileDataType.WaterContent);
     public int[,] GetWaterContentChunk(Vector2Int coord) => GetWaterContent(new RectInt(coord.x * CHUNK_SIZE, coord.y * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE));
     public WaterTileType[,] GetWaterType(RectInt rect) => GetTileData<WaterTileType>(rect, NativeMethods.TileDataType.WaterType);
@@ -151,6 +160,7 @@ public class GridWorld: IDisposable
     public void FillFertility(RectInt rect, int value) => FillTileData(rect, NativeMethods.TileDataType.Fertility, value);
     public void FillWaterContent(RectInt rect, int value) => FillTileData(rect, NativeMethods.TileDataType.WaterContent, value);
     public void FillWaterType(RectInt rect, WaterTileType value) => FillTileData(rect, NativeMethods.TileDataType.WaterType, value);
+    public void FillFertilityType(RectInt rect, FertilityType value) => FillTileData(rect, NativeMethods.TileDataType.FertilityType, value);
     public void FillBuildObstructionType(RectInt rect, BuildObstructionType value) => FillTileData(rect, NativeMethods.TileDataType.BuildObstructionType, value);
 
     // ------ Private P/Invoke Native Plugin Interop ------
@@ -177,7 +187,8 @@ public class GridWorld: IDisposable
             WaterContent = 0,
             WaterType = 1,
             Fertility = 2,
-            BuildObstructionType = 3
+            BuildObstructionType = 3,
+            FertilityType = 4
         }
 
         // ---- World management

@@ -1,4 +1,4 @@
-# Intro 
+# PART 0 - BASICS
 
 This is the techdoc for our submission to the course Group Projects 2026. This document stipulates the standards and conventions we will be using throughout the project. This document is written and maintained by me, Lucy, in accordance with our team's standards. 
 
@@ -18,6 +18,7 @@ As the player's base grows, they attract more and stronger enemies. Those enemie
     * New Input system 
     * uGUI (Unity UI)
 * Visual Studio 2026 
+* Wwise
 * ...add as needed
 
 ## Unity 6.5 LTS (6000.5.4f1) 
@@ -42,7 +43,9 @@ The new UI Toolkit, while more powerful, is UXML-based and more closely resemble
 
 Programmers will use Visual Studio 2026 as their IDE of choice to write C# and C++ code.
 
-# Programming guidelines
+<br></br>
+
+# PART 1 - PROGRAMMING GUIDELINES
 
 Below follow a number of programming guidelines. When writing code in the project, stick to these guidelines. For the most part, they should be considered hard rules. These rules exist to keep code in the project consistent, clean, and well-written.
  
@@ -472,27 +475,19 @@ In general, a class should only be a monobehaviour if it requires one of Monobeh
 
 **REASON:** Monobehaviour can, at times, be overkill. Monobehaviours are specifically meant for scripting behaviour and components. If you can get away with a more lightweight base class or even no base class at all, your code will be simpler and more maintable.
 
-# Folder structure
+<br></br>
 
-## Unity project folder structure
-Here is the **approximate** top-level folder structure of our Unity project:
+# PART 2 - PROJECT STRUCTURE
 
+# Unity Project Structure
+This is the top-level folder structure of our Unity project. Below, individual parts of this structure are explained more in-depth below.
 ```
 /Root/
     Assets/
         Game/
             Audio/
             Graphics/
-                Characters/
-                Environment/
-                Particles/
-                Shaders/
-            UI/
-            Scripts/     
-                ScriptableObjects/
-                Monobehaviours/
-                CSharp/
-                Cpp/
+            Systems/
             Input/
             Scenes/
         Editor/
@@ -504,7 +499,7 @@ Here is the **approximate** top-level folder structure of our Unity project:
             .../      ⎦
         TextMeshPro/
         Settings/
-
+        Plugins/
     Packages/        ⎤  ---> Generated folders, 
     ProjectSettings/ ⎦       Included in Version Control 
 
@@ -513,37 +508,48 @@ Here is the **approximate** top-level folder structure of our Unity project:
     Temp/    ⎥      excluded from Version Control
     .../     ⎦
 ```
-### Game | Dev | Editor
-These three folders hold almost all of our team-created assets. They are split here between purpose and development stage.
+## Dev 
+This is where we put any and all work-in-progress files and assets. Within this folder, every team member gets their own folder. Internally, these individual folders may be as (dis)organized as needed. Any assets within these folders are considered **temporary** and **should not be touched by anyone else.** As soon as a file or asset is finished, it should be moved to the appropriate location in **Game** or **Editor**. 
 
-#### Dev
-Everyone working on the project gets their own 'Dev' folder under Assets. This is a temporary workspace to place any kind of assets when working on a feature, level, etc. All assets in these folders are considered temporary and WIP, and no assets from someone's dev folder should be used anywhere outside of that specific dev folder.
+**No asset inside Dev may be depended on by any asset outside of it. This folder is NOT included in the main branch.**
 
-In general, any assets inside of someone's Dev folder are considered incomplete and off-limits, and should not be touched by anyone other than its owner. As soon as an asset is complete it should be moved out of the dev folder and to its appropriate location. 
+## Editor
+In this file, all editor-specific assets should go, such as tools and in-editor scripts.
 
-#### Game
-This is the folder for our game-ready assets.
+## Game
+This is the place where all **game-ready** assets should go. It is internally divided up into further categories, each with their own folder structure, explained below.
 
-#### Editor
-This folder is for all editor-specific assets, such as tooling.
+### systems
+This folder will hold all of the **scripts** and **prefabs** used in the game. In simpler terms, this is the place where all of the code and their implementations go. Internally, they are split up into logical software **systems**.
 
-### Scripts
-The scripts folders are split into the types of scripts we may have. These are ScriptableObjects, Monobehaviours (custom components), non-unity C# scripts, and C++ scripts.
+A **System** in this sense is a single coherent unit of behaviour. **Every single script and prefab should be part of a larger system.** If you find yourself in need of writing a script or creating a prefab that does not fit any established system, this likely indicates a flaw in in your design or architecture. 
 
-### Settings
+**Do not** add new system folders without discussing it with the team. **All systems** should be established and explained in **SystemDocs.md**.
+
+All systems are further categorized into one of **four system categories**:
+
+- **Core systems**: These are the most **fundamental** and low-level systems that other systems **depend on** and that the game cannot exist without. In general, a system is a core system if many other systems **cannot** reasonably exist or be **tested** without these. Examples of core systems are the grid, in-game resource, and health systems.
+
+- **Gameplay systems**: These are the high-level gameplay systems that make up the bulk of the interactable player systems, but that themselves are **not** heavily depended on by other systems. Unlike with Core Systems, gameplay systems should be largely **orthogonal** to each other and be able to be **tested** independently. Removing one entirely should **not** leave other systems in an un-executable state. Examples include the build system and the farming system.
+
+- **I/O systems**: These are all of the **Input/Output** and **data management** related systems. These are the systems that handle all of the communication to and fro the **user**, such as **input handling** and **UI** and the **OS**, such as **save systems**. Importantly, **NO system outside this category should do or care about any sort of I/O**.
+
+- **Utility systems**: These are the additional and superfluous systems that are neither core to the game or part of the gameplay. Many of these will be **small, critical** systems that **facilitate other systems** or provide **additional utilities.** These are the systems such as our **dependency injection**.
+
+## Settings
 This folder holds URP settings.
 
-### TextMeshPro
+## TextMeshPro
 The main folder of the TextMeshPro package, holding fonts and assets related to the package.
 
-## ArtAssets
+# ArtAssets
 
 In this folder we expect all **source art** assets that are **used in the game**. 
 Ideally, the folder structure in this directory matches the folder structure of the game. That way it's easy to find a source file of an asset in the game.
 
 It is not recommended to include export files (```.fbx```, ```.png```, etc..) in this folder, since Unity project already contains these files if the asset is imported. If we store export files in ArtAssets as well, we need to keep the files in both locations up-to-date. Hovewer, storing export files in ArtAssets folder is not forbitten.
 
-### SoundAssets
+# SoundAssets
 
 In this folder we expect all **source sound** assets that are **used in the game**
 

@@ -170,6 +170,57 @@ MonoBehaviour:
     outputs:
     - resourceId: 1
       amount: 20
+  - tierName: Tier 3
+    inputs:
+    - resourceId: 5
+      amount: 30
+    outputs:
+    - resourceId: 1
+      amount: 10
+    - resourceId: 2
+      amount: 3
+  - tierName: Tier 4
+    inputs:
+    - resourceId: 5
+      amount: 40
+    outputs:
+    - resourceId: 1
+      amount: 15
+    - resourceId: 2
+      amount: 5
+  - tierName: Tier 5
+    inputs:
+    - resourceId: 5
+      amount: 50
+    outputs:
+    - resourceId: 1
+      amount: 15
+    - resourceId: 2
+      amount: 7
+    - resourceId: 3
+      amount: 2
+  - tierName: Tier 6
+    inputs:
+    - resourceId: 5
+      amount: 75
+    outputs:
+    - resourceId: 1
+      amount: 20
+    - resourceId: 2
+      amount: 10
+    - resourceId: 3
+      amount: 3
+  - tierName: Tier 7
+    inputs:
+    - resourceId: 5
+      amount: 100
+    outputs:
+    - resourceId: 1
+      amount: 20
+    - resourceId: 2
+      amount: 15
+    - resourceId: 3
+      amount: 5
   inventoryStorage: {fileID: 5124713925676610085}
   outputStorage: {fileID: 3180923515246316916}
   closeDistance: 5
@@ -201,6 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9004a8784fbacb4cbef6febd1ecb018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
+  deathStrat: 0
   maxHealth: 100
   currentHealth: 0
 --- !u!114 &4356877362674444588

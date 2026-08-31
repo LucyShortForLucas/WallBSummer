@@ -16,7 +16,7 @@ MonoBehaviour:
   - name: Farmland
     description: 'A simple plot of tilled land to grow seeds on. Requires fertile
       soil and a source of water to grow anything.  '
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 6fe1b4a6eb2f8134da4dc4f6c6c8151d, type: 3}
     building: {fileID: 5784207029061357082, guid: 0daded2719c4d754abee927bc5847ded, type: 3}
     previewMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
     tileFootPrint: {x: 1, y: 1}
@@ -25,9 +25,37 @@ MonoBehaviour:
     resourceCost:
     - resource: 1
       cost: 1
+  - name: Deep water pump
+    description: 'A drill-and-pump capable of digging deep into the earth''s crust
+      to extract the most valuable resource of all: fresh water. '
+    icon: {fileID: 21300000, guid: 7563501f86e40e844956325fedb428d2, type: 3}
+    building: {fileID: 2976505963839714493, guid: 88b27daebbbca9b458356872a266bb60, type: 3}
+    previewMesh: {fileID: -595205388697165202, guid: cbfaca3462349d04b93a9d95c137ab50, type: 3}
+    tileFootPrint: {x: 3, y: 3}
+    placementOffset: {x: 1.5, y: 1, z: 1.5}
+    requiresFertileSoil: 0
+    resourceCost:
+    - resource: 1
+      cost: 5
+    - resource: 2
+      cost: 5
+  - name: Trade Depot
+    description: A high-altitude rocket-powered delivery system to trade the food
+      you farm to nearby human settlements for scrap
+    icon: {fileID: 21300000, guid: a6352fee5b4496640b74311c587eb70e, type: 3}
+    building: {fileID: 37314985656475278, guid: 2a95103261ae8d84eb37f8348bc8d0a5, type: 3}
+    previewMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    tileFootPrint: {x: 5, y: 5}
+    placementOffset: {x: 2.5, y: 1, z: 2.5}
+    requiresFertileSoil: 0
+    resourceCost:
+    - resource: 1
+      cost: 5
+    - resource: 2
+      cost: 5
   - name: Scrap Turret
     description: A basic defense turret jury-rigged to blast away anything that moves
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 7563501f86e40e844956325fedb428d2, type: 3}
     building: {fileID: 2048181224289364501, guid: 589fd9ea221e20749b13ae424fcf540c, type: 3}
     previewMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
     tileFootPrint: {x: 5, y: 5}
@@ -41,7 +69,7 @@ MonoBehaviour:
   - name: Scrap Factory
     description: 'An incredibly sophisticated bundle of wires and cogs with the sole
       purpose of turning scrap  into slightly more useful scrap '
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 8e88f3c1642fc3644b1140afbd76279c, type: 3}
     building: {fileID: 2932117563363369894, guid: 47ddff2d1d874094aa0beade7b1b14b9, type: 3}
     previewMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
     tileFootPrint: {x: 5, y: 5}
@@ -53,5 +81,33 @@ MonoBehaviour:
     - resource: 2
       cost: 3
     - resource: 3
-      cost: 1
+      cost: 2
+  - name: Storage Container
+    description: 'An incredibly advanced and highly sought-after piece of technology
+      from the Old World: a big empty box to keep all your stuff in'
+    icon: {fileID: 21300000, guid: 7d0d216f9f969ba468cebf9dce8bf0d5, type: 3}
+    building: {fileID: 3585548435327155510, guid: 7b7d162ec613b0f448be068a14e01be9, type: 3}
+    previewMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    tileFootPrint: {x: 5, y: 5}
+    placementOffset: {x: 2.5, y: 1, z: 2.5}
+    requiresFertileSoil: 0
+    resourceCost:
+    - resource: 2
+      cost: 30
+  - name: Advanced Turret
+    description: 'This juiced up turret can fire scrap like no other. Keep away from
+      children, pets, and evil murder-happy robots. Batteries not included. '
+    icon: {fileID: 21300000, guid: 7563501f86e40e844956325fedb428d2, type: 3}
+    building: {fileID: 2048181224289364501, guid: f945cc6a10c933e45abfe456e7cd9cf6, type: 3}
+    previewMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    tileFootPrint: {x: 5, y: 5}
+    placementOffset: {x: 2.5, y: 1, z: 2.5}
+    requiresFertileSoil: 0
+    resourceCost:
+    - resource: 1
+      cost: 15
+    - resource: 2
+      cost: 15
+    - resource: 3
+      cost: 5
   _children: []

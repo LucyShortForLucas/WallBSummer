@@ -98,6 +98,7 @@ public class BuildSystemObstructionFootprint : MonoBehaviour, IInjectable
         foreach (var tile in tiles)
         {
             _gridWorld.FillBuildObstructionType(new RectInt(tile, Vector2Int.one), GridWorld.BuildObstructionType.Natural);
+            _gridWorld.FillFertilityType(new RectInt(tile, Vector2Int.one), GridWorld.FertilityType.None);
         }
     }
 

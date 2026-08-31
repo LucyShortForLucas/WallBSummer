@@ -85,6 +85,8 @@ public class BuildSystem : MonoBehaviour, IInjectable
     private TooltipHandler.TooltipData _outOfRangeTooltipData = new("Out of range!", Color.red, CustomColors.BlackTrans);
     private TooltipHandler.Handle? _insufficientResourcesTooltip;
     private TooltipHandler.TooltipData _insufficientResourcesTooltipData = new("Insufficient resources!", Color.red, CustomColors.BlackTrans);
+    private TooltipHandler.Handle? _requiresFertilityTooltip;
+    private TooltipHandler.TooltipData _requiresFertilityTooltipData = new("Require fertility!", Color.red, CustomColors.BlackTrans);
 
 
     // ---- Public API
@@ -114,6 +116,7 @@ public class BuildSystem : MonoBehaviour, IInjectable
         _obstructedTooltip?.RemoveTooltip();
         _outOfRangeTooltip?.RemoveTooltip();
         _insufficientResourcesTooltip?.RemoveTooltip();
+        _requiresFertilityTooltip?.RemoveTooltip();
 
         Cursor.visible = true;
     }
@@ -140,6 +143,8 @@ public class BuildSystem : MonoBehaviour, IInjectable
         Vector3 buildingPosition = nullableBuildingPosition.Value;
 
         _gridWorldHandler.World.FillBuildObstructionType(_tryingToPlaceTileRect, GridWorld.BuildObstructionType.Building);
+        _gridWorldHandler.World.FillFertilityType(_tryingToPlaceTileRect, GridWorld.FertilityType.None);
+
         var go = Instantiate(_tryingToPlaceBuildable?.building, buildingPosition, Quaternion.identity);
 
         if (go == null)
@@ -174,6 +179,7 @@ public class BuildSystem : MonoBehaviour, IInjectable
         _obstructedTooltip ??= _toolTipHandler.NewHandle();
         _outOfRangeTooltip ??= _toolTipHandler.NewHandle();
         _insufficientResourcesTooltip ??= _toolTipHandler.NewHandle();
+        _requiresFertilityTooltip ??= _toolTipHandler.NewHandle();
 
         // unpack non-nullable buildable
         var buildable = _tryingToPlaceBuildable.Value;
@@ -206,8 +212,19 @@ public class BuildSystem : MonoBehaviour, IInjectable
                 notEnoughResources = true;
         }
 
+        // Handle fertiity if needed
+        bool notEnoughFertility = false;
+        if (buildable.requiresFertileSoil)
+        {
+            foreach (var fertility in _gridWorldHandler.World.GetFertility(_tryingToPlaceTileRect))
+            {
+                if (fertility < GridWorld.INFO.minFertilityToSpread)
+                    notEnoughFertility = true;
+            }
+        }
+
         // Handle obstructed or out of range or not enough resources
-        buildstrat.BuildAllowed = _placingAllowed = !obstructed && !outOfRange && !notEnoughResources;
+        buildstrat.BuildAllowed = _placingAllowed = !obstructed && !outOfRange && !notEnoughResources && !notEnoughFertility;
 
         if (obstructed && _obstructedTooltip.Empty)
             _obstructedTooltip.NewTooltip(_obstructedTooltipData);
@@ -223,5 +240,10 @@ public class BuildSystem : MonoBehaviour, IInjectable
             _insufficientResourcesTooltip.NewTooltip(_insufficientResourcesTooltipData);
         else if (!notEnoughResources)
             _insufficientResourcesTooltip.RemoveTooltip();
+
+        if (notEnoughFertility && _requiresFertilityTooltip.Empty)
+            _requiresFertilityTooltip.NewTooltip(_requiresFertilityTooltipData);
+        else if (!notEnoughFertility)
+            _requiresFertilityTooltip.RemoveTooltip();
     }
 }
