@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{A71A4991-68E7-457B-A1D0-5EB7B176AF0C}",
     "Language": "SFX",
-    "Hash": "{F2DC2267-C239-C87D-843F-4E1BCBF73FC2}",
+    "Hash": "{0765E874-89C4-0676-84E5-A019B63EFDBC}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Master",
     "ShortName": "Master",
     "Path": "Master.bnk",
@@ -90,10 +90,11 @@
      {
       "Id": "757154895",
       "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
+      "Streaming": "true",
+      "Location": "Loose",
       "ShortName": "DesertTemp.wav",
-      "CachePath": "1C/{1C8F04F0-2D14-D204-20E6-2A956253634B}.wem"
+      "Path": "Media/757154895.wem",
+      "CachePath": "B4/{B4C09165-02C0-CD0F-C7ED-4E667B79D31E}.wem"
      },
      {
       "Id": "776163752",
@@ -150,9 +151,7 @@
       "Name": "Ambience",
       "ObjectPath": "\\Events\\Default Work Unit\\Ambience",
       "GUID": "{284E678E-C8AA-4D61-939E-FF3A3FAAC1C2}",
-      "DurationType": "OneShot",
-      "DurationMin": "305.9929",
-      "DurationMax": "305.9929",
+      "DurationType": "Infinite",
       "MediaRefs": [
        {
         "Id": "757154895"
@@ -279,6 +278,6 @@
     ]
    }
   ],
-  "FileHash": "{3D97A20C-2D91-3E65-A23D-E8362049BD91}"
+  "FileHash": "{7319C15D-2629-DFB9-49F0-F4D0BF8DD00B}"
  }
 }

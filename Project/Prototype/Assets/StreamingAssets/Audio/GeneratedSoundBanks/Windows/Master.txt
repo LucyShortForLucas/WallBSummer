@@ -20,11 +20,13 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	616443019	BadToTheBone	.cache\6E\{6E3BCD52-B934-2F98-F8A8-D87CE7B22E73}.wem		\Containers\Default Work Unit\BadToTheBone		318236
 	654893353	PlaceBase	.cache\61\{6185DBDB-D6C6-4378-24BC-6BA126606C2B}.wem		\Containers\SFX\BuildSystem\BuildingPlace\Base\PlaceBase		332896
 	656306846	InventoryCloseBase	.cache\0C\{0CFCB692-B010-D0DE-B0AD-68F70F9B420F}.wem		\Containers\SFX\Interactions\InventoryClose\Base\InventoryCloseBase		403296
-	757154895	DesertTemp	.cache\1C\{1C8F04F0-2D14-D204-20E6-2A956253634B}.wem		\Containers\Ambience\DesertTemp		58750728
 	776163752	TurretBase-003	.cache\99\{9969493D-30C1-F1FA-66BD-57B2F8474DE7}.wem		\Containers\SFX\Turret\BurstLayers\Base\TurretBase-003		375496
 	777327380	InventoryOpenStyle	.cache\3A\{3AE2F5FF-6894-6876-B5E4-9CA893577FCB}.wem		\Containers\SFX\Interactions\InventoryOpen\Style\InventoryOpenStyle		300896
 	785512542	TurretStyle-002	.cache\D1\{D11C9316-FC67-5EEE-EA34-59AA37628DB2}.wem		\Containers\SFX\Turret\BurstLayers\StyleDesert\TurretStyle-002		375496
 	910507173	TurretBase-001	.cache\C0\{C06807D7-1138-0359-AC2D-5A6A1CD29853}.wem		\Containers\SFX\Turret\BurstLayers\Base\TurretBase-001		377696
 	943670292	PlantingStyle	.cache\F4\{F426E514-2418-B92B-A703-1C9B999F65B0}.wem		\Containers\SFX\Interactions\Planting\Style\PlantingStyle		279576
 	1011641975	PlantingBase	.cache\09\{09E7DA4C-034E-38B3-738F-40F55876B467}.wem		\Containers\SFX\Interactions\Planting\Base\PlantingBase		279576
+
+Streamed Audio	ID	Name	Audio source file	Generated audio file	Wwise Object Path	Notes
+	757154895	DesertTemp	.cache\B4\{B4C09165-02C0-CD0F-C7ED-4E667B79D31E}.wem	757154895.wem	\Containers\Ambience\DesertTemp	
 
