@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -34,3 +35,4 @@ public class MyDataAssetEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 }
+#endif
